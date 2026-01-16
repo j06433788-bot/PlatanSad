@@ -228,26 +228,30 @@ const CheckoutPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4">
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4">
         <button
           onClick={() => navigate('/cart')}
-          className="flex items-center gap-2 text-gray-600 hover:text-green-600 mb-6 transition-colors"
+          className="flex items-center gap-2 text-gray-600 hover:text-green-600 mb-4 sm:mb-6 transition-colors"
         >
-          <ArrowLeft className="w-5 h-5" />
-          <span>Назад до кошика</span>
+          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+          <span className="text-sm sm:text-base">Назад до кошика</span>
         </button>
 
-        <h1 className="text-3xl font-bold text-gray-800 mb-8" data-testid="checkout-title">Оформлення замовлення</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-8" data-testid="checkout-title">
+          Оформлення замовлення
+        </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
           {/* Checkout Form */}
           <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6 space-y-6">
+            <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-4 sm:p-6 space-y-4 sm:space-y-6">
               {/* Contact Information */}
               <div>
-                <h2 className="text-xl font-bold text-gray-800 mb-4">Контактна інформація</h2>
-                <div className="space-y-4">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4">
+                  Контактна інформація
+                </h2>
+                <div className="space-y-3 sm:space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Ім'я та прізвище <span className="text-red-500">*</span>
@@ -257,14 +261,14 @@ const CheckoutPage = () => {
                       name="customerName"
                       value={formData.customerName}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                      className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
                         errors.customerName ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="Іван Іваненко"
                       data-testid="customer-name-input"
                     />
                     {errors.customerName && (
-                      <p className="mt-1 text-sm text-red-500">{errors.customerName}</p>
+                      <p className="mt-1 text-xs sm:text-sm text-red-500">{errors.customerName}</p>
                     )}
                   </div>
 
@@ -277,14 +281,14 @@ const CheckoutPage = () => {
                       name="customerPhone"
                       value={formData.customerPhone}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                      className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
                         errors.customerPhone ? 'border-red-500' : 'border-gray-300'
                       }`}
-                      placeholder="+380 (XX) XXX-XX-XX"
+                      placeholder="+380 XX XXX XX XX"
                       data-testid="customer-phone-input"
                     />
                     {errors.customerPhone && (
-                      <p className="mt-1 text-sm text-red-500">{errors.customerPhone}</p>
+                      <p className="mt-1 text-xs sm:text-sm text-red-500">{errors.customerPhone}</p>
                     )}
                   </div>
 
@@ -297,80 +301,202 @@ const CheckoutPage = () => {
                       name="customerEmail"
                       value={formData.customerEmail}
                       onChange={handleChange}
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                      className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
                         errors.customerEmail ? 'border-red-500' : 'border-gray-300'
                       }`}
                       placeholder="example@email.com"
                       data-testid="customer-email-input"
                     />
                     {errors.customerEmail && (
-                      <p className="mt-1 text-sm text-red-500">{errors.customerEmail}</p>
+                      <p className="mt-1 text-xs sm:text-sm text-red-500">{errors.customerEmail}</p>
                     )}
                   </div>
                 </div>
               </div>
 
               {/* Delivery Information */}
-              <div className="border-t pt-6">
-                <h2 className="text-xl font-bold text-gray-800 mb-4">Доставка</h2>
-                <div className="space-y-4">
+              <div className="border-t pt-4 sm:pt-6">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4">Доставка</h2>
+                <div className="space-y-3 sm:space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Спосіб доставки <span className="text-red-500">*</span>
                     </label>
                     <div className="space-y-2">
-                      <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-green-500 transition-colors">
+                      <label className="flex items-start sm:items-center p-3 sm:p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-green-500 transition-colors">
                         <input
                           type="radio"
                           name="deliveryMethod"
                           value="nova_poshta"
                           checked={formData.deliveryMethod === 'nova_poshta'}
                           onChange={handleChange}
-                          className="w-4 h-4 text-green-600"
+                          className="w-4 h-4 text-green-600 mt-0.5 sm:mt-0 flex-shrink-0"
                           data-testid="delivery-nova-poshta"
                         />
                         <span className="ml-3">
-                          <span className="font-medium">Нова Пошта</span>
-                          <span className="block text-sm text-gray-500">Доставка до відділення або поштомату</span>
+                          <span className="font-medium text-sm sm:text-base block">Нова Пошта</span>
+                          <span className="block text-xs sm:text-sm text-gray-500 mt-0.5">
+                            Доставка до відділення або поштомату
+                          </span>
                         </span>
                       </label>
-                      <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-green-500 transition-colors">
+                      <label className="flex items-start sm:items-center p-3 sm:p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-green-500 transition-colors">
                         <input
                           type="radio"
                           name="deliveryMethod"
                           value="self_pickup"
                           checked={formData.deliveryMethod === 'self_pickup'}
                           onChange={handleChange}
-                          className="w-4 h-4 text-green-600"
+                          className="w-4 h-4 text-green-600 mt-0.5 sm:mt-0 flex-shrink-0"
                           data-testid="delivery-self-pickup"
                         />
                         <span className="ml-3">
-                          <span className="font-medium">Самовивіз</span>
-                          <span className="block text-sm text-gray-500">смт. Смига, Рівненська обл.</span>
+                          <span className="font-medium text-sm sm:text-base block">Самовивіз</span>
+                          <span className="block text-xs sm:text-sm text-gray-500 mt-0.5">
+                            смт. Смига, Рівненська обл.
+                          </span>
                         </span>
                       </label>
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Адреса доставки <span className="text-red-500">*</span>
-                    </label>
-                    <textarea
-                      name="deliveryAddress"
-                      value={formData.deliveryAddress}
-                      onChange={handleChange}
-                      rows="3"
-                      className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                        errors.deliveryAddress ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                      placeholder="Місто, відділення Нової Пошти або повна адреса"
-                      data-testid="delivery-address-input"
-                    />
-                    {errors.deliveryAddress && (
-                      <p className="mt-1 text-sm text-red-500">{errors.deliveryAddress}</p>
-                    )}
-                  </div>
+                  {formData.deliveryMethod === 'nova_poshta' ? (
+                    <>
+                      {/* Вибір міста */}
+                      <div className="relative" ref={cityInputRef}>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Місто <span className="text-red-500">*</span>
+                        </label>
+                        <div className="relative">
+                          <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                          <input
+                            type="text"
+                            value={citySearch}
+                            onChange={(e) => {
+                              setCitySearch(e.target.value);
+                              setShowCityDropdown(true);
+                              setFormData(prev => ({ ...prev, city: null, warehouse: null }));
+                            }}
+                            onFocus={() => setShowCityDropdown(true)}
+                            className={`w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                              errors.city ? 'border-red-500' : 'border-gray-300'
+                            }`}
+                            placeholder="Почніть вводити назву міста..."
+                            data-testid="city-search-input"
+                          />
+                        </div>
+                        {errors.city && (
+                          <p className="mt-1 text-xs sm:text-sm text-red-500">{errors.city}</p>
+                        )}
+
+                        {/* Dropdown з містами */}
+                        {showCityDropdown && citySearch.length >= 2 && cities.length > 0 && (
+                          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 sm:max-h-60 overflow-y-auto">
+                            {cities.map((city) => (
+                              <div
+                                key={city.ref}
+                                onClick={() => handleCitySelect(city)}
+                                className="px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-green-50 cursor-pointer border-b border-gray-100 last:border-0"
+                              >
+                                <div className="font-medium text-sm sm:text-base text-gray-800">{city.name}</div>
+                                <div className="text-xs sm:text-sm text-gray-500">{city.area}</div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Популярні міста */}
+                        {showCityDropdown && citySearch.length < 2 && (
+                          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 sm:max-h-60 overflow-y-auto">
+                            <div className="px-3 sm:px-4 py-2 bg-gray-50 text-xs sm:text-sm font-medium text-gray-600 sticky top-0">
+                              Популярні міста
+                            </div>
+                            {popularCities.map((cityName, index) => (
+                              <div
+                                key={index}
+                                onClick={async () => {
+                                  setCitySearch(cityName);
+                                  const results = await searchCities(cityName);
+                                  if (results.length > 0) {
+                                    handleCitySelect(results[0]);
+                                  }
+                                }}
+                                className="px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-green-50 cursor-pointer border-b border-gray-100 last:border-0 text-sm sm:text-base"
+                              >
+                                {cityName}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Вибір відділення */}
+                      {formData.city && (
+                        <div className="relative" ref={warehouseInputRef}>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Відділення Нової Пошти <span className="text-red-500">*</span>
+                          </label>
+                          <div className="relative">
+                            <Package className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                            <input
+                              type="text"
+                              value={formData.warehouse ? formData.warehouse.description : ''}
+                              onFocus={() => setShowWarehouseDropdown(true)}
+                              readOnly
+                              className={`w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 cursor-pointer ${
+                                errors.warehouse ? 'border-red-500' : 'border-gray-300'
+                              }`}
+                              placeholder={loadingWarehouses ? "Завантаження..." : "Оберіть відділення"}
+                              data-testid="warehouse-select-input"
+                            />
+                          </div>
+                          {errors.warehouse && (
+                            <p className="mt-1 text-xs sm:text-sm text-red-500">{errors.warehouse}</p>
+                          )}
+
+                          {/* Dropdown з відділеннями */}
+                          {showWarehouseDropdown && warehouses.length > 0 && (
+                            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-48 sm:max-h-60 overflow-y-auto">
+                              {warehouses.map((warehouse) => (
+                                <div
+                                  key={warehouse.ref}
+                                  onClick={() => handleWarehouseSelect(warehouse)}
+                                  className="px-3 sm:px-4 py-2 sm:py-2.5 hover:bg-green-50 cursor-pointer border-b border-gray-100 last:border-0"
+                                >
+                                  <div className="font-medium text-sm sm:text-base text-gray-800">
+                                    {warehouse.description}
+                                  </div>
+                                  <div className="text-xs sm:text-sm text-gray-500">
+                                    {warehouse.shortAddress}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Адреса <span className="text-red-500">*</span>
+                      </label>
+                      <textarea
+                        name="deliveryAddress"
+                        value={formData.deliveryAddress}
+                        onChange={handleChange}
+                        rows="3"
+                        className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 ${
+                          errors.deliveryAddress ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        placeholder="смт. Смига, Рівненська обл."
+                        data-testid="delivery-address-input"
+                      />
+                      {errors.deliveryAddress && (
+                        <p className="mt-1 text-xs sm:text-sm text-red-500">{errors.deliveryAddress}</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
