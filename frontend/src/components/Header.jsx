@@ -546,18 +546,18 @@ const Header = () => {
                   <div key={item.id} className="flex gap-3 bg-white border border-gray-200 rounded-lg p-3">
                     {/* Product Image */}
                     <img
-                      src={item.product?.image || '/placeholder.png'}
-                      alt={item.product?.name}
+                      src={item.productImage || '/placeholder.png'}
+                      alt={item.productName}
                       className="w-20 h-20 object-cover rounded-md flex-shrink-0"
                     />
                     
                     {/* Product Details */}
                     <div className="flex-1 min-w-0">
                       <h4 className="text-sm font-semibold text-gray-800 mb-1 line-clamp-2">
-                        {item.product?.name}
+                        {item.productName}
                       </h4>
                       <p className="text-sm font-bold text-green-600 mb-2">
-                        {item.product?.price} ₴
+                        {item.price} ₴
                       </p>
                       
                       {/* Quantity Controls */}
