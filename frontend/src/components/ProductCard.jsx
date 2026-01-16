@@ -35,17 +35,17 @@ const ProductCard = ({ product }) => {
       <div className="absolute top-2 left-2 z-10 flex flex-col gap-1.5">
         {hasSale && (
           <span className="bg-red-500 text-white text-[10px] sm:text-xs px-2 py-0.5 rounded-md font-bold shadow-sm">
-            SALE
+            РОЗПРОДАЖ
           </span>
         )}
         {isNew && (
           <span className="bg-green-500 text-white text-[10px] sm:text-xs px-2 py-0.5 rounded-md font-bold shadow-sm">
-            NEW
+            НОВИНКА
           </span>
         )}
         {isHit && (
           <span className="bg-orange-500 text-white text-[10px] sm:text-xs px-2 py-0.5 rounded-md font-bold shadow-sm">
-            HIT
+            ХІТ
           </span>
         )}
       </div>
