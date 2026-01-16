@@ -41,7 +41,8 @@ function App() {
         <AdminAuthProvider>
           <CartProvider>
             <WishlistProvider>
-              <Routes>
+              <CompareProvider>
+                <Routes>
                 {/* Admin Routes */}
                 <Route path="/admin/login" element={<AdminLogin />} />
                 <Route
