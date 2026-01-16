@@ -36,28 +36,6 @@ const CheckoutPage = () => {
   const cityInputRef = useRef(null);
   const warehouseInputRef = useRef(null);
 
-  if (cartItems.length === 0) {
-    return (
-      <div className="min-h-screen bg-gray-50 py-12">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
-            <ShoppingBag className="w-24 h-24 mx-auto text-gray-300 mb-6" />
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Кошик порожній</h2>
-            <p className="text-gray-600 mb-8">
-              Додайте товари до кошика перед оформленням замовлення
-            </p>
-            <button
-              onClick={() => navigate('/catalog')}
-              className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium transition-all"
-            >
-              Перейти до каталогу
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   // Пошук міст при введенні
   useEffect(() => {
     const searchDebounce = setTimeout(async () => {
@@ -100,6 +78,28 @@ const CheckoutPage = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-12">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="bg-white rounded-lg shadow-md p-12 text-center">
+            <ShoppingBag className="w-24 h-24 mx-auto text-gray-300 mb-6" />
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Кошик порожній</h2>
+            <p className="text-gray-600 mb-8">
+              Додайте товари до кошика перед оформленням замовлення
+            </p>
+            <button
+              onClick={() => navigate('/catalog')}
+              className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-lg font-medium transition-all"
+            >
+              Перейти до каталогу
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
