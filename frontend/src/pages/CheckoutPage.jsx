@@ -501,44 +501,48 @@ const CheckoutPage = () => {
               </div>
 
               {/* Payment Method */}
-              <div className="border-t pt-6">
-                <h2 className="text-xl font-bold text-gray-800 mb-4">Оплата</h2>
+              <div className="border-t pt-4 sm:pt-6">
+                <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4">Оплата</h2>
                 <div className="space-y-2">
-                  <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-green-500 transition-colors">
+                  <label className="flex items-start sm:items-center p-3 sm:p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-green-500 transition-colors">
                     <input
                       type="radio"
                       name="paymentMethod"
                       value="cash_on_delivery"
                       checked={formData.paymentMethod === 'cash_on_delivery'}
                       onChange={handleChange}
-                      className="w-4 h-4 text-green-600"
+                      className="w-4 h-4 text-green-600 mt-0.5 sm:mt-0 flex-shrink-0"
                       data-testid="payment-cash"
                     />
                     <span className="ml-3">
-                      <span className="font-medium">Накладений платіж</span>
-                      <span className="block text-sm text-gray-500">Оплата при отриманні товару</span>
+                      <span className="font-medium text-sm sm:text-base block">Накладений платіж</span>
+                      <span className="block text-xs sm:text-sm text-gray-500 mt-0.5">
+                        Оплата при отриманні товару
+                      </span>
                     </span>
                   </label>
-                  <label className="flex items-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-green-500 transition-colors">
+                  <label className="flex items-start sm:items-center p-3 sm:p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-green-500 transition-colors">
                     <input
                       type="radio"
                       name="paymentMethod"
                       value="card"
                       checked={formData.paymentMethod === 'card'}
                       onChange={handleChange}
-                      className="w-4 h-4 text-green-600"
+                      className="w-4 h-4 text-green-600 mt-0.5 sm:mt-0 flex-shrink-0"
                       data-testid="payment-card"
                     />
                     <span className="ml-3">
-                      <span className="font-medium">Оплата на картку</span>
-                      <span className="block text-sm text-gray-500">Передоплата на банківську картку</span>
+                      <span className="font-medium text-sm sm:text-base block">Оплата на картку</span>
+                      <span className="block text-xs sm:text-sm text-gray-500 mt-0.5">
+                        Передоплата на банківську картку
+                      </span>
                     </span>
                   </label>
                 </div>
               </div>
 
               {/* Additional Notes */}
-              <div className="border-t pt-6">
+              <div className="border-t pt-4 sm:pt-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Коментар до замовлення
                 </label>
@@ -547,54 +551,64 @@ const CheckoutPage = () => {
                   value={formData.notes}
                   onChange={handleChange}
                   rows="3"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                   placeholder="Додаткова інформація (необов'язково)"
                   data-testid="order-notes-input"
                 />
               </div>
+
+              {/* Мобільна кнопка (показується тільки на маленьких екранах) */}
+              <button
+                type="submit"
+                disabled={loading}
+                className="lg:hidden w-full bg-green-600 hover:bg-green-700 text-white py-3 sm:py-4 rounded-lg font-medium text-base sm:text-lg transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                data-testid="place-order-btn-mobile"
+              >
+                {loading ? 'Оформлення...' : 'Підтвердити замовлення'}
+              </button>
             </form>
           </div>
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
-              <h2 className="text-xl font-bold text-gray-800 mb-6">Ваше замовлення</h2>
+            <div className="bg-white rounded-lg shadow-md p-4 sm:p-6 lg:sticky lg:top-24">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6">Ваше замовлення</h2>
 
-              <div className="space-y-4 mb-6 max-h-64 overflow-y-auto">
+              <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6 max-h-48 sm:max-h-64 overflow-y-auto">
                 {cartItems.map((item) => (
-                  <div key={item.id} className="flex gap-3">
-                    <div className="w-16 h-16 rounded bg-gray-100 flex-shrink-0">
+                  <div key={item.id} className="flex gap-2 sm:gap-3">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded bg-gray-100 flex-shrink-0">
                       <img
                         src={item.productImage}
                         alt={item.productName}
                         className="w-full h-full object-cover rounded"
                       />
                     </div>
-                    <div className="flex-1">
-                      <div className="text-sm font-medium text-gray-800 line-clamp-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs sm:text-sm font-medium text-gray-800 line-clamp-2">
                         {item.productName}
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
                         {item.quantity} шт × {item.price} грн
                       </div>
                     </div>
-                    <div className="text-sm font-medium text-gray-800">
+                    <div className="text-xs sm:text-sm font-medium text-gray-800 flex-shrink-0">
                       {(item.price * item.quantity).toFixed(2)} грн
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="border-t pt-4 space-y-3">
-                <div className="flex justify-between text-gray-600">
+              <div className="border-t pt-3 sm:pt-4 space-y-2 sm:space-y-3">
+                <div className="flex justify-between text-sm sm:text-base text-gray-600">
                   <span>Товари</span>
                   <span>{cartTotal.toFixed(2)} грн</span>
                 </div>
-                <div className="flex justify-between text-gray-600">
+                <div className="flex justify-between text-sm sm:text-base text-gray-600">
                   <span>Доставка</span>
-                  <span className="text-green-600">За тарифами перевізника</span>
+                  <span className="text-green-600 text-xs sm:text-sm">За тарифами перевізника</span>
                 </div>
-                <div className="border-t pt-3 flex justify-between text-xl font-bold">
+                <div className="border-t pt-2 sm:pt-3 flex justify-between text-lg sm:text-xl font-bold">
                   <span>Разом</span>
                   <span className="text-green-600" data-testid="checkout-total">{cartTotal.toFixed(2)} грн</span>
                 </div>
@@ -604,13 +618,13 @@ const CheckoutPage = () => {
                 type="submit"
                 onClick={handleSubmit}
                 disabled={loading}
-                className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white py-4 rounded-lg font-medium text-lg transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="hidden lg:block w-full mt-4 sm:mt-6 bg-green-600 hover:bg-green-700 text-white py-3 sm:py-4 rounded-lg font-medium text-base sm:text-lg transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 data-testid="place-order-btn"
               >
                 {loading ? 'Оформлення...' : 'Підтвердити замовлення'}
               </button>
 
-              <p className="mt-4 text-xs text-gray-500 text-center">
+              <p className="mt-3 sm:mt-4 text-xs text-gray-500 text-center">
                 Натискаючи кнопку, ви погоджуєтесь з умовами обробки персональних даних
               </p>
             </div>
