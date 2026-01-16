@@ -1,4 +1,4 @@
-from fastapi import FastAPI, APIRouter, HTTPException, Query
+from fastapi import FastAPI, APIRouter, HTTPException, Query, Depends
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
@@ -6,6 +6,7 @@ import os
 import logging
 from pathlib import Path
 from typing import List, Optional
+from datetime import datetime, timedelta
 from models import (
     Product, ProductCreate, ProductUpdate,
     Category, CategoryCreate,
@@ -13,6 +14,14 @@ from models import (
     WishlistItem, WishlistItemCreate,
     Order, OrderCreate,
     QuickOrder, QuickOrderCreate
+)
+from admin_models import (
+    AdminLogin, AdminToken, DashboardStats, 
+    OrderStatusUpdate, CategoryUpdate, OrderStats
+)
+from admin_auth import (
+    authenticate_admin, create_access_token, 
+    get_current_admin, ACCESS_TOKEN_EXPIRE_MINUTES
 )
 
 ROOT_DIR = Path(__file__).parent
