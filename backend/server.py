@@ -388,6 +388,80 @@ async def get_quick_order(order_id: str):
     return quick_order
 
 
+# ==================== LIQPAY PAYMENT ENDPOINTS ====================
+
+from liqpay_service import liqpay_service
+
+@api_router.post("/liqpay/create-checkout")
+async def create_liqpay_checkout(
+    order_id: str,
+    amount: float,
+    description: str = "Оплата замовлення PlatanSad",
+    result_url: str = None,
+    server_url: str = None
+):
+    """Create LiqPay checkout session"""
+    try:
+        checkout_data = liqpay_service.create_checkout_data(
+            amount=amount,
+            order_id=order_id,
+            description=description,
+            result_url=result_url,
+            server_url=server_url
+        )
+        return checkout_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/liqpay/callback")
+async def liqpay_callback(request: dict):
+    """Handle LiqPay payment callback"""
+    try:
+        data = request.get("data", "")
+        signature = request.get("signature", "")
+        
+        # Verify signature
+        if not liqpay_service.verify_callback(data, signature):
+            raise HTTPException(status_code=400, detail="Invalid signature")
+        
+        # Decode callback data
+        callback_data = liqpay_service.decode_callback_data(data)
+        
+        order_id = callback_data.get("order_id")
+        status = callback_data.get("status")
+        
+        # Update order payment status in database
+        if order_id and status in ["success", "sandbox"]:
+            await db.orders.update_one(
+                {"id": order_id},
+                {"$set": {
+                    "paymentStatus": "paid",
+                    "liqpayStatus": status,
+                    "paidAt": datetime.utcnow().isoformat()
+                }}
+            )
+        
+        return {"status": "ok", "order_id": order_id, "payment_status": status}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.get("/liqpay/status/{order_id}")
+async def get_payment_status(order_id: str):
+    """Get payment status for an order"""
+    order = await db.orders.find_one({"id": order_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    return {
+        "order_id": order_id,
+        "payment_status": order.get("paymentStatus", "pending"),
+        "liqpay_status": order.get("liqpayStatus"),
+        "paid_at": order.get("paidAt")
+    }
+
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/")
