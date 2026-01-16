@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { ordersApi } from '../api/ordersApi';
 import { toast } from 'sonner';
-import { ArrowLeft, ShoppingBag } from 'lucide-react';
+import { ArrowLeft, ShoppingBag, Search, MapPin, Package } from 'lucide-react';
+import { searchCities, getWarehouses, popularCities } from '../api/novaPoshtaApi';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
@@ -12,15 +13,28 @@ const CheckoutPage = () => {
   
   const [formData, setFormData] = useState({
     customerName: '',
-    customerPhone: '',
+    customerPhone: '+380',
     customerEmail: '',
     deliveryAddress: '',
     deliveryMethod: 'nova_poshta',
     paymentMethod: 'cash_on_delivery',
     notes: '',
+    city: null,
+    warehouse: null,
   });
 
   const [errors, setErrors] = useState({});
+  
+  // Стани для Нової Пошти
+  const [citySearch, setCitySearch] = useState('');
+  const [cities, setCities] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
+  const [showCityDropdown, setShowCityDropdown] = useState(false);
+  const [showWarehouseDropdown, setShowWarehouseDropdown] = useState(false);
+  const [loadingWarehouses, setLoadingWarehouses] = useState(false);
+  
+  const cityInputRef = useRef(null);
+  const warehouseInputRef = useRef(null);
 
   if (cartItems.length === 0) {
     return (
@@ -44,12 +58,72 @@ const CheckoutPage = () => {
     );
   }
 
+  // Пошук міст при введенні
+  useEffect(() => {
+    const searchDebounce = setTimeout(async () => {
+      if (citySearch.length >= 2) {
+        const results = await searchCities(citySearch);
+        setCities(results);
+      } else {
+        setCities([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(searchDebounce);
+  }, [citySearch]);
+
+  // Завантаження відділень при виборі міста
+  useEffect(() => {
+    const loadWarehouses = async () => {
+      if (formData.city?.ref) {
+        setLoadingWarehouses(true);
+        const results = await getWarehouses(formData.city.ref);
+        setWarehouses(results);
+        setLoadingWarehouses(false);
+      }
+    };
+
+    loadWarehouses();
+  }, [formData.city]);
+
+  // Закриття dropdown при кліку поза ним
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (cityInputRef.current && !cityInputRef.current.contains(event.target)) {
+        setShowCityDropdown(false);
+      }
+      if (warehouseInputRef.current && !warehouseInputRef.current.contains(event.target)) {
+        setShowWarehouseDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    
+    // Обробка телефону - не дозволяємо видалити +380
+    if (name === 'customerPhone') {
+      if (!value.startsWith('+380')) {
+        return;
+      }
+      // Дозволяємо тільки цифри після +380
+      const phoneDigits = value.slice(4).replace(/\D/g, '');
+      const formattedPhone = '+380' + phoneDigits.slice(0, 9);
+      
+      setFormData(prev => ({
+        ...prev,
+        [name]: formattedPhone
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+    
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({
@@ -59,6 +133,27 @@ const CheckoutPage = () => {
     }
   };
 
+  const handleCitySelect = (city) => {
+    setFormData(prev => ({
+      ...prev,
+      city: city,
+      warehouse: null,
+      deliveryAddress: ''
+    }));
+    setCitySearch(city.name);
+    setShowCityDropdown(false);
+    setWarehouses([]);
+  };
+
+  const handleWarehouseSelect = (warehouse) => {
+    setFormData(prev => ({
+      ...prev,
+      warehouse: warehouse,
+      deliveryAddress: `${formData.city.name}, ${warehouse.description}`
+    }));
+    setShowWarehouseDropdown(false);
+  };
+
   const validateForm = () => {
     const newErrors = {};
 
@@ -66,10 +161,10 @@ const CheckoutPage = () => {
       newErrors.customerName = "Введіть ім'я";
     }
 
-    if (!formData.customerPhone.trim()) {
+    if (!formData.customerPhone.trim() || formData.customerPhone === '+380') {
       newErrors.customerPhone = 'Введіть телефон';
-    } else if (!/^\+?[0-9\s\-()]{10,}$/.test(formData.customerPhone)) {
-      newErrors.customerPhone = 'Невірний формат телефону';
+    } else if (formData.customerPhone.length < 13) {
+      newErrors.customerPhone = 'Введіть повний номер телефону';
     }
 
     if (!formData.customerEmail.trim()) {
@@ -78,8 +173,15 @@ const CheckoutPage = () => {
       newErrors.customerEmail = 'Невірний формат email';
     }
 
-    if (!formData.deliveryAddress.trim()) {
-      newErrors.deliveryAddress = 'Введіть адресу доставки';
+    if (formData.deliveryMethod === 'nova_poshta') {
+      if (!formData.city) {
+        newErrors.city = 'Оберіть місто';
+      }
+      if (!formData.warehouse) {
+        newErrors.warehouse = 'Оберіть відділення';
+      }
+    } else if (!formData.deliveryAddress.trim()) {
+      newErrors.deliveryAddress = 'Введіть адресу';
     }
 
     setErrors(newErrors);
