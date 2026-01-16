@@ -70,6 +70,15 @@ const ProductDetailPage = () => {
     }
   };
 
+  const getBadgeName = (badge) => {
+    switch(badge) {
+      case 'sale': return 'РОЗПРОДАЖ';
+      case 'new': return 'НОВИНКА';
+      case 'hit': return 'ХІТ';
+      default: return badge;
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -127,7 +136,7 @@ const ProductDetailPage = () => {
                         ${badge === 'hit' ? 'bg-orange-500' : ''}
                       `}
                     >
-                      {badge}
+                      {getBadgeName(badge)}
                     </span>
                   ))}
                 </div>
