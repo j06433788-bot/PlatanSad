@@ -3,9 +3,12 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { productsApi } from '../api/productsApi';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { ShoppingCart, Heart, ArrowLeft, Minus, Plus, Zap } from 'lucide-react';
+import { useCompare } from '../context/CompareContext';
+import { ShoppingCart, Heart, ArrowLeft, Minus, Plus, Zap, GitCompare, Check, Truck, ShieldCheck, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
 import QuickOrderModal from '../components/QuickOrderModal';
+import SimilarProducts from '../components/SimilarProducts';
+import RecentlyViewed, { addToRecentlyViewed } from '../components/RecentlyViewed';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
@@ -14,8 +17,10 @@ const ProductDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const [showQuickOrder, setShowQuickOrder] = useState(false);
+  
   const { addToCart, cartLoading } = useCart();
   const { isInWishlist, toggleWishlist, wishlistLoading } = useWishlist();
+  const { addToCompare, isInCompare, removeFromCompare } = useCompare();
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -23,6 +28,8 @@ const ProductDetailPage = () => {
         setLoading(true);
         const data = await productsApi.getProduct(id);
         setProduct(data);
+        // Add to history
+        addToRecentlyViewed(data);
       } catch (error) {
         console.error('Error fetching product:', error);
         toast.error('Помилка завантаження товару');
@@ -33,10 +40,22 @@ const ProductDetailPage = () => {
     };
 
     fetchProduct();
+    // Reset quantity when id changes
+    setQuantity(1);
+    // Scroll to top
+    window.scrollTo(0, 0);
   }, [id, navigate]);
 
   const handleAddToCart = () => {
     addToCart(product, quantity);
+  };
+
+  const handleCompare = () => {
+    if (isInCompare(product.id)) {
+      removeFromCompare(product.id);
+    } else {
+      addToCompare(product);
+    }
   };
 
   const incrementQuantity = () => {
@@ -53,8 +72,11 @@ const ProductDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-gray-500">Завантаження...</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
+          <div className="text-gray-500 font-medium">Завантаження...</div>
+        </div>
       </div>
     );
   }
@@ -64,207 +86,223 @@ const ProductDetailPage = () => {
   }
 
   const isFavorite = isInWishlist(product.id);
+  const isCompared = isInCompare(product.id);
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4">
-        {/* Back button - Larger */}
-        <button
-          onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-gray-600 hover:text-green-600 mb-6 transition-colors py-2"
-          data-testid="back-btn"
-        >
-          <ArrowLeft className="w-6 h-6" />
-          <span className="text-base">Назад до каталогу</span>
-        </button>
+    <div className="min-h-screen bg-gray-50 pb-12">
+      {/* Breadcrumb / Back Navigation */}
+      <div className="bg-white border-b sticky top-[72px] md:top-[88px] z-30 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-2 text-gray-600 hover:text-green-600 transition-colors font-medium text-sm"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Назад
+          </button>
+        </div>
+      </div>
 
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 lg:p-8">
-            {/* Product Image */}
-            <div className="relative">
-              <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+      <div className="max-w-7xl mx-auto px-4 py-6 md:py-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 lg:gap-8">
+            {/* Product Image Section */}
+            <div className="relative bg-gray-50 p-4 md:p-8 flex items-center justify-center">
+              <div className="relative w-full max-w-lg aspect-square bg-white rounded-xl shadow-sm overflow-hidden">
                 <img
                   src={product.image}
                   alt={product.name}
                   className="w-full h-full object-cover"
-                  data-testid="product-image"
                 />
-              </div>
-              
-              {/* Badges - Larger for mobile */}
-              <div className="absolute top-4 left-4 flex flex-col gap-2">
-                {product.badges?.includes('sale') && (
-                  <span className="bg-red-500 text-white text-base px-3 py-1.5 rounded font-medium">
-                    Розпродаж
-                  </span>
-                )}
-                {product.badges?.includes('new') && (
-                  <span className="bg-blue-500 text-white text-base px-3 py-1.5 rounded font-medium">
-                    Новинка
-                  </span>
-                )}
-                {product.badges?.includes('hit') && (
-                  <span className="bg-orange-500 text-white text-base px-3 py-1.5 rounded font-medium">
-                    Хіт
-                  </span>
-                )}
-              </div>
-
-              {product.discount > 0 && (
-                <div className="absolute top-4 right-4">
-                  <span className="bg-red-600 text-white text-xl px-4 py-2 rounded-full font-bold">
-                    −{product.discount}%
-                  </span>
+                
+                {/* Badges */}
+                <div className="absolute top-4 left-4 flex flex-col gap-2">
+                  {product.badges?.map(badge => (
+                    <span 
+                      key={badge}
+                      className={`
+                        text-xs font-bold px-3 py-1 rounded-md text-white shadow-sm uppercase tracking-wider
+                        ${badge === 'sale' ? 'bg-red-500' : ''}
+                        ${badge === 'new' ? 'bg-green-500' : ''}
+                        ${badge === 'hit' ? 'bg-orange-500' : ''}
+                      `}
+                    >
+                      {badge}
+                    </span>
+                  ))}
                 </div>
-              )}
+
+                {product.discount > 0 && (
+                  <div className="absolute top-4 right-4">
+                    <span className="bg-red-600 text-white text-lg font-bold px-3 py-1 rounded-lg shadow-sm">
+                      -{product.discount}%
+                    </span>
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Product Info */}
-            <div className="flex flex-col">
-              <div className="text-base text-gray-500 mb-2">Артикул: {product.article}</div>
-              
-              <h1 className="text-3xl sm:text-3xl font-bold text-gray-800 mb-4" data-testid="product-name">
+            {/* Product Info Section */}
+            <div className="p-6 md:p-8 lg:pr-12 flex flex-col h-full">
+              <div className="flex items-center justify-between gap-4 mb-2">
+                <span className="text-sm text-gray-500 font-medium bg-gray-100 px-2 py-1 rounded">
+                  Арт: {product.article}
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleCompare}
+                    className={`p-2 rounded-full transition-colors ${
+                      isCompared 
+                        ? 'bg-green-50 text-green-600' 
+                        : 'text-gray-400 hover:bg-gray-100 hover:text-green-600'
+                    }`}
+                    title="Порівняти"
+                  >
+                    <GitCompare className="w-6 h-6" />
+                  </button>
+                  <button
+                    onClick={() => toggleWishlist(product.id)}
+                    className={`p-2 rounded-full transition-colors ${
+                      isFavorite 
+                        ? 'bg-red-50 text-red-500' 
+                        : 'text-gray-400 hover:bg-gray-100 hover:text-red-500'
+                    }`}
+                    title="В обране"
+                  >
+                    <Heart className={`w-6 h-6 ${isFavorite ? 'fill-current' : ''}`} />
+                  </button>
+                </div>
+              </div>
+
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 leading-tight">
                 {product.name}
               </h1>
 
-              <div className="text-base text-gray-600 mb-4">
-                <span className="font-medium">Категорія:</span> {product.category}
+              <div className="text-green-600 font-medium mb-6">
+                {product.category}
               </div>
 
-              {/* Price - Extra large */}
-              <div className="mb-6">
-                <div className="flex items-baseline gap-3">
-                  <span className="text-4xl sm:text-4xl font-bold text-green-600" data-testid="product-price">
-                    {product.price} грн
-                  </span>
-                  {product.oldPrice && (
-                    <span className="text-2xl text-gray-400 line-through">
-                      {product.oldPrice} грн
-                    </span>
-                  )}
-                </div>
-                {product.discount > 0 && (
-                  <div className="text-base text-green-600 mt-2">
-                    Ви економите {product.oldPrice - product.price} грн
+              {/* Price Block */}
+              <div className="bg-gray-50 rounded-xl p-4 mb-6 border border-gray-100">
+                <div className="flex items-center justify-between flex-wrap gap-4 mb-4">
+                  <div>
+                    <div className="flex items-baseline gap-3">
+                      <span className="text-3xl md:text-4xl font-bold text-gray-900">
+                        {product.price} ₴
+                      </span>
+                      {product.oldPrice && (
+                        <span className="text-xl text-gray-400 line-through">
+                          {product.oldPrice} ₴
+                        </span>
+                      )}
+                    </div>
+                    {product.stock > 0 ? (
+                      <div className="flex items-center gap-1.5 text-green-600 text-sm font-medium mt-1">
+                        <Check className="w-4 h-4" />
+                        <span>В наявності</span>
+                      </div>
+                    ) : (
+                      <div className="text-red-500 text-sm font-medium mt-1">
+                        Немає в наявності
+                      </div>
+                    )}
                   </div>
-                )}
+
+                  {/* Quantity */}
+                  <div className="flex items-center bg-white rounded-lg border border-gray-200 p-1 shadow-sm">
+                    <button
+                      onClick={decrementQuantity}
+                      disabled={quantity <= 1}
+                      className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                    <input
+                      type="number"
+                      value={quantity}
+                      readOnly
+                      className="w-12 text-center text-lg font-bold text-gray-800 focus:outline-none"
+                    />
+                    <button
+                      onClick={incrementQuantity}
+                      disabled={quantity >= product.stock}
+                      className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Main Actions */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={cartLoading || product.stock === 0}
+                    className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white py-3.5 px-6 rounded-xl font-bold text-lg transition-all active:scale-[0.98] disabled:opacity-50 shadow-md hover:shadow-lg"
+                  >
+                    <ShoppingCart className="w-5 h-5" />
+                    Купити
+                  </button>
+                  <button
+                    onClick={() => setShowQuickOrder(true)}
+                    disabled={product.stock === 0}
+                    className="flex items-center justify-center gap-2 bg-orange-100 hover:bg-orange-200 text-orange-700 py-3.5 px-6 rounded-xl font-bold text-lg transition-all active:scale-[0.98] disabled:opacity-50"
+                  >
+                    <Zap className="w-5 h-5" />
+                    Швидке замовлення
+                  </button>
+                </div>
+              </div>
+
+              {/* Benefits */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-blue-50/50">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 flex-shrink-0">
+                    <Truck className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-gray-900">Доставка</div>
+                    <div className="text-xs text-gray-500">По всій Україні</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-green-50/50">
+                  <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 flex-shrink-0">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-gray-900">Гарантія</div>
+                    <div className="text-xs text-gray-500">Якість перевірено</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 rounded-lg bg-purple-50/50">
+                  <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 flex-shrink-0">
+                    <CreditCard className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-sm text-gray-900">Оплата</div>
+                    <div className="text-xs text-gray-500">Зручним способом</div>
+                  </div>
+                </div>
               </div>
 
               {/* Description */}
-              <div className="mb-6">
-                <h3 className="font-bold text-xl mb-3">Опис товару</h3>
-                <p className="text-gray-700 leading-relaxed text-base">{product.description}</p>
-              </div>
-
-              {/* Stock status - Larger */}
-              <div className="mb-6">
-                {product.stock > 0 ? (
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 bg-green-500 rounded-full"></span>
-                    <span className="text-green-600 font-medium text-base">
-                      В наявності ({product.stock} шт.)
-                    </span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 bg-red-500 rounded-full"></span>
-                    <span className="text-red-600 font-medium text-base">Немає в наявності</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Quantity selector - Extra large */}
-              <div className="mb-6">
-                <label className="font-medium text-gray-700 mb-3 block text-base">Кількість:</label>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={decrementQuantity}
-                    disabled={quantity <= 1}
-                    className="w-12 h-12 flex items-center justify-center border-2 border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    data-testid="decrease-qty-btn"
-                  >
-                    <Minus className="w-5 h-5" />
-                  </button>
-                  <input
-                    type="number"
-                    value={quantity}
-                    onChange={(e) => {
-                      const val = parseInt(e.target.value);
-                      if (val >= 1 && val <= product.stock) {
-                        setQuantity(val);
-                      }
-                    }}
-                    className="w-24 h-12 text-center text-lg border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    min="1"
-                    max={product.stock}
-                    data-testid="quantity-input"
-                  />
-                  <button
-                    onClick={incrementQuantity}
-                    disabled={quantity >= product.stock}
-                    className="w-12 h-12 flex items-center justify-center border-2 border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    data-testid="increase-qty-btn"
-                  >
-                    <Plus className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Action buttons - Extra large */}
-              <div className="flex gap-3 mb-4">
-                <button
-                  onClick={handleAddToCart}
-                  disabled={cartLoading || product.stock === 0}
-                  className="flex-1 bg-green-600 hover:bg-green-700 text-white px-6 py-4 rounded-lg font-medium text-lg flex items-center justify-center gap-3 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                  data-testid="add-to-cart-detail-btn"
-                >
-                  <ShoppingCart className="w-6 h-6" />
-                  <span>Додати в кошик</span>
-                </button>
-                <button
-                  onClick={() => toggleWishlist(product.id)}
-                  disabled={wishlistLoading}
-                  className="w-16 h-16 border-2 border-gray-300 rounded-lg flex items-center justify-center hover:border-red-500 hover:bg-red-50 transition-all disabled:opacity-50"
-                  data-testid="wishlist-detail-btn"
-                >
-                  <Heart
-                    className={`w-7 h-7 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'}`}
-                  />
-                </button>
-              </div>
-
-              {/* Quick buy button */}
-              <button
-                onClick={() => setShowQuickOrder(true)}
-                disabled={product.stock === 0}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white px-6 py-4 rounded-lg font-medium text-lg flex items-center justify-center gap-3 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none mb-6"
-                data-testid="quick-buy-detail-btn"
-              >
-                <Zap className="w-6 h-6" />
-                <span>Купити швидко</span>
-              </button>
-
-              {/* Additional info */}
-              <div className="border-t pt-6 space-y-4 text-base text-gray-600">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">🚚 Доставка:</span>
-                  <span>Новою Поштою по всій Україні</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">💳 Оплата:</span>
-                  <span>При отриманні або онлайн</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">✅ Гарантія:</span>
-                  <span>Якість перевірена</span>
+              <div className="mt-auto">
+                <h3 className="font-bold text-lg text-gray-900 mb-3">Опис товару</h3>
+                <div className="prose prose-sm sm:prose-base text-gray-600 leading-relaxed max-w-none">
+                  <p>{product.description}</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Similar Products */}
+        <SimilarProducts category={product.category} currentProductId={product.id} />
+        
+        {/* Recently Viewed */}
+        <RecentlyViewed currentProductId={product.id} />
       </div>
 
-      {/* Quick Order Modal */}
       <QuickOrderModal 
         product={product}
         isOpen={showQuickOrder}
