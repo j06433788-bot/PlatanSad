@@ -1,53 +1,275 @@
-import { useEffect } from "react";
-import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import axios from "axios";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Toaster } from "sonner";
+import { CartProvider } from "./context/CartContext";
+import { WishlistProvider } from "./context/WishlistContext";
+import { AdminAuthProvider } from "./admin/context/AdminAuthContext";
+import { ThemeProvider } from "./admin/context/ThemeContext";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import HomePage from "./pages/HomePage";
+import ProductDetailPage from "./pages/ProductDetailPage";
+import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import CatalogPage from "./pages/CatalogPage";
+import OrderSuccessPage from "./pages/OrderSuccessPage";
+import WishlistPage from "./pages/WishlistPage";
+import AboutPage from "./pages/AboutPage";
+import DeliveryPage from "./pages/DeliveryPage";
+import ReturnPage from "./pages/ReturnPage";
+import ContactsPage from "./pages/ContactsPage";
+import BlogPage from "./pages/BlogPage";
+import ComparePage from "./pages/ComparePage";
 
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
+// Admin imports
+import AdminLogin from "./admin/pages/AdminLogin";
+import AdminDashboard from "./admin/pages/AdminDashboard";
+import AdminProducts from "./admin/pages/AdminProducts";
+import AdminOrders from "./admin/pages/AdminOrders";
+import AdminOrdersStats from "./admin/pages/AdminOrdersStats";
+import AdminCategories from "./admin/pages/AdminCategories";
+import ProtectedRoute from "./admin/components/ProtectedRoute";
 
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
-  return (
-    <div>
-      <header className="App-header">
-        <a
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
+import "./App.css";
 
 function App() {
   return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
+    <Router>
+      <ThemeProvider>
+        <AdminAuthProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <Routes>
+                {/* Admin Routes */}
+                <Route path="/admin/login" element={<AdminLogin />} />
+                <Route
+                  path="/admin/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <AdminDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/products"
+                  element={
+                    <ProtectedRoute>
+                      <AdminProducts />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/orders"
+                  element={
+                    <ProtectedRoute>
+                      <AdminOrders />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/orders/stats"
+                  element={
+                    <ProtectedRoute>
+                      <AdminOrdersStats />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/admin/categories"
+                  element={
+                    <ProtectedRoute>
+                      <AdminCategories />
+                    </ProtectedRoute>
+                  }
+                />
+
+                {/* Public Routes with Layout */}
+                <Route
+                  path="/"
+                  element={
+                    <div className="App min-h-screen bg-white flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <HomePage />
+                      </main>
+                      <Footer />
+                    </div>
+                  }
+                />
+                <Route
+                  path="/catalog"
+                  element={
+                    <div className="App min-h-screen bg-white flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <CatalogPage />
+                      </main>
+                      <Footer />
+                    </div>
+                  }
+                />
+                <Route
+                  path="/products/:id"
+                  element={
+                    <div className="App min-h-screen bg-white flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <ProductDetailPage />
+                      </main>
+                      <Footer />
+                    </div>
+                  }
+                />
+                <Route
+                  path="/cart"
+                  element={
+                    <div className="App min-h-screen bg-white flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <CartPage />
+                      </main>
+                      <Footer />
+                    </div>
+                  }
+                />
+                <Route
+                  path="/checkout"
+                  element={
+                    <div className="App min-h-screen bg-white flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <CheckoutPage />
+                      </main>
+                      <Footer />
+                    </div>
+                  }
+                />
+                <Route
+                  path="/order-success/:orderId"
+                  element={
+                    <div className="App min-h-screen bg-white flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <OrderSuccessPage />
+                      </main>
+                      <Footer />
+                    </div>
+                  }
+                />
+                <Route
+                  path="/wishlist"
+                  element={
+                    <div className="App min-h-screen bg-white flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <WishlistPage />
+                      </main>
+                      <Footer />
+                    </div>
+                  }
+                />
+                <Route
+                  path="/about"
+                  element={
+                    <div className="App min-h-screen bg-white flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <AboutPage />
+                      </main>
+                      <Footer />
+                    </div>
+                  }
+                />
+                <Route
+                  path="/delivery"
+                  element={
+                    <div className="App min-h-screen bg-white flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <DeliveryPage />
+                      </main>
+                      <Footer />
+                    </div>
+                  }
+                />
+                <Route
+                  path="/return"
+                  element={
+                    <div className="App min-h-screen bg-white flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <ReturnPage />
+                      </main>
+                      <Footer />
+                    </div>
+                  }
+                />
+                <Route
+                  path="/contacts"
+                  element={
+                    <div className="App min-h-screen bg-white flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <ContactsPage />
+                      </main>
+                      <Footer />
+                    </div>
+                  }
+                />
+                <Route
+                  path="/blog"
+                  element={
+                    <div className="App min-h-screen bg-white flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <BlogPage />
+                      </main>
+                      <Footer />
+                    </div>
+                  }
+                />
+                <Route
+                  path="/compare"
+                  element={
+                    <div className="App min-h-screen bg-white flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <ComparePage />
+                      </main>
+                      <Footer />
+                    </div>
+                  }
+                />
+              </Routes>
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  duration: 3000,
+                  style: {
+                    background: '#fff',
+                    color: '#333',
+                    border: '1px solid #e5e7eb',
+                  },
+                  success: {
+                    iconTheme: {
+                      primary: '#10b981',
+                      secondary: '#fff',
+                    },
+                  },
+                  error: {
+                    iconTheme: {
+                      primary: '#ef4444',
+                      secondary: '#fff',
+                    },
+                  },
+                }}
+              />
+            </WishlistProvider>
+          </CartProvider>
+        </AdminAuthProvider>
+      </ThemeProvider>
+    </Router>
   );
 }
 

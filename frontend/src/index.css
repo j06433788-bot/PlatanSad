@@ -113,3 +113,48 @@ code {
         border-bottom-color: inherit;
     }
 }
+
+/* Mobile optimizations */
+@layer utilities {
+    /* Slide up animation for mobile filters */
+    @keyframes slide-up {
+        from {
+            transform: translateY(100%);
+        }
+        to {
+            transform: translateY(0);
+        }
+    }
+    
+    .animate-slide-up {
+        animation: slide-up 0.3s ease-out;
+    }
+
+    /* Active states */
+    .active\:scale-98:active {
+        transform: scale(0.98);
+    }
+
+    /* Better scrollbar for mobile */
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Touch-friendly spacing */
+    @media (max-width: 640px) {
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+    }
+}
