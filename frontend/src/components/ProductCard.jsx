@@ -1,130 +1,181 @@
 import React, { useState } from 'react';
-import { ShoppingCart, Heart, Zap } from 'lucide-react';
+import { ShoppingCart, Heart, Zap, GitCompare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import { useCompare } from '../context/CompareContext';
 import QuickOrderModal from './QuickOrderModal';
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const { addToCart, loading: cartLoading } = useCart();
   const { isInWishlist, toggleWishlist, loading: wishlistLoading } = useWishlist();
+  const { addToCompare, isInCompare, removeFromCompare } = useCompare();
   const [showQuickOrder, setShowQuickOrder] = useState(false);
   
   const isFavorite = isInWishlist(product.id);
+  const isCompared = isInCompare(product.id);
 
   const hasSale = product.badges?.includes('sale');
   const isNew = product.badges?.includes('new');
   const isHit = product.badges?.includes('hit');
 
+  const handleCompare = (e) => {
+    e.stopPropagation();
+    if (isCompared) {
+      removeFromCompare(product.id);
+    } else {
+      addToCompare(product);
+    }
+  };
+
   return (
-    <div className="bg-white rounded-lg overflow-hidden border border-gray-100 hover:shadow-lg transition-all duration-300 relative group">
-      {/* Badges - Stacked vertically like in example */}
-      <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
+    <div className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 relative group h-full flex flex-col">
+      {/* Badges */}
+      <div className="absolute top-2 left-2 z-10 flex flex-col gap-1.5">
         {hasSale && (
-          <span className="bg-red-500 text-white text-[10px] sm:text-xs px-2 py-0.5 rounded font-medium">
-            Розпродаж
+          <span className="bg-red-500 text-white text-[10px] sm:text-xs px-2 py-0.5 rounded-md font-bold shadow-sm">
+            SALE
           </span>
         )}
         {isNew && (
-          <span className="bg-green-500 text-white text-[10px] sm:text-xs px-2 py-0.5 rounded font-medium">
-            Новинка
+          <span className="bg-green-500 text-white text-[10px] sm:text-xs px-2 py-0.5 rounded-md font-bold shadow-sm">
+            NEW
           </span>
         )}
         {isHit && (
-          <span className="bg-orange-500 text-white text-[10px] sm:text-xs px-2 py-0.5 rounded font-medium">
-            Хіт
+          <span className="bg-orange-500 text-white text-[10px] sm:text-xs px-2 py-0.5 rounded-md font-bold shadow-sm">
+            HIT
           </span>
         )}
       </div>
 
-      {/* Discount badge - Bottom left like in example */}
+      {/* Discount badge */}
       {product.discount > 0 && (
-        <div className="absolute bottom-[120px] sm:bottom-[140px] left-2 z-10">
-          <span className="bg-red-500 text-white text-xs px-2 py-1 rounded font-bold">
-            −{product.discount}%
+        <div className="absolute top-2 right-2 z-10">
+          <span className="bg-red-600 text-white text-xs px-2 py-1 rounded-md font-bold shadow-sm">
+            -{product.discount}%
           </span>
         </div>
       )}
 
-      {/* Favorite button */}
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          toggleWishlist(product.id);
-        }}
-        disabled={wishlistLoading}
-        className="absolute top-2 right-2 z-20 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-red-50 active:scale-95 disabled:opacity-50"
-        data-testid={`wishlist-btn-${product.id}`}
-        aria-label="Додати до улюблених"
-      >
-        <Heart
-          className={`w-4 h-4 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-400'}`}
-        />
-      </button>
+      {/* Action Buttons Group (Top Right - visible on hover desktop, always visible mobile but subtle) */}
+      <div className="absolute top-10 right-2 z-20 flex flex-col gap-2">
+        {/* Wishlist */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleWishlist(product.id);
+          }}
+          disabled={wishlistLoading}
+          className={`w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-all duration-300 active:scale-90 ${
+            isFavorite ? 'bg-red-50 text-red-500' : 'bg-white/90 text-gray-400 hover:text-red-500'
+          }`}
+          aria-label="Додати до улюблених"
+        >
+          <Heart className={`w-4 h-4 ${isFavorite ? 'fill-red-500' : ''}`} />
+        </button>
 
-      {/* Product image */}
+        {/* Compare */}
+        <button
+          onClick={handleCompare}
+          className={`w-8 h-8 rounded-full flex items-center justify-center shadow-md transition-all duration-300 active:scale-90 ${
+            isCompared ? 'bg-green-50 text-green-600' : 'bg-white/90 text-gray-400 hover:text-green-600'
+          }`}
+          aria-label="Порівняти"
+        >
+          <GitCompare className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Product Image */}
       <div 
-        className="relative aspect-square overflow-hidden bg-gray-50 cursor-pointer"
+        className="relative aspect-[4/5] sm:aspect-square overflow-hidden bg-gray-50 cursor-pointer"
         onClick={() => navigate(`/products/${product.id}`)}
-        data-testid={`product-card-${product.id}`}
       >
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+          loading="lazy"
         />
+        
+        {/* Quick Buy Overlay Button (Desktop) */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-300 hidden sm:block">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowQuickOrder(true);
+            }}
+            className="w-full bg-white/95 backdrop-blur-sm text-gray-800 py-2 rounded-lg font-medium text-sm shadow-lg hover:bg-orange-50 hover:text-orange-600 flex items-center justify-center gap-2"
+          >
+            <Zap className="w-4 h-4 text-orange-500" />
+            Купити швидко
+          </button>
+        </div>
       </div>
 
-      {/* Product info */}
-      <div className="p-3 sm:p-4">
-        {/* Product name */}
+      {/* Product Info */}
+      <div className="p-3 sm:p-4 flex flex-col flex-1">
+        <div className="text-xs text-gray-500 mb-1 line-clamp-1">{product.category}</div>
         <h3 
-          className="text-sm sm:text-base font-medium text-gray-800 mb-2 h-11 sm:h-12 line-clamp-2 leading-tight hover:text-green-600 transition-colors cursor-pointer"
+          className="text-sm sm:text-base font-medium text-gray-800 mb-auto line-clamp-2 leading-tight hover:text-green-600 transition-colors cursor-pointer min-h-[2.5em]"
           onClick={() => navigate(`/products/${product.id}`)}
         >
           {product.name}
         </h3>
 
-        {/* Price */}
-        <div className="flex items-baseline gap-2 mb-3">
-          <span className="text-lg sm:text-lg font-bold text-gray-900">{product.price} грн</span>
-          {product.oldPrice && (
-            <span className="text-xs sm:text-sm text-gray-400 line-through">{product.oldPrice} грн</span>
-          )}
+        {/* Price & Stock */}
+        <div className="mt-3 mb-3">
+          <div className="flex items-baseline gap-2 flex-wrap">
+            <span className="text-lg sm:text-xl font-bold text-gray-900">{product.price} ₴</span>
+            {product.oldPrice && (
+              <span className="text-xs sm:text-sm text-gray-400 line-through decoration-red-400">
+                {product.oldPrice} ₴
+              </span>
+            )}
+          </div>
+          <div className="text-xs mt-1">
+            {product.stock > 0 ? (
+              <span className="text-green-600 font-medium flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                В наявності
+              </span>
+            ) : (
+              <span className="text-red-500 font-medium">Немає в наявності</span>
+            )}
+          </div>
         </div>
 
-        {/* Add to cart button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            addToCart(product, 1);
-          }}
-          disabled={cartLoading}
-          className="w-full flex items-center justify-center gap-2 py-2.5 sm:py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-all duration-300 text-sm active:scale-95 disabled:opacity-50"
-          data-testid={`add-to-cart-btn-${product.id}`}
-          aria-label="Додати в кошик"
-        >
-          <ShoppingCart className="w-4 h-4" />
-          <span>В кошик</span>
-        </button>
-
-        {/* Quick buy button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            setShowQuickOrder(true);
-          }}
-          className="w-full flex items-center justify-center gap-2 py-2.5 sm:py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-all duration-300 text-sm active:scale-95 mt-2"
-          data-testid={`quick-buy-btn-${product.id}`}
-          aria-label="Купити швидко"
-        >
-          <Zap className="w-4 h-4" />
-          <span>Купити швидко</span>
-        </button>
+        {/* Buttons */}
+        <div className="grid grid-cols-[1fr,auto] gap-2 mt-auto">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              addToCart(product, 1);
+            }}
+            disabled={cartLoading || product.stock === 0}
+            className="flex items-center justify-center gap-2 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-all duration-300 text-sm active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-md"
+          >
+            <ShoppingCart className="w-4 h-4" />
+            <span className="hidden sm:inline">В кошик</span>
+            <span className="sm:hidden">Купити</span>
+          </button>
+          
+          {/* Mobile Quick Buy Icon */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowQuickOrder(true);
+            }}
+            disabled={product.stock === 0}
+            className="sm:hidden w-10 flex items-center justify-center bg-orange-100 text-orange-600 rounded-lg active:scale-95 disabled:opacity-50"
+          >
+            <Zap className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
-      {/* Quick Order Modal */}
       <QuickOrderModal 
         product={product}
         isOpen={showQuickOrder}
