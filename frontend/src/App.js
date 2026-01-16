@@ -267,6 +267,7 @@ function App() {
                   },
                 }}
               />
+              </CompareProvider>
             </WishlistProvider>
           </CartProvider>
         </AdminAuthProvider>
