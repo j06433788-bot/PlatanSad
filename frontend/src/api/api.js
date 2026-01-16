@@ -1,9 +1,7 @@
 import axios from 'axios';
 
-// Use relative URLs in development, absolute in production
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? (process.env.REACT_APP_BACKEND_URL || '')
-  : '';
+// Get backend URL from environment variable or use default
+const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
