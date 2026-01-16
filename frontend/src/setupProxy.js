@@ -8,7 +8,8 @@ module.exports = function(app) {
       changeOrigin: true,
       timeout: 30000,
       proxyTimeout: 30000,
-      logLevel: 'debug'
+      logLevel: 'debug',
+      pathRewrite: { '^/api': '/api' }
     })
   );
 };
