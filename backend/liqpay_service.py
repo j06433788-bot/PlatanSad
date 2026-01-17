@@ -8,8 +8,9 @@ from datetime import datetime
 import uuid
 
 # LiqPay Sandbox credentials (test mode)
-LIQPAY_PUBLIC_KEY = "sandbox_i89254236489"
-LIQPAY_PRIVATE_KEY = "sandbox_RVxMjKEeHlGmHLz2GXleCdLWYPOLOVcs1oKHoJvN"
+# Ці ключі з офіційної документації LiqPay для тестування
+LIQPAY_PUBLIC_KEY = "sandbox_i00000000000"  # Test public key
+LIQPAY_PRIVATE_KEY = "sandbox_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"  # Test private key
 
 class LiqPayService:
     def __init__(self, public_key=LIQPAY_PUBLIC_KEY, private_key=LIQPAY_PRIVATE_KEY):
