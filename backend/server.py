@@ -1193,6 +1193,79 @@ async def health_check(db: AsyncSession = Depends(get_db)):
         return {"status": "unhealthy", "database": str(e)}
 
 
+# ==================== LIQPAY ENDPOINTS ====================
+
+from liqpay_service import liqpay_service
+
+@api_router.post("/liqpay/create-checkout")
+async def create_liqpay_checkout(
+    order_id: str = Query(..., description="Order ID"),
+    amount: float = Query(..., description="Payment amount"),
+    description: str = Query(..., description="Payment description"),
+    result_url: Optional[str] = Query(None, description="Result URL after payment"),
+    server_url: Optional[str] = Query(None, description="Server callback URL"),
+):
+    """
+    Create LiqPay checkout session
+    Returns data and signature for payment form
+    """
+    try:
+        checkout_data = liqpay_service.create_checkout_data(
+            amount=amount,
+            order_id=order_id,
+            description=description,
+            result_url=result_url,
+            server_url=server_url
+        )
+        return checkout_data
+    except Exception as e:
+        logger.error(f"LiqPay checkout error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Failed to create checkout: {str(e)}")
+
+
+@api_router.get("/liqpay/status/{order_id}")
+async def get_liqpay_status(order_id: str):
+    """
+    Get payment status for an order
+    Note: In real implementation, this would check actual payment status
+    """
+    # This is a mock endpoint - in production you would query LiqPay API or your database
+    return {
+        "order_id": order_id,
+        "status": "pending",
+        "message": "Payment status check not implemented in sandbox mode"
+    }
+
+
+@api_router.post("/liqpay/callback")
+async def liqpay_callback(
+    data: str = Query(...),
+    signature: str = Query(...)
+):
+    """
+    LiqPay callback endpoint
+    Receives payment status updates from LiqPay
+    """
+    try:
+        # Verify signature
+        if not liqpay_service.verify_callback(data, signature):
+            raise HTTPException(status_code=400, detail="Invalid signature")
+        
+        # Decode callback data
+        callback_data = liqpay_service.decode_callback_data(data)
+        
+        # Log the payment status
+        logger.info(f"LiqPay callback: {callback_data}")
+        
+        # Here you would update order status in database
+        # For now, just return success
+        return {"status": "ok", "message": "Callback received"}
+        
+    except Exception as e:
+        logger.error(f"LiqPay callback error: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
