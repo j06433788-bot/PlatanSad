@@ -174,7 +174,7 @@ function App() {
                 <Route
                   path="/about"
                   element={
-                    <div className="App min-h-screen bg-white flex flex-col">
+                    <div className="App min-h-screen bg-white flex-col">
                       <Header />
                       <main className="flex-1">
                         <AboutPage />
@@ -245,13 +245,12 @@ function App() {
                 />
               </Routes>
               <Toaster
-                position="bottom-center"
-                expand={true}
+                position="top-center"
+                expand={false}
                 richColors
-                className="!z-[9999] !bottom-20"
+                className="!z-[9999]"
                 toastOptions={{
-                  duration: 3000,
-                  className: '!mb-16',
+                  duration: 2500,
                   style: {
                     background: 'transparent',
                     border: 'none',

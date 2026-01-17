@@ -36,34 +36,51 @@ const ProductCard = ({ product }) => {
     await addToCart(product);
     setAddedToCart(true);
     
-    // Show simple toast first to test
-    sonnerToast.success('Додано в кошик! 🛒', {
-      description: product.name,
-      duration: 3000,
-    });
+    // Beautiful toast from center
+    sonnerToast.custom(
+      () => (
+        <div className="bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl p-4 text-white min-w-[280px] shadow-2xl shadow-green-500/40 animate-toast-slide">
+          <div className="flex items-center gap-3">
+            <div className="bg-white/20 p-2.5 rounded-xl animate-toast-bounce">
+              <ShoppingCart className="w-6 h-6 fill-current animate-toast-sparkle" />
+            </div>
+            <div>
+              <p className="font-bold text-lg">Додано в кошик! 🛒</p>
+              <p className="text-sm text-white/90 mt-0.5">{product.name}</p>
+            </div>
+          </div>
+        </div>
+      ),
+      { duration: 2500, position: 'top-center' }
+    );
     
     setTimeout(() => setAddedToCart(false), 2000);
   };
 
-  const handleWishlist = (e) => {
+  const handleWishlist = async (e) => {
     e.stopPropagation();
     const wasInWishlist = isFavorite;
-    toggleWishlist(product);
+    
+    // Call toggle with product ID only
+    await toggleWishlist(product.id);
+    
     if (!wasInWishlist) {
+      // Beautiful heart animation toast
       sonnerToast.custom(
         () => (
-          <div className="bg-gradient-to-r from-rose-500 to-pink-500 rounded-2xl p-4 text-white min-w-[280px] shadow-xl shadow-rose-500/30 animate-toast-slide">
+          <div className="bg-gradient-to-r from-rose-500 to-pink-500 rounded-2xl p-4 text-white min-w-[280px] shadow-2xl shadow-rose-500/40 animate-toast-slide">
             <div className="flex items-center gap-3">
               <div className="bg-white/20 p-2.5 rounded-xl animate-toast-bounce">
                 <Heart className="w-6 h-6 fill-current animate-toast-sparkle" />
               </div>
               <div>
-                <p className="font-bold">Додано в бажання! ❤️</p>
+                <p className="font-bold text-lg">Додано в бажання! ❤️</p>
+                <p className="text-sm text-white/90 mt-0.5">{product.name}</p>
               </div>
             </div>
           </div>
         ),
-        { duration: 2500, position: 'bottom-center' }
+        { duration: 2500, position: 'top-center' }
       );
     }
   };
