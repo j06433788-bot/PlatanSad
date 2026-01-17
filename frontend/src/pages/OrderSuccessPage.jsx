@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { ordersApi } from '../api/ordersApi';
@@ -15,19 +15,23 @@ const OrderSuccessPage = () => {
   const [order, setOrder] = useState(null);
   const [paymentStatus, setPaymentStatus] = useState(null);
   const [loading, setLoading] = useState(true);
+  const cartCleared = useRef(false);
 
   useEffect(() => {
     const fetchOrderData = async () => {
       try {
-        // Clear cart on success page load
-        await clearCart();
+        // Clear cart only once
+        if (!cartCleared.current) {
+          cartCleared.current = true;
+          await clearCart();
+        }
         
         // Fetch order details
         const orderData = await ordersApi.getOrderById(orderId);
         setOrder(orderData);
         
         // Fetch payment status if LiqPay
-        if (orderData.paymentMethod === 'liqpay') {
+        if (orderData?.paymentMethod === 'liqpay') {
           const status = await liqpayApi.getPaymentStatus(orderId);
           setPaymentStatus(status);
         }
@@ -38,8 +42,10 @@ const OrderSuccessPage = () => {
       }
     };
 
-    fetchOrderData();
-  }, [orderId, clearCart]);
+    if (orderId) {
+      fetchOrderData();
+    }
+  }, [orderId]);
 
   if (loading) {
     return (
