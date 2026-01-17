@@ -203,7 +203,13 @@ const CheckoutPage = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-32">
       {/* LiqPay Form */}
       {liqpayData && (
-        <form ref={liqpayFormRef} method="POST" action={liqpayData.checkout_url} className="hidden">
+        <form 
+          ref={liqpayFormRef} 
+          method="POST" 
+          action="https://www.liqpay.ua/api/3/checkout" 
+          acceptCharset="utf-8"
+          className="hidden"
+        >
           <input type="hidden" name="data" value={liqpayData.data} />
           <input type="hidden" name="signature" value={liqpayData.signature} />
         </form>
