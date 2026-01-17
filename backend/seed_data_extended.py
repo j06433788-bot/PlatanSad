@@ -257,3 +257,110 @@ for p in globosa_products:
 PRODUCTS.extend(globosa_products)
 
 print("Part 4 loaded: Listopadni (25) + Globosa (10)")
+
+# === КАТАЛЬПА (8 товарів) ===
+katalpa_products = [
+    {"id": "prod-kat001", "name": "Катальпа бігнонієвидна 100-120см", "price": 600, "image": "https://images.prom.ua/4958829409_w640_h640_katalpa-catalpa.jpg", "badges": ["hit"], "stock": 15},
+    {"id": "prod-kat002", "name": "Катальпа бігнонієвидна 120-140см", "price": 750, "image": "https://images.prom.ua/4958829409_w640_h640_katalpa-catalpa.jpg", "stock": 12},
+    {"id": "prod-kat003", "name": "Катальпа бігнонієвидна 140-160см", "price": 900, "image": "https://images.prom.ua/4958829409_w640_h640_katalpa-catalpa.jpg", "badges": ["new"], "stock": 10},
+    {"id": "prod-kat004", "name": "Катальпа бігнонієвидна Нана штамб 180см", "price": 1800, "image": "https://images.prom.ua/4958829409_w640_h640_katalpa-catalpa.jpg", "badges": ["hit"], "stock": 8},
+    {"id": "prod-kat005", "name": "Катальпа бігнонієвидна Нана штамб 200см", "price": 2200, "image": "https://images.prom.ua/4958829409_w640_h640_katalpa-catalpa.jpg", "stock": 6},
+    {"id": "prod-kat006", "name": "Катальпа гібридна 100-120см", "price": 650, "image": "https://images.prom.ua/4958829409_w640_h640_katalpa-catalpa.jpg", "badges": ["new"], "stock": 10},
+    {"id": "prod-kat007", "name": "Катальпа великоквіткова 120-140см", "price": 850, "oldPrice": 950, "discount": 11, "image": "https://images.prom.ua/4958829409_w640_h640_katalpa-catalpa.jpg", "badges": ["sale"], "stock": 8},
+    {"id": "prod-kat008", "name": "Катальпа бігнонієвидна Ауреа 100-120см", "price": 1200, "image": "https://images.prom.ua/4958829409_w640_h640_katalpa-catalpa.jpg", "badges": ["hit"], "stock": 5},
+]
+for p in katalpa_products:
+    p["category"] = "Катальпа"
+    p["description"] = f"{p['name']}. Декоративне дерево з великими листками та білими квітками."
+    if "oldPrice" not in p: p["oldPrice"] = None
+    if "discount" not in p: p["discount"] = 0
+    if "badges" not in p: p["badges"] = []
+PRODUCTS.extend(katalpa_products)
+
+# === ЯЛИНА (12 товарів) ===
+yalina_products = [
+    {"id": "prod-yal001", "name": "Ялина звичайна 60-80см", "price": 280, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "badges": ["hit"], "stock": 50},
+    {"id": "prod-yal002", "name": "Ялина звичайна 80-100см", "price": 350, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "stock": 45},
+    {"id": "prod-yal003", "name": "Ялина колюча Глаука 60-80см", "price": 850, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "badges": ["new"], "stock": 25},
+    {"id": "prod-yal004", "name": "Ялина колюча Хопсі 60-80см", "price": 1200, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "badges": ["hit"], "stock": 15},
+    {"id": "prod-yal005", "name": "Ялина сербська 80-100см", "price": 500, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "stock": 30},
+    {"id": "prod-yal006", "name": "Ялина канадська Коніка 40-50см", "price": 500, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "badges": ["hit"], "stock": 35},
+    {"id": "prod-yal007", "name": "Ялина Енгельмана 80-100см", "price": 850, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "stock": 12},
+    {"id": "prod-yal008", "name": "Ялина східна 60-80см", "price": 650, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "badges": ["new"], "stock": 18},
+    {"id": "prod-yal009", "name": "Ялина колюча Глаука Глобоза 40-50см", "price": 900, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "stock": 20},
+    {"id": "prod-yal010", "name": "Ялина звичайна Інверса штамб 150см", "price": 1500, "oldPrice": 1700, "discount": 12, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "badges": ["sale"], "stock": 8},
+    {"id": "prod-yal011", "name": "Ялина сербська Пендула 80-100см", "price": 1100, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "badges": ["hit"], "stock": 10},
+    {"id": "prod-yal012", "name": "Ялина чорна 80-100см", "price": 950, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "stock": 12},
+]
+for p in yalina_products:
+    p["category"] = "Ялина"
+    p["description"] = f"{p['name']}. Класична новорічна красуня, декоративна цілий рік."
+    if "oldPrice" not in p: p["oldPrice"] = None
+    if "discount" not in p: p["discount"] = 0
+    if "badges" not in p: p["badges"] = []
+PRODUCTS.extend(yalina_products)
+
+# === КІМНАТНІ РОСЛИНИ (15 товарів) ===
+kimnatni_products = [
+    {"id": "prod-kim001", "name": "Фікус Бенджаміна 80-100см", "price": 450, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["hit"], "stock": 20},
+    {"id": "prod-kim002", "name": "Монстера Делі оса 60-80см", "price": 550, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 15},
+    {"id": "prod-kim003", "name": "Драцена Маргіната 80-100см", "price": 500, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["new"], "stock": 18},
+    {"id": "prod-kim004", "name": "Юка слонова 60-80см", "price": 600, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 12},
+    {"id": "prod-kim005", "name": "Спатифілум Світ Чіко 40-50см", "price": 320, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["hit"], "stock": 25},
+    {"id": "prod-kim006", "name": "Антуріум Андре червоний 30-40см", "price": 400, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 20},
+    {"id": "prod-kim007", "name": "Замі окулькас 50-60см", "price": 450, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["new"], "stock": 15},
+    {"id": "prod-kim008", "name": "Сансевієрія трифасціата 40-50см", "price": 280, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 30},
+    {"id": "prod-kim009", "name": "Хлорофітум кучерявий 30-40см", "price": 200, "oldPrice": 250, "discount": 20, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["sale"], "stock": 35},
+    {"id": "prod-kim010", "name": "Алое Вера 30-40см", "price": 250, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["hit"], "stock": 28},
+    {"id": "prod-kim011", "name": "Фікус каучуконосний 80-100см", "price": 500, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 15},
+    {"id": "prod-kim012", "name": "Кротон Пітра 40-50см", "price": 480, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["new"], "stock": 12},
+    {"id": "prod-kim013", "name": "Шефлера деревовидна 60-80см", "price": 420, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 18},
+    {"id": "prod-kim014", "name": "Дифенбахія 50-60см", "price": 380, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["hit"], "stock": 20},
+    {"id": "prod-kim015", "name": "Пальма Арека 100-120см", "price": 850, "oldPrice": 950, "discount": 11, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["sale"], "stock": 8},
+]
+for p in kimnatni_products:
+    p["category"] = "Кімнатні рослини"
+    p["description"] = f"{p['name']}. Декоративна кімнатна рослина, очищає повітря."
+    if "oldPrice" not in p: p["oldPrice"] = None
+    if "discount" not in p: p["discount"] = 0
+    if "badges" not in p: p["badges"] = []
+PRODUCTS.extend(kimnatni_products)
+
+print(f"Part 5 loaded: Katalpa (8) + Yalina (12) + Kimnatni (15)")
+print(f"\n✅ TOTAL PRODUCTS: {len(PRODUCTS)}")
+
+# === SEED FUNCTION ===
+async def seed_database():
+    """Seed database with categories and products"""
+    print("🌱 Starting database seeding...")
+    
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
+    print("📋 Tables created")
+    
+    async with AsyncSessionLocal() as session:
+        print("Clearing existing data...")
+        from sqlalchemy import delete
+        await session.execute(delete(Product))
+        await session.execute(delete(Category))
+        await session.commit()
+        
+        print(f"Inserting {len(CATEGORIES)} categories...")
+        for cat_data in CATEGORIES:
+            category = Category(**cat_data)
+            session.add(category)
+        await session.commit()
+        print(f"✅ Inserted {len(CATEGORIES)} categories")
+        
+        print(f"Inserting {len(PRODUCTS)} products...")
+        for prod_data in PRODUCTS:
+            product = Product(**prod_data)
+            session.add(product)
+        await session.commit()
+        print(f"✅ Inserted {len(PRODUCTS)} products")
+    
+    print("✨ Database seeding completed!")
+
+if __name__ == "__main__":
+    asyncio.run(seed_database())
