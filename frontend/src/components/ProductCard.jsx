@@ -36,23 +36,11 @@ const ProductCard = ({ product }) => {
     await addToCart(product);
     setAddedToCart(true);
     
-    // Show animated toast
-    sonnerToast.custom(
-      (t) => (
-        <div className="bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl p-4 text-white min-w-[280px] shadow-xl shadow-blue-500/30 animate-toast-slide">
-          <div className="flex items-center gap-3">
-            <div className="bg-white/20 p-2.5 rounded-xl animate-toast-bounce">
-              <ShoppingCart className="w-6 h-6 animate-toast-sparkle" />
-            </div>
-            <div className="flex-1">
-              <p className="font-bold">Додано в кошик! 🛒</p>
-              <p className="text-sm text-white/80 truncate">{product.name}</p>
-            </div>
-          </div>
-        </div>
-      ),
-      { duration: 3000, position: 'bottom-center' }
-    );
+    // Show simple toast first to test
+    sonnerToast.success('Додано в кошик! 🛒', {
+      description: product.name,
+      duration: 3000,
+    });
     
     setTimeout(() => setAddedToCart(false), 2000);
   };
