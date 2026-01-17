@@ -148,6 +148,46 @@ async def get_product(product_id: str, db: AsyncSession = Depends(get_db)):
     )
 
 
+@api_router.post("/products/bulk-import")
+async def bulk_import_products(
+    products: List[ProductCreate],
+    current_admin: dict = Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    """Bulk import products (Admin only)"""
+    imported = 0
+    errors = []
+    
+    for product_input in products:
+        try:
+            product = Product(
+                id=product_input.id if hasattr(product_input, 'id') else None,
+                name=product_input.name,
+                article=product_input.article,
+                price=product_input.price,
+                old_price=product_input.oldPrice,
+                discount=product_input.discount,
+                image=product_input.image,
+                category=product_input.category,
+                badges=product_input.badges,
+                description=product_input.description,
+                stock=product_input.stock
+            )
+            db.add(product)
+            imported += 1
+        except Exception as e:
+            errors.append(f"{product_input.name}: {str(e)}")
+    
+    await db.commit()
+    
+    return {
+        "success": True,
+        "imported": imported,
+        "total": len(products),
+        "errors": errors
+    }
+
+
 @api_router.post("/products", response_model=ProductSchema)
 async def create_product(
     product_input: ProductCreate,
