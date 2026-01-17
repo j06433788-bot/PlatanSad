@@ -9,9 +9,11 @@ from datetime import datetime
 import uuid
 
 # LiqPay Sandbox credentials (test mode)
-# Ці ключі з офіційної документації LiqPay для тестування
-LIQPAY_PUBLIC_KEY = "sandbox_i00000000000"  # Test public key
-LIQPAY_PRIVATE_KEY = "sandbox_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"  # Test private key
+# ВАЖЛИВО: замініть на реальні ключі з кабінету LiqPay
+# Отримайте sandbox ключі на: https://www.liqpay.ua/
+# Для production використовуйте змінні оточення
+LIQPAY_PUBLIC_KEY = os.getenv("LIQPAY_PUBLIC_KEY", "sandbox_i00000000000")
+LIQPAY_PRIVATE_KEY = os.getenv("LIQPAY_PRIVATE_KEY", "sandbox_test_key_please_replace")
 
 class LiqPayService:
     def __init__(self, public_key=LIQPAY_PUBLIC_KEY, private_key=LIQPAY_PRIVATE_KEY):
