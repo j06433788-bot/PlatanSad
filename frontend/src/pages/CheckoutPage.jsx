@@ -637,16 +637,35 @@ const CheckoutPage = () => {
             
             {/* Test Card Info */}
             {formData.paymentMethod === 'liqpay' && (
-              <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-2xl">
-                <div className="flex items-start gap-3">
-                  <div className="w-8 h-8 bg-yellow-200 rounded-full flex items-center justify-center flex-shrink-0">
-                    <span className="text-yellow-800 text-lg">ℹ️</span>
+              <div className="mt-4 space-y-3">
+                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-2xl">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-yellow-200 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-yellow-800 text-lg">⚠️</span>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-yellow-800 mb-1">Для тестування LiqPay</p>
+                      <p className="text-xs text-yellow-700">
+                        Потрібні <span className="font-bold">реальні sandbox ключі</span> з вашого кабінету LiqPay.
+                      </p>
+                      <p className="text-xs text-yellow-700 mt-1">
+                        Отримайте ключі на: <a href="https://www.liqpay.ua/" target="_blank" rel="noopener noreferrer" className="underline font-semibold">liqpay.ua</a>
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-yellow-800 mb-1">Тестовий режим</p>
-                    <p className="text-xs text-yellow-700">
-                      Тестова картка: <span className="font-mono font-bold">4242 4242 4242 4242</span>
-                    </p>
+                </div>
+                
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl">
+                  <div className="flex items-start gap-3">
+                    <div className="w-8 h-8 bg-blue-200 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-blue-800 text-lg">ℹ️</span>
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-blue-800 mb-1">Альтернатива</p>
+                      <p className="text-xs text-blue-700">
+                        Використовуйте <span className="font-bold">"Накладений платіж"</span> для тестування без потреби в оплаті онлайн.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
