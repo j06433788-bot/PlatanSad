@@ -248,8 +248,10 @@ function App() {
                 position="bottom-center"
                 expand={true}
                 richColors
+                className="!z-[9999] !bottom-20"
                 toastOptions={{
                   duration: 3000,
+                  className: '!mb-16',
                   style: {
                     background: 'transparent',
                     border: 'none',
