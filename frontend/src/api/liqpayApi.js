@@ -12,7 +12,7 @@ export const liqpayApi = {
     if (resultUrl) params.append('result_url', resultUrl);
     if (serverUrl) params.append('server_url', serverUrl);
     
-    const response = await api.post(`/api/liqpay/create-checkout?${params.toString()}`);
+    const response = await api.get(`/api/liqpay/create-checkout?${params.toString()}`);
     return response.data;
   },
 
