@@ -288,54 +288,33 @@ const Header = () => {
               <h3 className="text-sm font-bold text-green-800 uppercase tracking-wide">Категорії товарів</h3>
             </div>
             
-            {/* Categories with Subcategories */}
-            {categoriesStructure.map((category) => (
+            {/* Categories from API */}
+            {categories.map((category) => (
               <div key={category.id} className="border-b border-gray-100">
-                {/* Main Category Button */}
+                {/* Category Button - Navigate to catalog with category filter */}
                 <button
-                  onClick={() => toggleCategory(category.id)}
+                  onClick={() => {
+                    navigate(`/catalog?category=${encodeURIComponent(category.name)}`);
+                    setIsMenuOpen(false);
+                  }}
                   className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors group"
+                  data-testid={`category-${category.id}`}
                 >
                   <div className="text-green-500 group-hover:text-green-600 transition-colors">
-                    {getCategoryIcon(category.icon)}
+                    <Sprout className="w-5 h-5" />
                   </div>
                   <div className="flex-1 text-left">
                     <span className="font-medium text-sm">{category.name}</span>
                   </div>
-                  <div className="text-gray-400 group-hover:text-green-600 transition-all">
-                    {expandedCategories[category.id] ? (
-                      <ChevronDown className="w-5 h-5" />
-                    ) : (
-                      <ChevronRight className="w-5 h-5" />
+                  <div className="flex items-center gap-2">
+                    {category.count > 0 && (
+                      <span className="text-xs text-gray-400 bg-white px-2 py-0.5 rounded-full border border-gray-200">
+                        {category.count}
+                      </span>
                     )}
+                    <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-green-600 transition-all" />
                   </div>
                 </button>
-
-                {/* Subcategories - Collapsible */}
-                <div 
-                  className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    expandedCategories[category.id] ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
-                  }`}
-                >
-                  <div className="bg-gray-50">
-                    {category.subcategories.map((subcategory) => (
-                      <button
-                        key={subcategory.id}
-                        onClick={() => {
-                          navigate(`/catalog?search=${encodeURIComponent(subcategory.name)}`);
-                          setIsMenuOpen(false);
-                        }}
-                        className="w-full flex items-center gap-2 pl-12 pr-4 py-2.5 text-gray-600 hover:bg-green-100 hover:text-green-700 transition-colors text-left"
-                      >
-                        <div className="w-1.5 h-1.5 bg-green-400 rounded-full flex-shrink-0" />
-                        <span className="text-sm flex-1">{subcategory.name}</span>
-                        <span className="text-xs text-gray-400 bg-white px-2 py-0.5 rounded-full">
-                          {subcategory.count}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
               </div>
             ))}
 
