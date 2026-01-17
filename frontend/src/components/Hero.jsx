@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 
 const slides = [
   { 
-    image: '/PLATAN.jpg', 
-    title: '',
-    subtitle: '',
-    alt: 'PlatanSad - Професійний розсадник',
-    noOverlay: true, // Без градієнта і тексту
-    isPlatan: true // Спеціальне відображення для PLATAN
+    image: 'https://images.unsplash.com/photo-1494825514961-674db1ac2700?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODl8MHwxfHNlYXJjaHwzfHxldmVyZ3JlZW4lMjB0cmVlc3xlbnwwfHx8fDE3Njg2NTk0MTN8MA&ixlib=rb-4.1.0&q=85', 
+    title: 'PlatanSad',
+    subtitle: 'Професійний розсадник рослин',
+    alt: 'PlatanSad - Професійний розсадник хвойних рослин',
+    noOverlay: false
   },
   { 
     image: 'https://images.prom.ua/6510283244_w640_h640_bonsaj-nivaki-pinus.jpg', 
