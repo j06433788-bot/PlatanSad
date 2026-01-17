@@ -183,10 +183,10 @@ const CheckoutPage = () => {
           order.id, cartTotal, `Замовлення #${order.id}`, resultUrl
         );
         setLiqpayData(checkout);
-        toast.success('Перенаправлення на оплату...');
+        toast.paymentRedirect();
       } else {
         await clearCart();
-        toast.success('Замовлення оформлено!');
+        toast.orderSuccess();
         navigate(`/order-success/${order.id}`);
       }
     } catch (error) {
