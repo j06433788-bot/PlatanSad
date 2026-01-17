@@ -87,10 +87,9 @@ export const CartProvider = ({ children }) => {
       setLoading(true);
       await cartApi.clearCart(userId);
       setCartItems([]);
-      toast.success('Кошик очищено');
+      // Removed toast - cart is cleared silently after order
     } catch (error) {
       console.error('Error clearing cart:', error);
-      toast.error('Помилка очищення кошика');
     } finally {
       setLoading(false);
     }
