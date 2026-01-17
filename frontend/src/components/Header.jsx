@@ -431,7 +431,7 @@ const Header = () => {
             <div className="flex items-center gap-3">
               {/* Instagram */}
               <a 
-                href="https://instagram.com/platansad.ua.rezerv" 
+                href="https://www.instagram.com/platansad.uaa?igsh=cmhhbG4zbjNkMTBr" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="w-11 h-11 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-md"
@@ -441,7 +441,7 @@ const Header = () => {
               
               {/* TikTok */}
               <a 
-                href="https://tiktok.com/@platansad" 
+                href="https://www.tiktok.com/@platansad.ua?_r=1&_t=ZM-939QCCJ5tAx" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="w-11 h-11 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-md"
