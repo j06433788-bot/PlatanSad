@@ -1,14 +1,28 @@
 #!/usr/bin/env python3
+"""
+PlatanSad Backend API Testing Suite
+Tests all backend endpoints for the Ukrainian plant store
+"""
+
 import requests
 import sys
 import json
 from datetime import datetime
+import uuid
 
 class PlatanSadAPITester:
-    def __init__(self, base_url="https://archive-extractor-4.preview.emergentagent.com"):
+    def __init__(self, base_url="http://localhost:8001"):
         self.base_url = base_url
         self.tests_run = 0
         self.tests_passed = 0
+        self.failed_tests = []
+        self.created_items = {
+            'products': [],
+            'cart_items': [],
+            'wishlist_items': [],
+            'orders': [],
+            'quick_orders': []
+        }
 
     def run_test(self, name, method, endpoint, expected_status, data=None, params=None):
         """Run a single API test"""
