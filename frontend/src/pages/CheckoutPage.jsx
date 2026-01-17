@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { ordersApi } from '../api/ordersApi';
 import { liqpayApi } from '../api/liqpayApi';
-import { toast } from '../components/CustomToast';
+import { toast } from 'sonner';
 import { 
   ArrowLeft, MapPin, Package, CreditCard, 
-  Truck, CheckCircle2, ChevronDown, Banknote, X
+  Truck, CheckCircle2, ChevronDown, Banknote, X, User, Phone, Mail,
+  MessageSquare, ShoppingBag, Check
 } from 'lucide-react';
 import { searchCities, getWarehouses, popularCities } from '../api/novaPoshtaApi';
 
@@ -94,16 +95,18 @@ const CheckoutPage = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl p-8 text-center max-w-sm w-full shadow-lg">
-          <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-800 mb-2">Кошик порожній</h2>
-          <p className="text-gray-500 mb-6 text-sm">Додайте товари перед оформленням</p>
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-3xl p-8 sm:p-12 text-center max-w-md w-full shadow-xl">
+          <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <ShoppingBag className="w-10 h-10 text-gray-400" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-800 mb-3">Кошик порожній</h2>
+          <p className="text-gray-500 mb-8 text-sm">Додайте товари до кошика перед оформленням замовлення</p>
           <button
             onClick={() => navigate('/catalog')}
-            className="w-full bg-green-500 text-white py-3 rounded-xl font-semibold"
+            className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-4 rounded-2xl font-bold text-lg shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 active:scale-[0.98] transition-all"
           >
-            До каталогу
+            Перейти до каталогу
           </button>
         </div>
       </div>
@@ -142,7 +145,7 @@ const CheckoutPage = () => {
     const newErrors = {};
     if (!formData.customerName.trim()) newErrors.customerName = "Обов'язкове поле";
     if (!formData.customerPhone.trim() || formData.customerPhone.length < 13) 
-      newErrors.customerPhone = 'Введіть номер';
+      newErrors.customerPhone = 'Введіть коректний номер';
     if (!formData.customerEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.customerEmail)) 
       newErrors.customerEmail = 'Невірний email';
     if (formData.deliveryMethod === 'nova_poshta') {
@@ -156,7 +159,7 @@ const CheckoutPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) {
-      toast.error('Заповніть всі поля');
+      toast.error('Будь ласка, заповніть всі обов\'язкові поля');
       return;
     }
     setLoading(true);
@@ -183,21 +186,21 @@ const CheckoutPage = () => {
           order.id, cartTotal, `Замовлення #${order.id}`, resultUrl
         );
         setLiqpayData(checkout);
-        toast.paymentRedirect();
+        toast.info('Перенаправлення на оплату...');
       } else {
         await clearCart();
-        toast.orderSuccess();
+        toast.success('Замовлення успішно оформлено!');
         navigate(`/order-success/${order.id}`);
       }
     } catch (error) {
-      toast.error('Помилка оформлення');
+      toast.error('Помилка оформлення замовлення');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-32">
       {/* LiqPay Form */}
       {liqpayData && (
         <form ref={liqpayFormRef} method="POST" action={liqpayData.checkout_url} className="hidden">
@@ -207,308 +210,488 @@ const CheckoutPage = () => {
       )}
 
       {/* Header */}
-      <div className="sticky top-0 z-50 bg-white border-b">
-        <div className="flex items-center gap-3 px-4 py-3">
-          <button onClick={() => navigate('/cart')} className="p-1">
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="font-bold text-lg">Оформлення</h1>
+      <div className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-center gap-3 px-4 sm:px-6 py-4">
+            <button 
+              onClick={() => navigate('/cart')} 
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors active:scale-95"
+              aria-label="Назад до кошика"
+            >
+              <ArrowLeft className="w-6 h-6 text-gray-700" />
+            </button>
+            <h1 className="font-bold text-xl sm:text-2xl text-gray-800">Оформлення замовлення</h1>
+          </div>
         </div>
       </div>
 
-      <div className="p-4 pb-32">
-        {/* Order Summary */}
-        <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-gray-600">Товарів: {cartItems.length}</span>
-            <span className="text-xl font-bold text-green-600">{cartTotal.toLocaleString()} ₴</span>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        {/* Order Summary Card */}
+        <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-3xl p-6 mb-6 shadow-xl text-white">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <p className="text-green-100 text-sm font-medium mb-1">Сума замовлення</p>
+              <p className="text-4xl font-bold">{cartTotal.toLocaleString()} ₴</p>
+            </div>
+            <div className="bg-white/20 backdrop-blur-sm rounded-2xl px-4 py-2">
+              <p className="text-sm font-medium">{cartItems.length} {cartItems.length === 1 ? 'товар' : 'товарів'}</p>
+            </div>
           </div>
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            {cartItems.slice(0, 4).map((item) => (
-              <img key={item.id} src={item.productImage} alt="" 
-                className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
+          
+          {/* Product Thumbnails */}
+          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {cartItems.slice(0, 5).map((item) => (
+              <div key={item.id} className="relative flex-shrink-0">
+                <img 
+                  src={item.productImage} 
+                  alt={item.productName}
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover ring-2 ring-white/30" 
+                />
+                <div className="absolute -top-2 -right-2 bg-white text-green-600 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shadow-md">
+                  {item.quantity}
+                </div>
+              </div>
             ))}
-            {cartItems.length > 4 && (
-              <div className="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                <span className="text-sm text-gray-500">+{cartItems.length - 4}</span>
+            {cartItems.length > 5 && (
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0 ring-2 ring-white/30">
+                <span className="text-sm font-bold">+{cartItems.length - 5}</span>
               </div>
             )}
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Contact */}
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <h2 className="font-semibold mb-3 flex items-center gap-2">
-              <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs">1</span>
-              Контактні дані
-            </h2>
-            <div className="space-y-3">
-              <div>
-                <input
-                  type="text"
-                  name="customerName"
-                  value={formData.customerName}
-                  onChange={handleChange}
-                  placeholder="Ім'я та прізвище *"
-                  className={`w-full px-4 py-3 bg-gray-50 rounded-xl border-2 ${errors.customerName ? 'border-red-400' : 'border-transparent'} focus:border-green-500 focus:bg-white outline-none`}
-                />
-                {errors.customerName && <p className="text-red-500 text-xs mt-1">{errors.customerName}</p>}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* 1. Contact Information */}
+          <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-2xl flex items-center justify-center text-lg font-bold shadow-md">
+                1
               </div>
+              <h2 className="text-xl font-bold text-gray-800">Контактні дані</h2>
+            </div>
+            
+            <div className="space-y-4">
+              {/* Name */}
               <div>
-                <input
-                  type="tel"
-                  name="customerPhone"
-                  value={formData.customerPhone}
-                  onChange={handleChange}
-                  placeholder="+380XXXXXXXXX *"
-                  className={`w-full px-4 py-3 bg-gray-50 rounded-xl border-2 ${errors.customerPhone ? 'border-red-400' : 'border-transparent'} focus:border-green-500 focus:bg-white outline-none`}
-                />
-                {errors.customerPhone && <p className="text-red-500 text-xs mt-1">{errors.customerPhone}</p>}
+                <label className="block text-sm font-medium text-gray-700 mb-2">Ім'я та прізвище</label>
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    name="customerName"
+                    value={formData.customerName}
+                    onChange={handleChange}
+                    placeholder="Введіть ваше ім'я"
+                    className={`w-full pl-12 pr-4 py-4 bg-gray-50 rounded-2xl border-2 transition-all ${
+                      errors.customerName ? 'border-red-400 bg-red-50' : 'border-transparent focus:border-green-500 focus:bg-white'
+                    } outline-none text-base`}
+                  />
+                </div>
+                {errors.customerName && (
+                  <p className="text-red-500 text-xs mt-2 ml-1 flex items-center gap-1">
+                    <X className="w-3 h-3" />
+                    {errors.customerName}
+                  </p>
+                )}
               </div>
+
+              {/* Phone */}
               <div>
-                <input
-                  type="email"
-                  name="customerEmail"
-                  value={formData.customerEmail}
-                  onChange={handleChange}
-                  placeholder="Email *"
-                  className={`w-full px-4 py-3 bg-gray-50 rounded-xl border-2 ${errors.customerEmail ? 'border-red-400' : 'border-transparent'} focus:border-green-500 focus:bg-white outline-none`}
-                />
-                {errors.customerEmail && <p className="text-red-500 text-xs mt-1">{errors.customerEmail}</p>}
+                <label className="block text-sm font-medium text-gray-700 mb-2">Телефон</label>
+                <div className="relative">
+                  <Phone className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="tel"
+                    name="customerPhone"
+                    value={formData.customerPhone}
+                    onChange={handleChange}
+                    placeholder="+380XXXXXXXXX"
+                    className={`w-full pl-12 pr-4 py-4 bg-gray-50 rounded-2xl border-2 transition-all ${
+                      errors.customerPhone ? 'border-red-400 bg-red-50' : 'border-transparent focus:border-green-500 focus:bg-white'
+                    } outline-none text-base`}
+                  />
+                </div>
+                {errors.customerPhone && (
+                  <p className="text-red-500 text-xs mt-2 ml-1 flex items-center gap-1">
+                    <X className="w-3 h-3" />
+                    {errors.customerPhone}
+                  </p>
+                )}
+              </div>
+
+              {/* Email */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="email"
+                    name="customerEmail"
+                    value={formData.customerEmail}
+                    onChange={handleChange}
+                    placeholder="example@mail.com"
+                    className={`w-full pl-12 pr-4 py-4 bg-gray-50 rounded-2xl border-2 transition-all ${
+                      errors.customerEmail ? 'border-red-400 bg-red-50' : 'border-transparent focus:border-green-500 focus:bg-white'
+                    } outline-none text-base`}
+                  />
+                </div>
+                {errors.customerEmail && (
+                  <p className="text-red-500 text-xs mt-2 ml-1 flex items-center gap-1">
+                    <X className="w-3 h-3" />
+                    {errors.customerEmail}
+                  </p>
+                )}
               </div>
             </div>
           </div>
 
-          {/* Delivery */}
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <h2 className="font-semibold mb-3 flex items-center gap-2">
-              <span className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs">2</span>
-              Доставка
-            </h2>
+          {/* 2. Delivery */}
+          <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl flex items-center justify-center text-lg font-bold shadow-md">
+                2
+              </div>
+              <h2 className="text-xl font-bold text-gray-800">Спосіб доставки</h2>
+            </div>
             
-            {/* Delivery Method */}
-            <div className="flex gap-2 mb-4">
+            {/* Delivery Method Selection */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
               <button
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, deliveryMethod: 'nova_poshta' }))}
-                className={`flex-1 p-3 rounded-xl border-2 flex items-center gap-2 ${
-                  formData.deliveryMethod === 'nova_poshta' ? 'border-green-500 bg-green-50' : 'border-gray-200'
+                className={`relative p-4 sm:p-5 rounded-2xl border-2 transition-all text-left ${
+                  formData.deliveryMethod === 'nova_poshta'
+                    ? 'border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-md'
+                    : 'border-gray-200 hover:border-gray-300 bg-white'
                 }`}
               >
-                <Truck className={`w-5 h-5 ${formData.deliveryMethod === 'nova_poshta' ? 'text-green-600' : 'text-gray-400'}`} />
-                <span className="text-sm font-medium">Нова Пошта</span>
+                <div className="flex items-start gap-3">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                    formData.deliveryMethod === 'nova_poshta' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-400'
+                  }`}>
+                    <Truck className="w-6 h-6" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-bold text-base mb-1">Нова Пошта</div>
+                    <div className="text-xs text-gray-500">Доставка на відділення</div>
+                  </div>
+                  {formData.deliveryMethod === 'nova_poshta' && (
+                    <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
+                  )}
+                </div>
               </button>
+
               <button
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, deliveryMethod: 'self_pickup' }))}
-                className={`flex-1 p-3 rounded-xl border-2 flex items-center gap-2 ${
-                  formData.deliveryMethod === 'self_pickup' ? 'border-green-500 bg-green-50' : 'border-gray-200'
+                className={`relative p-4 sm:p-5 rounded-2xl border-2 transition-all text-left ${
+                  formData.deliveryMethod === 'self_pickup'
+                    ? 'border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-md'
+                    : 'border-gray-200 hover:border-gray-300 bg-white'
                 }`}
               >
-                <MapPin className={`w-5 h-5 ${formData.deliveryMethod === 'self_pickup' ? 'text-green-600' : 'text-gray-400'}`} />
-                <span className="text-sm font-medium">Самовивіз</span>
+                <div className="flex items-start gap-3">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${
+                    formData.deliveryMethod === 'self_pickup' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-400'
+                  }`}>
+                    <MapPin className="w-6 h-6" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-bold text-base mb-1">Самовивіз</div>
+                    <div className="text-xs text-gray-500">З нашого розсадника</div>
+                  </div>
+                  {formData.deliveryMethod === 'self_pickup' && (
+                    <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
+                  )}
+                </div>
               </button>
             </div>
 
             {/* Nova Poshta Fields */}
             {formData.deliveryMethod === 'nova_poshta' && (
-              <div className="space-y-3">
+              <div className="space-y-4 pt-4 border-t border-gray-100">
                 {/* City */}
-                <div className="relative" ref={cityInputRef}>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                    <input
-                      type="text"
-                      value={citySearch}
-                      onChange={(e) => {
-                        setCitySearch(e.target.value);
-                        setShowCityDropdown(true);
-                        setFormData(prev => ({ ...prev, city: null, warehouse: null }));
-                      }}
-                      onFocus={() => setShowCityDropdown(true)}
-                      placeholder="Місто / село *"
-                      className={`w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl border-2 ${errors.city ? 'border-red-400' : 'border-transparent'} focus:border-green-500 focus:bg-white outline-none`}
-                    />
-                    {formData.city && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setCitySearch('');
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Місто / Село</label>
+                  <div className="relative" ref={cityInputRef}>
+                    <div className="relative">
+                      <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+                      <input
+                        type="text"
+                        value={citySearch}
+                        onChange={(e) => {
+                          setCitySearch(e.target.value);
+                          setShowCityDropdown(true);
                           setFormData(prev => ({ ...prev, city: null, warehouse: null }));
                         }}
-                        className="absolute right-3 top-1/2 -translate-y-1/2"
-                      >
-                        <X className="w-4 h-4 text-gray-400" />
-                      </button>
-                    )}
-                  </div>
-                  {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
-                  
-                  {/* City Dropdown */}
-                  {showCityDropdown && (
-                    <div className="absolute z-50 w-full mt-1 bg-white border rounded-xl shadow-lg max-h-48 overflow-y-auto">
-                      {loadingCities ? (
-                        <div className="p-3 text-center text-gray-500 text-sm">Пошук...</div>
-                      ) : citySearch.length < 2 ? (
-                        <>
-                          <div className="px-3 py-2 bg-gray-50 text-xs text-gray-500 font-medium">Популярні міста</div>
-                          {popularCities.slice(0, 8).map((city, i) => (
-                            <div
-                              key={i}
-                              onClick={async () => {
-                                setCitySearch(city);
-                                const results = await searchCities(city);
-                                if (results.length > 0) handleCitySelect(results[0]);
-                              }}
-                              className="px-3 py-2.5 hover:bg-gray-50 cursor-pointer text-sm"
-                            >
-                              {city}
-                            </div>
-                          ))}
-                        </>
-                      ) : cities.length > 0 ? (
-                        cities.map((city) => (
-                          <div
-                            key={city.ref}
-                            onClick={() => handleCitySelect(city)}
-                            className="px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b last:border-0"
-                          >
-                            <div className="text-sm font-medium">{city.name}</div>
-                            <div className="text-xs text-gray-500">{city.area} обл.</div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className="p-3 text-center text-gray-500 text-sm">Не знайдено</div>
+                        onFocus={() => setShowCityDropdown(true)}
+                        placeholder="Почніть вводити назву"
+                        className={`w-full pl-12 pr-10 py-4 bg-gray-50 rounded-2xl border-2 transition-all ${
+                          errors.city ? 'border-red-400 bg-red-50' : 'border-transparent focus:border-blue-500 focus:bg-white'
+                        } outline-none text-base`}
+                      />
+                      {formData.city && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCitySearch('');
+                            setFormData(prev => ({ ...prev, city: null, warehouse: null }));
+                          }}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-200 rounded-full transition-colors"
+                        >
+                          <X className="w-5 h-5 text-gray-400" />
+                        </button>
                       )}
                     </div>
-                  )}
+                    {errors.city && (
+                      <p className="text-red-500 text-xs mt-2 ml-1 flex items-center gap-1">
+                        <X className="w-3 h-3" />
+                        {errors.city}
+                      </p>
+                    )}
+                    
+                    {/* City Dropdown */}
+                    {showCityDropdown && (
+                      <div className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-2xl shadow-2xl max-h-64 overflow-y-auto">
+                        {loadingCities ? (
+                          <div className="p-4 text-center text-gray-500 text-sm">Пошук міст...</div>
+                        ) : citySearch.length < 2 ? (
+                          <>
+                            <div className="px-4 py-3 bg-gradient-to-r from-gray-50 to-gray-100 text-xs text-gray-600 font-bold uppercase tracking-wide sticky top-0">
+                              Популярні міста
+                            </div>
+                            {popularCities.slice(0, 8).map((city, i) => (
+                              <div
+                                key={i}
+                                onClick={async () => {
+                                  setCitySearch(city);
+                                  const results = await searchCities(city);
+                                  if (results.length > 0) handleCitySelect(results[0]);
+                                }}
+                                className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-100 last:border-0 text-sm font-medium"
+                              >
+                                {city}
+                              </div>
+                            ))}
+                          </>
+                        ) : cities.length > 0 ? (
+                          cities.map((city) => (
+                            <div
+                              key={city.ref}
+                              onClick={() => handleCitySelect(city)}
+                              className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-100 last:border-0"
+                            >
+                              <div className="text-sm font-semibold text-gray-800">{city.name}</div>
+                              <div className="text-xs text-gray-500 mt-0.5">{city.area} область</div>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="p-4 text-center text-gray-500 text-sm">Місто не знайдено</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Warehouse */}
                 {formData.city && (
-                  <div className="relative" ref={warehouseInputRef}>
-                    <div 
-                      onClick={() => setShowWarehouseDropdown(true)}
-                      className={`w-full px-4 py-3 bg-gray-50 rounded-xl border-2 ${errors.warehouse ? 'border-red-400' : 'border-transparent'} cursor-pointer flex items-center justify-between`}
-                    >
-                      <div className="flex items-center gap-2 flex-1 min-w-0">
-                        <Package className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                        <span className={`truncate ${formData.warehouse ? 'text-gray-800' : 'text-gray-400'}`}>
-                          {loadingWarehouses ? 'Завантаження...' : formData.warehouse?.description || 'Відділення *'}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Відділення Нової Пошти</label>
+                    <div className="relative" ref={warehouseInputRef}>
+                      <div 
+                        onClick={() => !loadingWarehouses && setShowWarehouseDropdown(true)}
+                        className={`w-full pl-12 pr-10 py-4 bg-gray-50 rounded-2xl border-2 transition-all cursor-pointer flex items-center ${
+                          errors.warehouse ? 'border-red-400 bg-red-50' : 'border-transparent hover:border-blue-300'
+                        }`}
+                      >
+                        <Package className="absolute left-4 w-5 h-5 text-gray-400" />
+                        <span className={`flex-1 text-base ${
+                          formData.warehouse ? 'text-gray-800 font-medium' : 'text-gray-400'
+                        }`}>
+                          {loadingWarehouses ? 'Завантаження відділень...' : formData.warehouse?.description || 'Оберіть відділення'}
                         </span>
+                        <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
                       </div>
-                      <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                    </div>
-                    {errors.warehouse && <p className="text-red-500 text-xs mt-1">{errors.warehouse}</p>}
-                    
-                    {/* Warehouse Dropdown */}
-                    {showWarehouseDropdown && warehouses.length > 0 && (
-                      <div className="absolute z-50 w-full mt-1 bg-white border rounded-xl shadow-lg max-h-48 overflow-y-auto">
-                        {warehouses.map((warehouse) => (
-                          <div
-                            key={warehouse.ref}
-                            onClick={() => handleWarehouseSelect(warehouse)}
-                            className="px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b last:border-0"
-                          >
-                            <div className="text-sm">{warehouse.description}</div>
+                      {errors.warehouse && (
+                        <p className="text-red-500 text-xs mt-2 ml-1 flex items-center gap-1">
+                          <X className="w-3 h-3" />
+                          {errors.warehouse}
+                        </p>
+                      )}
+                      
+                      {/* Warehouse Dropdown */}
+                      {showWarehouseDropdown && warehouses.length > 0 && (
+                        <div className="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-2xl shadow-2xl max-h-64 overflow-y-auto">
+                          <div className="px-4 py-3 bg-gradient-to-r from-gray-50 to-gray-100 text-xs text-gray-600 font-bold uppercase tracking-wide sticky top-0">
+                            {warehouses.length} відділень
                           </div>
-                        ))}
-                      </div>
-                    )}
+                          {warehouses.map((warehouse) => (
+                            <div
+                              key={warehouse.ref}
+                              onClick={() => handleWarehouseSelect(warehouse)}
+                              className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-100 last:border-0"
+                            >
+                              <div className="text-sm font-medium text-gray-800">{warehouse.description}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
             )}
 
+            {/* Self Pickup Address */}
             {formData.deliveryMethod === 'self_pickup' && (
-              <div className="bg-green-50 p-3 rounded-xl">
-                <p className="text-sm text-green-800">
-                  <strong>Адреса:</strong> смт. Смига, вул. Садова, 15
-                </p>
-                <p className="text-xs text-green-600 mt-1">Пн-Сб: 9:00-18:00</p>
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-5 rounded-2xl border border-green-200">
+                  <div className="flex items-start gap-3">
+                    <MapPin className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="text-sm font-bold text-green-900 mb-2">Адреса розсадника:</p>
+                      <p className="text-sm text-green-800 font-medium">смт. Смига, вул. Садова, 15</p>
+                      <p className="text-xs text-green-600 mt-2">Пн-Сб: 9:00-18:00 | Нд: вихідний</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
 
-          {/* Payment */}
-          <div className="bg-white rounded-xl p-4 shadow-sm">
-            <h2 className="font-semibold mb-3 flex items-center gap-2">
-              <span className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs">3</span>
-              Оплата
-            </h2>
-            <div className="space-y-2">
+          {/* 3. Payment */}
+          <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl flex items-center justify-center text-lg font-bold shadow-md">
+                3
+              </div>
+              <h2 className="text-xl font-bold text-gray-800">Спосіб оплати</h2>
+            </div>
+            
+            <div className="space-y-3">
+              {/* Cash on Delivery */}
               <button
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, paymentMethod: 'cash_on_delivery' }))}
-                className={`w-full p-3 rounded-xl border-2 flex items-center gap-3 ${
-                  formData.paymentMethod === 'cash_on_delivery' ? 'border-green-500 bg-green-50' : 'border-gray-200'
+                className={`w-full p-4 sm:p-5 rounded-2xl border-2 transition-all text-left ${
+                  formData.paymentMethod === 'cash_on_delivery'
+                    ? 'border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-md'
+                    : 'border-gray-200 hover:border-gray-300 bg-white'
                 }`}
               >
-                <Banknote className={`w-6 h-6 ${formData.paymentMethod === 'cash_on_delivery' ? 'text-green-600' : 'text-gray-400'}`} />
-                <div className="text-left flex-1">
-                  <div className="font-medium text-sm">Накладений платіж</div>
-                  <div className="text-xs text-gray-500">Оплата при отриманні</div>
+                <div className="flex items-center gap-4">
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+                    formData.paymentMethod === 'cash_on_delivery' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-400'
+                  }`}>
+                    <Banknote className="w-7 h-7" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-bold text-base mb-1">Накладений платіж</div>
+                    <div className="text-xs text-gray-500">Оплата при отриманні товару</div>
+                  </div>
+                  {formData.paymentMethod === 'cash_on_delivery' && (
+                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Check className="w-5 h-5 text-white" />
+                    </div>
+                  )}
                 </div>
-                {formData.paymentMethod === 'cash_on_delivery' && <CheckCircle2 className="w-5 h-5 text-green-500" />}
               </button>
               
+              {/* LiqPay */}
               <button
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, paymentMethod: 'liqpay' }))}
-                className={`w-full p-3 rounded-xl border-2 flex items-center gap-3 ${
-                  formData.paymentMethod === 'liqpay' ? 'border-green-500 bg-green-50' : 'border-gray-200'
+                className={`w-full p-4 sm:p-5 rounded-2xl border-2 transition-all text-left ${
+                  formData.paymentMethod === 'liqpay'
+                    ? 'border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-md'
+                    : 'border-gray-200 hover:border-gray-300 bg-white'
                 }`}
               >
-                <CreditCard className={`w-6 h-6 ${formData.paymentMethod === 'liqpay' ? 'text-green-600' : 'text-gray-400'}`} />
-                <div className="text-left flex-1">
-                  <div className="font-medium text-sm flex items-center gap-2">
-                    LiqPay
-                    <span className="text-[10px] bg-yellow-200 text-yellow-800 px-1.5 py-0.5 rounded">ТЕСТ</span>
+                <div className="flex items-center gap-4">
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+                    formData.paymentMethod === 'liqpay' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-400'
+                  }`}>
+                    <CreditCard className="w-7 h-7" />
                   </div>
-                  <div className="text-xs text-gray-500">Visa, Mastercard</div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-bold text-base">LiqPay</span>
+                      <span className="text-[10px] bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded-full font-bold">ТЕСТ</span>
+                    </div>
+                    <div className="text-xs text-gray-500">Visa, Mastercard</div>
+                  </div>
+                  {formData.paymentMethod === 'liqpay' && (
+                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Check className="w-5 h-5 text-white" />
+                    </div>
+                  )}
                 </div>
-                {formData.paymentMethod === 'liqpay' && <CheckCircle2 className="w-5 h-5 text-green-500" />}
               </button>
             </div>
             
+            {/* Test Card Info */}
             {formData.paymentMethod === 'liqpay' && (
-              <div className="mt-3 p-2 bg-yellow-50 rounded-lg">
-                <p className="text-xs text-yellow-700">
-                  Тестова картка: <strong>4242 4242 4242 4242</strong>
-                </p>
+              <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-2xl">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-yellow-200 rounded-full flex items-center justify-center flex-shrink-0">
+                    <span className="text-yellow-800 text-lg">ℹ️</span>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-yellow-800 mb-1">Тестовий режим</p>
+                    <p className="text-xs text-yellow-700">
+                      Тестова картка: <span className="font-mono font-bold">4242 4242 4242 4242</span>
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
           </div>
 
-          {/* Notes */}
-          <div className="bg-white rounded-xl p-4 shadow-sm">
+          {/* 4. Notes */}
+          <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
+            <div className="flex items-center gap-3 mb-4">
+              <MessageSquare className="w-6 h-6 text-gray-600" />
+              <h3 className="text-base font-bold text-gray-800">Коментар до замовлення</h3>
+              <span className="text-xs text-gray-400">(необов'язково)</span>
+            </div>
             <textarea
               name="notes"
               value={formData.notes}
               onChange={handleChange}
-              placeholder="Коментар до замовлення (необов'язково)"
-              rows="2"
-              className="w-full px-4 py-3 bg-gray-50 rounded-xl border-2 border-transparent focus:border-green-500 focus:bg-white outline-none resize-none text-sm"
+              placeholder="Додайте побажання або уточнення..."
+              rows="3"
+              className="w-full px-4 py-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-green-500 focus:bg-white outline-none resize-none text-sm transition-all"
             />
           </div>
         </form>
       </div>
 
-      {/* Fixed Bottom */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-lg">
-        <div className="flex items-center gap-4">
-          <div>
-            <div className="text-xs text-gray-500">До сплати</div>
-            <div className="text-2xl font-bold text-green-600">{cartTotal.toLocaleString()} ₴</div>
+      {/* Fixed Bottom Bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+          <div className="flex items-center gap-4">
+            <div className="flex-1">
+              <div className="text-xs text-gray-500 font-medium mb-1">До сплати</div>
+              <div className="text-3xl font-bold text-green-600">{cartTotal.toLocaleString()} ₴</div>
+            </div>
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="flex-1 sm:flex-none sm:min-w-[240px] bg-gradient-to-r from-green-500 to-emerald-500 text-white py-4 px-8 rounded-2xl font-bold text-base disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <span>Оформлення...</span>
+                </>
+              ) : (
+                <>
+                  <span>Підтвердити замовлення</span>
+                  <Check className="w-5 h-5" />
+                </>
+              )}
+            </button>
           </div>
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="flex-1 bg-green-500 text-white py-4 rounded-xl font-bold text-base disabled:opacity-50 active:bg-green-600 transition-colors"
-          >
-            {loading ? 'Зачекайте...' : 'Оформити замовлення'}
-          </button>
         </div>
       </div>
     </div>
