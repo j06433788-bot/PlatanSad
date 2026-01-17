@@ -32,7 +32,7 @@ PRODUCTS = []
 bonsai_products = [
     {"id": "prod-b001", "name": "Нівакі з сосни звичайної 185-190см", "price": 47000, "image": "https://images.prom.ua/6815175822_w640_h640_nivaki-z-sosni.jpg", "badges": ["hit"], "stock": 1},
     {"id": "prod-b002", "name": "Нівакі з сосни звичайної 130см", "price": 6000, "image": "https://images.prom.ua/6826569009_w640_h640_nivaki-z-sosni.jpg", "badges": ["new"], "stock": 3},
-    {"id": "prod-b003", "name": "Нівакі з туї Міккі", "price": 1200, "oldPrice": 1400, "discount": 14, "image": "https://images.prom.ua/5914702282_w640_h640_nivaki-z-tuyi.jpg", "badges": ["sale"], "stock": 5},
+    {"id": "prod-b003", "name": "Нівакі з туї Міккі", "price": 1200, "old_price": 1400, "discount": 14, "image": "https://images.prom.ua/5914702282_w640_h640_nivaki-z-tuyi.jpg", "badges": ["sale"], "stock": 5},
     {"id": "prod-b004", "name": "Нівакі з сосни чорної 150см", "price": 12000, "image": "https://images.prom.ua/6815175822_w640_h640_nivaki-z-sosni.jpg", "stock": 2},
     {"id": "prod-b005", "name": "Нівакі з ялини колючої Глаука Глобоза", "price": 8500, "image": "https://images.prom.ua/6510283244_w640_h640_bonsaj-nivaki-pinus.jpg", "badges": ["hit"], "stock": 4},
     {"id": "prod-b006", "name": "Нівакі з ялини звичайної 120см", "price": 5500, "image": "https://images.prom.ua/6510283244_w640_h640_bonsaj-nivaki-pinus.jpg", "stock": 3},
@@ -45,7 +45,7 @@ bonsai_products = [
     {"id": "prod-b013", "name": "Бонсай з модрини європейської", "price": 5000, "image": "https://images.prom.ua/6510283244_w640_h640_bonsaj-nivaki-pinus.jpg", "badges": ["new"], "stock": 5},
     {"id": "prod-b014", "name": "Нівакі з тису ягідного 130см", "price": 14000, "image": "https://images.prom.ua/6510283244_w640_h640_bonsaj-nivaki-pinus.jpg", "badges": ["hit"], "stock": 2},
     {"id": "prod-b015", "name": "Нівакі з кипарисовика Лавсона", "price": 7800, "image": "https://images.prom.ua/6510283244_w640_h640_bonsaj-nivaki-pinus.jpg", "stock": 3},
-    {"id": "prod-b016", "name": "Бонсай з туї західної Даніка", "price": 2500, "oldPrice": 3000, "discount": 17, "image": "https://images.prom.ua/5914702282_w640_h640_nivaki-z-tuyi.jpg", "badges": ["sale"], "stock": 8},
+    {"id": "prod-b016", "name": "Бонсай з туї західної Даніка", "price": 2500, "old_price": 3000, "discount": 17, "image": "https://images.prom.ua/5914702282_w640_h640_nivaki-z-tuyi.jpg", "badges": ["sale"], "stock": 8},
     {"id": "prod-b017", "name": "Нівакі з сосни звичайної Ватереріподібна", "price": 10500, "image": "https://images.prom.ua/6815175822_w640_h640_nivaki-z-sosni.jpg", "stock": 2},
     {"id": "prod-b018", "name": "Нівакі з ялиці благородної 150см", "price": 18000, "image": "https://images.prom.ua/6510283244_w640_h640_bonsaj-nivaki-pinus.jpg", "badges": ["hit"], "stock": 1},
     {"id": "prod-b019", "name": "Бонсай з псевдотсуги Мензіса", "price": 8000, "image": "https://images.prom.ua/6510283244_w640_h640_bonsaj-nivaki-pinus.jpg", "stock": 3},
@@ -54,7 +54,7 @@ bonsai_products = [
 for p in bonsai_products:
     p["category"] = "Бонсай Нівакі"
     p["description"] = f"{p['name']}. Формована рослина в японському стилі. Ідеально для декоративного саду."
-    if "oldPrice" not in p: p["oldPrice"] = None
+    if "old_price" not in p: p["old_price"] = None
     if "discount" not in p: p["discount"] = 0
     if "badges" not in p: p["badges"] = []
 PRODUCTS.extend(bonsai_products)
@@ -80,12 +80,12 @@ columna_products = [
     {"id": "prod-tc017", "name": "Туя Колумна 400-420см", "price": 4500, "image": "https://images.prom.ua/5107358816_w640_h640_tuya-kolumna-columna.jpg", "stock": 2},
     {"id": "prod-tc018", "name": "Туя Колумна формована 150см", "price": 900, "image": "https://images.prom.ua/5107358816_w640_h640_tuya-kolumna-columna.jpg", "badges": ["new"], "stock": 15},
     {"id": "prod-tc019", "name": "Туя Колумна формована 200см", "price": 1300, "image": "https://images.prom.ua/5107358816_w640_h640_tuya-kolumna-columna.jpg", "stock": 12},
-    {"id": "prod-tc020", "name": "Туя Колумна формована 250см", "price": 1800, "oldPrice": 2000, "discount": 10, "image": "https://images.prom.ua/5107358816_w640_h640_tuya-kolumna-columna.jpg", "badges": ["sale"], "stock": 10},
+    {"id": "prod-tc020", "name": "Туя Колумна формована 250см", "price": 1800, "old_price": 2000, "discount": 10, "image": "https://images.prom.ua/5107358816_w640_h640_tuya-kolumna-columna.jpg", "badges": ["sale"], "stock": 10},
 ]
 for p in columna_products:
     p["category"] = "Туя Колумна"
     p["description"] = f"{p['name']}. Колоновидна форма, ідеально для живоплоту та акцентів в саду."
-    if "oldPrice" not in p: p["oldPrice"] = None
+    if "old_price" not in p: p["old_price"] = None
     if "discount" not in p: p["discount"] = 0
     if "badges" not in p: p["badges"] = []
 PRODUCTS.extend(columna_products)
@@ -114,16 +114,16 @@ smaragd_products = [
     {"id": "prod-ts018", "name": "Туя Смарагд 400-420см", "price": 4500, "image": "https://images.prom.ua/5107353705_w640_h640_tuya-smaragd-smaragd.jpg", "stock": 3},
     {"id": "prod-ts019", "name": "Туя Смарагд формована 150см", "price": 900, "image": "https://images.prom.ua/5107353705_w640_h640_tuya-smaragd-smaragd.jpg", "badges": ["new"], "stock": 20},
     {"id": "prod-ts020", "name": "Туя Смарагд формована 200см", "price": 1300, "image": "https://images.prom.ua/5107353705_w640_h640_tuya-smaragd-smaragd.jpg", "stock": 15},
-    {"id": "prod-ts021", "name": "Туя Смарагд формована 250см", "price": 1800, "oldPrice": 2000, "discount": 10, "image": "https://images.prom.ua/5107353705_w640_h640_tuya-smaragd-smaragd.jpg", "badges": ["sale"], "stock": 12},
+    {"id": "prod-ts021", "name": "Туя Смарагд формована 250см", "price": 1800, "old_price": 2000, "discount": 10, "image": "https://images.prom.ua/5107353705_w640_h640_tuya-smaragd-smaragd.jpg", "badges": ["sale"], "stock": 12},
     {"id": "prod-ts022", "name": "Туя Смарагд спіраль 180см", "price": 1500, "image": "https://images.prom.ua/5107353705_w640_h640_tuya-smaragd-smaragd.jpg", "badges": ["hit"], "stock": 8},
     {"id": "prod-ts023", "name": "Туя Смарагд спіраль 220см", "price": 2000, "image": "https://images.prom.ua/5107353705_w640_h640_tuya-smaragd-smaragd.jpg", "stock": 6},
     {"id": "prod-ts024", "name": "Туя Смарагд помпон 150см", "price": 1200, "image": "https://images.prom.ua/5107353705_w640_h640_tuya-smaragd-smaragd.jpg", "badges": ["new"], "stock": 10},
-    {"id": "prod-ts025", "name": "Туя Смарагд помпон 200см", "price": 1700, "oldPrice": 1900, "discount": 11, "image": "https://images.prom.ua/5107353705_w640_h640_tuya-smaragd-smaragd.jpg", "badges": ["sale"], "stock": 8},
+    {"id": "prod-ts025", "name": "Туя Смарагд помпон 200см", "price": 1700, "old_price": 1900, "discount": 11, "image": "https://images.prom.ua/5107353705_w640_h640_tuya-smaragd-smaragd.jpg", "badges": ["sale"], "stock": 8},
 ]
 for p in smaragd_products:
     p["category"] = "Туя Смарагд"
     p["description"] = f"{p['name']}. Вузькоконічна форма, насичений зелений колір цілий рік."
-    if "oldPrice" not in p: p["oldPrice"] = None
+    if "old_price" not in p: p["old_price"] = None
     if "discount" not in p: p["discount"] = 0
     if "badges" not in p: p["badges"] = []
 PRODUCTS.extend(smaragd_products)
@@ -142,14 +142,14 @@ samshit_products = [
     {"id": "prod-sam010", "name": "Самшит вічнозелений спіраль 100см", "price": 1500, "image": "https://images.prom.ua/5027226901_w640_h640_samshit-vichnozelenij-arborestsens.jpg", "stock": 12},
     {"id": "prod-sam011", "name": "Самшит вічнозелений конус 60см", "price": 700, "image": "https://images.prom.ua/5027226901_w640_h640_samshit-vichnozelenij-arborestsens.jpg", "badges": ["hit"], "stock": 30},
     {"id": "prod-sam012", "name": "Самшит вічнозелений конус 80см", "price": 950, "image": "https://images.prom.ua/5027226901_w640_h640_samshit-vichnozelenij-arborestsens.jpg", "stock": 25},
-    {"id": "prod-sam013", "name": "Самшит вічнозелений помпон 70см", "price": 1000, "oldPrice": 1200, "discount": 17, "image": "https://images.prom.ua/5027226901_w640_h640_samshit-vichnozelenij-arborestsens.jpg", "badges": ["sale"], "stock": 20},
+    {"id": "prod-sam013", "name": "Самшит вічнозелений помпон 70см", "price": 1000, "old_price": 1200, "discount": 17, "image": "https://images.prom.ua/5027226901_w640_h640_samshit-vichnozelenij-arborestsens.jpg", "badges": ["sale"], "stock": 20},
     {"id": "prod-sam014", "name": "Самшит вічнозелений куб 50х50см", "price": 1100, "image": "https://images.prom.ua/5027226901_w640_h640_samshit-vichnozelenij-arborestsens.jpg", "badges": ["new"], "stock": 15},
     {"id": "prod-sam015", "name": "Самшит вічнозелений штамб 120см", "price": 1800, "image": "https://images.prom.ua/5027226901_w640_h640_samshit-vichnozelenij-arborestsens.jpg", "badges": ["hit"], "stock": 10},
 ]
 for p in samshit_products:
     p["category"] = "Самшит"
     p["description"] = f"{p['name']}. Вічнозелена рослина, відмінно формується, для живоплоту та топіарію."
-    if "oldPrice" not in p: p["oldPrice"] = None
+    if "old_price" not in p: p["old_price"] = None
     if "discount" not in p: p["discount"] = 0
     if "badges" not in p: p["badges"] = []
 PRODUCTS.extend(samshit_products)
@@ -178,7 +178,7 @@ hvoyni_products = [
     {"id": "prod-hv018", "name": "Сосна кедрова європейська 60-80см", "price": 1100, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["hit"], "stock": 10},
     {"id": "prod-hv019", "name": "Ялина Енгельмана 80-100см", "price": 850, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "stock": 12},
     {"id": "prod-hv020", "name": "Можжевельник китайський Стрікта 60-80см", "price": 550, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "stock": 28},
-    {"id": "prod-hv021", "name": "Туя західна Брабант 80-100см", "price": 350, "oldPrice": 400, "discount": 13, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["sale"], "stock": 40},
+    {"id": "prod-hv021", "name": "Туя західна Брабант 80-100см", "price": 350, "old_price": 400, "discount": 13, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["sale"], "stock": 40},
     {"id": "prod-hv022", "name": "Туя західна Голден Глоб 30-40см", "price": 400, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["new"], "stock": 35},
     {"id": "prod-hv023", "name": "Ялиця благородна 60-80см", "price": 1800, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["hit"], "stock": 8},
     {"id": "prod-hv024", "name": "Кедр атласький 80-100см", "price": 2200, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "stock": 5},
@@ -186,13 +186,13 @@ hvoyni_products = [
     {"id": "prod-hv026", "name": "Ялина колюча Хопсі 60-80см", "price": 1200, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["hit"], "stock": 15},
     {"id": "prod-hv027", "name": "Туя західна Тедді 20-30см", "price": 280, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["new"], "stock": 50},
     {"id": "prod-hv028", "name": "Сосна Банкса 60-80см", "price": 450, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "stock": 18},
-    {"id": "prod-hv029", "name": "Ялина канадська Коніка 40-50см", "price": 500, "oldPrice": 600, "discount": 17, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "badges": ["sale"], "stock": 30},
+    {"id": "prod-hv029", "name": "Ялина канадська Коніка 40-50см", "price": 500, "old_price": 600, "discount": 17, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "badges": ["sale"], "stock": 30},
     {"id": "prod-hv030", "name": "Туя західна Даніка 20-25см", "price": 320, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["hit"], "stock": 45},
 ]
 for p in hvoyni_products:
     p["category"] = "Хвойні рослини"
     p["description"] = f"{p['name']}. Декоративна хвойна рослина для саду. Морозостійка, невибаглива."
-    if "oldPrice" not in p: p["oldPrice"] = None
+    if "old_price" not in p: p["old_price"] = None
     if "discount" not in p: p["discount"] = 0
     if "badges" not in p: p["badges"] = []
 PRODUCTS.extend(hvoyni_products)
@@ -217,7 +217,7 @@ listopadni_products = [
     {"id": "prod-ld014", "name": "Бузок звичайний фіолетовий 60-80см", "price": 400, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["new"], "stock": 22},
     {"id": "prod-ld015", "name": "Калина бульденеж 60-80см", "price": 450, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["hit"], "stock": 18},
     {"id": "prod-ld016", "name": "Айва японська 40-50см", "price": 280, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "stock": 25},
-    {"id": "prod-ld017", "name": "Кизильник блискучий 50-60см", "price": 220, "oldPrice": 270, "discount": 19, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["sale"], "stock": 40},
+    {"id": "prod-ld017", "name": "Кизильник блискучий 50-60см", "price": 220, "old_price": 270, "discount": 19, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["sale"], "stock": 40},
     {"id": "prod-ld018", "name": "Глід одноматочковий 80-100см", "price": 350, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "stock": 15},
     {"id": "prod-ld019", "name": "Шовковиця чорна 100-120см", "price": 550, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["hit"], "stock": 12},
     {"id": "prod-ld020", "name": "Жасмин садовий 60-80см", "price": 320, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "stock": 30},
@@ -225,12 +225,12 @@ listopadni_products = [
     {"id": "prod-ld022", "name": "Магонія падуболиста 30-40см", "price": 350, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "stock": 20},
     {"id": "prod-ld023", "name": "Вишня декоративна Канзан 120-140см", "price": 850, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["hit"], "stock": 8},
     {"id": "prod-ld024", "name": "Горобина звичайна 100-120см", "price": 400, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "stock": 15},
-    {"id": "prod-ld025", "name": "Бузина червона 60-80см", "price": 280, "oldPrice": 350, "discount": 20, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["sale"], "stock": 25},
+    {"id": "prod-ld025", "name": "Бузина червона 60-80см", "price": 280, "old_price": 350, "discount": 20, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["sale"], "stock": 25},
 ]
 for p in listopadni_products:
     p["category"] = "Листопадні дерева та кущі"
     p["description"] = f"{p['name']}. Декоративні листопадні рослини для ландшафтного дизайну."
-    if "oldPrice" not in p: p["oldPrice"] = None
+    if "old_price" not in p: p["old_price"] = None
     if "discount" not in p: p["discount"] = 0
     if "badges" not in p: p["badges"] = []
 PRODUCTS.extend(listopadni_products)
@@ -245,13 +245,13 @@ globosa_products = [
     {"id": "prod-glob006", "name": "Туя Глобоса D45-50см", "price": 800, "image": "https://images.prom.ua/4858672644_w640_h640_kulyasta-tuya-globosa.jpg", "stock": 25},
     {"id": "prod-glob007", "name": "Туя Глобоса D50-60см", "price": 1000, "image": "https://images.prom.ua/4858672644_w640_h640_kulyasta-tuya-globosa.jpg", "badges": ["new"], "stock": 20},
     {"id": "prod-glob008", "name": "Туя Глобоса D60-70см", "price": 1300, "image": "https://images.prom.ua/4858672644_w640_h640_kulyasta-tuya-globosa.jpg", "stock": 15},
-    {"id": "prod-glob009", "name": "Туя Глобоса D70-80см", "price": 1600, "oldPrice": 1800, "discount": 11, "image": "https://images.prom.ua/4858672644_w640_h640_kulyasta-tuya-globosa.jpg", "badges": ["sale"], "stock": 10},
+    {"id": "prod-glob009", "name": "Туя Глобоса D70-80см", "price": 1600, "old_price": 1800, "discount": 11, "image": "https://images.prom.ua/4858672644_w640_h640_kulyasta-tuya-globosa.jpg", "badges": ["sale"], "stock": 10},
     {"id": "prod-glob010", "name": "Туя Глобоса D80-90см", "price": 2000, "image": "https://images.prom.ua/4858672644_w640_h640_kulyasta-tuya-globosa.jpg", "badges": ["hit"], "stock": 8},
 ]
 for p in globosa_products:
     p["category"] = "Куляста Туя Глобоса"
     p["description"] = f"{p['name']}. Компактна куляста форма, ідеально для альпінаріїв та контейнерів."
-    if "oldPrice" not in p: p["oldPrice"] = None
+    if "old_price" not in p: p["old_price"] = None
     if "discount" not in p: p["discount"] = 0
     if "badges" not in p: p["badges"] = []
 PRODUCTS.extend(globosa_products)
@@ -266,13 +266,13 @@ katalpa_products = [
     {"id": "prod-kat004", "name": "Катальпа бігнонієвидна Нана штамб 180см", "price": 1800, "image": "https://images.prom.ua/4958829409_w640_h640_katalpa-catalpa.jpg", "badges": ["hit"], "stock": 8},
     {"id": "prod-kat005", "name": "Катальпа бігнонієвидна Нана штамб 200см", "price": 2200, "image": "https://images.prom.ua/4958829409_w640_h640_katalpa-catalpa.jpg", "stock": 6},
     {"id": "prod-kat006", "name": "Катальпа гібридна 100-120см", "price": 650, "image": "https://images.prom.ua/4958829409_w640_h640_katalpa-catalpa.jpg", "badges": ["new"], "stock": 10},
-    {"id": "prod-kat007", "name": "Катальпа великоквіткова 120-140см", "price": 850, "oldPrice": 950, "discount": 11, "image": "https://images.prom.ua/4958829409_w640_h640_katalpa-catalpa.jpg", "badges": ["sale"], "stock": 8},
+    {"id": "prod-kat007", "name": "Катальпа великоквіткова 120-140см", "price": 850, "old_price": 950, "discount": 11, "image": "https://images.prom.ua/4958829409_w640_h640_katalpa-catalpa.jpg", "badges": ["sale"], "stock": 8},
     {"id": "prod-kat008", "name": "Катальпа бігнонієвидна Ауреа 100-120см", "price": 1200, "image": "https://images.prom.ua/4958829409_w640_h640_katalpa-catalpa.jpg", "badges": ["hit"], "stock": 5},
 ]
 for p in katalpa_products:
     p["category"] = "Катальпа"
     p["description"] = f"{p['name']}. Декоративне дерево з великими листками та білими квітками."
-    if "oldPrice" not in p: p["oldPrice"] = None
+    if "old_price" not in p: p["old_price"] = None
     if "discount" not in p: p["discount"] = 0
     if "badges" not in p: p["badges"] = []
 PRODUCTS.extend(katalpa_products)
@@ -288,14 +288,14 @@ yalina_products = [
     {"id": "prod-yal007", "name": "Ялина Енгельмана 80-100см", "price": 850, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "stock": 12},
     {"id": "prod-yal008", "name": "Ялина східна 60-80см", "price": 650, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "badges": ["new"], "stock": 18},
     {"id": "prod-yal009", "name": "Ялина колюча Глаука Глобоза 40-50см", "price": 900, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "stock": 20},
-    {"id": "prod-yal010", "name": "Ялина звичайна Інверса штамб 150см", "price": 1500, "oldPrice": 1700, "discount": 12, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "badges": ["sale"], "stock": 8},
+    {"id": "prod-yal010", "name": "Ялина звичайна Інверса штамб 150см", "price": 1500, "old_price": 1700, "discount": 12, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "badges": ["sale"], "stock": 8},
     {"id": "prod-yal011", "name": "Ялина сербська Пендула 80-100см", "price": 1100, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "badges": ["hit"], "stock": 10},
     {"id": "prod-yal012", "name": "Ялина чорна 80-100см", "price": 950, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "stock": 12},
 ]
 for p in yalina_products:
     p["category"] = "Ялина"
     p["description"] = f"{p['name']}. Класична новорічна красуня, декоративна цілий рік."
-    if "oldPrice" not in p: p["oldPrice"] = None
+    if "old_price" not in p: p["old_price"] = None
     if "discount" not in p: p["discount"] = 0
     if "badges" not in p: p["badges"] = []
 PRODUCTS.extend(yalina_products)
@@ -310,18 +310,18 @@ kimnatni_products = [
     {"id": "prod-kim006", "name": "Антуріум Андре червоний 30-40см", "price": 400, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 20},
     {"id": "prod-kim007", "name": "Замі окулькас 50-60см", "price": 450, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["new"], "stock": 15},
     {"id": "prod-kim008", "name": "Сансевієрія трифасціата 40-50см", "price": 280, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 30},
-    {"id": "prod-kim009", "name": "Хлорофітум кучерявий 30-40см", "price": 200, "oldPrice": 250, "discount": 20, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["sale"], "stock": 35},
+    {"id": "prod-kim009", "name": "Хлорофітум кучерявий 30-40см", "price": 200, "old_price": 250, "discount": 20, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["sale"], "stock": 35},
     {"id": "prod-kim010", "name": "Алое Вера 30-40см", "price": 250, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["hit"], "stock": 28},
     {"id": "prod-kim011", "name": "Фікус каучуконосний 80-100см", "price": 500, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 15},
     {"id": "prod-kim012", "name": "Кротон Пітра 40-50см", "price": 480, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["new"], "stock": 12},
     {"id": "prod-kim013", "name": "Шефлера деревовидна 60-80см", "price": 420, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 18},
     {"id": "prod-kim014", "name": "Дифенбахія 50-60см", "price": 380, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["hit"], "stock": 20},
-    {"id": "prod-kim015", "name": "Пальма Арека 100-120см", "price": 850, "oldPrice": 950, "discount": 11, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["sale"], "stock": 8},
+    {"id": "prod-kim015", "name": "Пальма Арека 100-120см", "price": 850, "old_price": 950, "discount": 11, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["sale"], "stock": 8},
 ]
 for p in kimnatni_products:
     p["category"] = "Кімнатні рослини"
     p["description"] = f"{p['name']}. Декоративна кімнатна рослина, очищає повітря."
-    if "oldPrice" not in p: p["oldPrice"] = None
+    if "old_price" not in p: p["old_price"] = None
     if "discount" not in p: p["discount"] = 0
     if "badges" not in p: p["badges"] = []
 PRODUCTS.extend(kimnatni_products)
