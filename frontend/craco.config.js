@@ -81,6 +81,15 @@ webpackConfig.devServer = (devServerConfig) => {
   // Fix Invalid Host header error - allow all hosts
   devServerConfig.allowedHosts = 'all';
   
+  // Add proxy for API requests
+  devServerConfig.proxy = {
+    '/api': {
+      target: 'http://localhost:8001',
+      changeOrigin: true,
+      secure: false,
+    }
+  };
+  
   // Apply visual edits dev server setup only if enabled
   if (config.enableVisualEdits && setupDevServer) {
     devServerConfig = setupDevServer(devServerConfig);
