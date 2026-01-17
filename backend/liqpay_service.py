@@ -54,8 +54,8 @@ class LiqPayService:
         if server_url:
             params["server_url"] = server_url
         
-        # Encode data to base64
-        json_string = json.dumps(params)
+        # Encode data to base64 - use compact JSON (no spaces)
+        json_string = json.dumps(params, separators=(',', ':'), ensure_ascii=False)
         data = base64.b64encode(json_string.encode('utf-8')).decode('ascii')
         
         # Generate signature
