@@ -11,7 +11,7 @@ class AdminLogin(BaseModel):
 class AdminToken(BaseModel):
     access_token: str
     token_type: str
-    username: str
+    username: Optional[str] = None
 
 
 class DashboardStats(BaseModel):
