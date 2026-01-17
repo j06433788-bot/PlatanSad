@@ -245,25 +245,16 @@ function App() {
                 />
               </Routes>
               <Toaster
-                position="top-right"
+                position="bottom-center"
+                expand={true}
+                richColors
                 toastOptions={{
                   duration: 3000,
                   style: {
-                    background: '#fff',
-                    color: '#333',
-                    border: '1px solid #e5e7eb',
-                  },
-                  success: {
-                    iconTheme: {
-                      primary: '#10b981',
-                      secondary: '#fff',
-                    },
-                  },
-                  error: {
-                    iconTheme: {
-                      primary: '#ef4444',
-                      secondary: '#fff',
-                    },
+                    background: 'transparent',
+                    border: 'none',
+                    boxShadow: 'none',
+                    padding: 0,
                   },
                 }}
               />
