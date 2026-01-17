@@ -94,6 +94,7 @@ class PlatanSadAPITester:
         # Test create product
         test_product = {
             "name": f"Test Plant {uuid.uuid4().hex[:8]}",
+            "article": f"TEST-{uuid.uuid4().hex[:6].upper()}",
             "description": "Test plant for API testing",
             "price": 299.99,
             "oldPrice": 399.99,
