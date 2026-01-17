@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useCompare } from '../context/CompareContext';
 import QuickOrderModal from './QuickOrderModal';
+import { toast } from './CustomToast';
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
@@ -34,12 +35,17 @@ const ProductCard = ({ product }) => {
     e.stopPropagation();
     await addToCart(product);
     setAddedToCart(true);
+    toast.cartAdd(product.name);
     setTimeout(() => setAddedToCart(false), 2000);
   };
 
   const handleWishlist = (e) => {
     e.stopPropagation();
+    const wasInWishlist = isFavorite;
     toggleWishlist(product);
+    if (!wasInWishlist) {
+      toast.wishlistAdd(product.name);
+    }
   };
 
   return (
