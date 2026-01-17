@@ -310,7 +310,8 @@ class PlatanSadAPITester:
         
         order_id = self.created_items['orders'][0]
         
-        # Test create LiqPay checkout
+        # Test create LiqPay checkout - use query params, not request body
+        url = f"{self.base_url}/api/liqpay/create-checkout"
         params = {
             'order_id': order_id,
             'amount': '299.99',
@@ -319,14 +320,19 @@ class PlatanSadAPITester:
             'server_url': 'http://localhost:8001/api/liqpay/callback'
         }
         
-        response = self.make_request('POST', '/liqpay/create-checkout', params=params)
-        success = response and response.status_code == 200
-        checkout_data = None
-        if success:
-            checkout_data = response.json()
-            # Verify required fields
-            required_fields = ['data', 'signature', 'checkout_url']
-            success = all(field in checkout_data for field in required_fields)
+        try:
+            response = requests.post(url, params=params, timeout=10)
+            success = response and response.status_code == 200
+            checkout_data = None
+            if success:
+                checkout_data = response.json()
+                # Verify required fields
+                required_fields = ['data', 'signature', 'checkout_url']
+                success = all(field in checkout_data for field in required_fields)
+        except Exception as e:
+            success = False
+            response = None
+            
         self.log_test("Create LiqPay checkout", success,
                      f"Status: {response.status_code if response else 'No response'}")
         
