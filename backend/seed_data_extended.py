@@ -155,3 +155,46 @@ for p in samshit_products:
 PRODUCTS.extend(samshit_products)
 
 print("Part 2 loaded: Tuya Smaragd (25) + Samshit (15)")
+
+# === ХВОЙНІ РОСЛИНИ (30 товарів) ===
+hvoyni_products = [
+    {"id": "prod-hv001", "name": "Ялина звичайна 80-100см", "price": 300, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["hit"], "stock": 45},
+    {"id": "prod-hv002", "name": "Ялина колюча Глаука 60-80см", "price": 850, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "stock": 30},
+    {"id": "prod-hv003", "name": "Ялина сербська 100-120см", "price": 550, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "badges": ["new"], "stock": 25},
+    {"id": "prod-hv004", "name": "Сосна звичайна 80-100см", "price": 280, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "stock": 50},
+    {"id": "prod-hv005", "name": "Сосна чорна 60-80см", "price": 650, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["hit"], "stock": 20},
+    {"id": "prod-hv006", "name": "Сосна гірська Мугус 40-50см", "price": 450, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "stock": 40},
+    {"id": "prod-hv007", "name": "Можжевельник казацький 30-40см", "price": 320, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["new"], "stock": 60},
+    {"id": "prod-hv008", "name": "Можжевельник скельний Блю Арроу 80-100см", "price": 750, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["hit"], "stock": 25},
+    {"id": "prod-hv009", "name": "Можжевельник горизонтальний 30-40см", "price": 350, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "stock": 35},
+    {"id": "prod-hv010", "name": "Ялиця корейська 60-80см", "price": 1200, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["hit"], "stock": 15},
+    {"id": "prod-hv011", "name": "Ялиця одноколірна 80-100см", "price": 1500, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "stock": 12},
+    {"id": "prod-hv012", "name": "Ялиця Нордмана 60-80см", "price": 950, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["new"], "stock": 18},
+    {"id": "prod-hv013", "name": "Модрина європейська 100-120см", "price": 600, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "stock": 20},
+    {"id": "prod-hv014", "name": "Тис ягідний 40-50см", "price": 850, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["hit"], "stock": 25},
+    {"id": "prod-hv015", "name": "Кипарисовик Лавсона 60-80см", "price": 550, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "stock": 30},
+    {"id": "prod-hv016", "name": "Псевдотсуга Мензіса 80-100см", "price": 900, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["new"], "stock": 15},
+    {"id": "prod-hv017", "name": "Сосна Веймутова 80-100см", "price": 700, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "stock": 22},
+    {"id": "prod-hv018", "name": "Сосна кедрова європейська 60-80см", "price": 1100, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["hit"], "stock": 10},
+    {"id": "prod-hv019", "name": "Ялина Енгельмана 80-100см", "price": 850, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "stock": 12},
+    {"id": "prod-hv020", "name": "Можжевельник китайський Стрікта 60-80см", "price": 550, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "stock": 28},
+    {"id": "prod-hv021", "name": "Туя західна Брабант 80-100см", "price": 350, "oldPrice": 400, "discount": 13, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["sale"], "stock": 40},
+    {"id": "prod-hv022", "name": "Туя західна Голден Глоб 30-40см", "price": 400, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["new"], "stock": 35},
+    {"id": "prod-hv023", "name": "Ялиця благородна 60-80см", "price": 1800, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["hit"], "stock": 8},
+    {"id": "prod-hv024", "name": "Кедр атласький 80-100см", "price": 2200, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "stock": 5},
+    {"id": "prod-hv025", "name": "Можжевельник звичайний Хіберніка 80-100см", "price": 600, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "stock": 20},
+    {"id": "prod-hv026", "name": "Ялина колюча Хопсі 60-80см", "price": 1200, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["hit"], "stock": 15},
+    {"id": "prod-hv027", "name": "Туя західна Тедді 20-30см", "price": 280, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["new"], "stock": 50},
+    {"id": "prod-hv028", "name": "Сосна Банкса 60-80см", "price": 450, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "stock": 18},
+    {"id": "prod-hv029", "name": "Ялина канадська Коніка 40-50см", "price": 500, "oldPrice": 600, "discount": 17, "image": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg", "badges": ["sale"], "stock": 30},
+    {"id": "prod-hv030", "name": "Туя західна Даніка 20-25см", "price": 320, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "badges": ["hit"], "stock": 45},
+]
+for p in hvoyni_products:
+    p["category"] = "Хвойні рослини"
+    p["description"] = f"{p['name']}. Декоративна хвойна рослина для саду. Морозостійка, невибаглива."
+    if "oldPrice" not in p: p["oldPrice"] = None
+    if "discount" not in p: p["discount"] = 0
+    if "badges" not in p: p["badges"] = []
+PRODUCTS.extend(hvoyni_products)
+
+print("Part 3 loaded: Hvoyni (30)")
