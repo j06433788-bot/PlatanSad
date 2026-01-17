@@ -48,13 +48,13 @@ const Hero = () => {
           {slides.map((slide, index) => (
             <div
               key={index}
-              className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'} ${slide.isPlatan ? 'bg-white' : ''}`}
+              className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
             >
               {/* Background image */}
               <img
                 src={slide.image}
                 alt={slide.alt}
-                className={`w-full h-full relative z-10 ${slide.isPlatan ? 'object-contain' : 'object-cover'}`}
+                className="w-full h-full object-cover relative z-10"
               />
               {/* Overlay gradient - тільки якщо не noOverlay */}
               {!slide.noOverlay && (
