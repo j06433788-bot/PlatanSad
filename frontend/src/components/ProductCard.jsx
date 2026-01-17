@@ -5,7 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useCompare } from '../context/CompareContext';
 import QuickOrderModal from './QuickOrderModal';
-import { toast } from './CustomToast';
+import { toast as sonnerToast } from 'sonner';
 
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
@@ -35,7 +35,25 @@ const ProductCard = ({ product }) => {
     e.stopPropagation();
     await addToCart(product);
     setAddedToCart(true);
-    toast.cartAdd(product.name);
+    
+    // Show animated toast
+    sonnerToast.custom(
+      (t) => (
+        <div className="bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl p-4 text-white min-w-[280px] shadow-xl shadow-blue-500/30 animate-toast-slide">
+          <div className="flex items-center gap-3">
+            <div className="bg-white/20 p-2.5 rounded-xl animate-toast-bounce">
+              <ShoppingCart className="w-6 h-6 animate-toast-sparkle" />
+            </div>
+            <div className="flex-1">
+              <p className="font-bold">Додано в кошик! 🛒</p>
+              <p className="text-sm text-white/80 truncate">{product.name}</p>
+            </div>
+          </div>
+        </div>
+      ),
+      { duration: 3000, position: 'bottom-center' }
+    );
+    
     setTimeout(() => setAddedToCart(false), 2000);
   };
 
@@ -44,7 +62,21 @@ const ProductCard = ({ product }) => {
     const wasInWishlist = isFavorite;
     toggleWishlist(product);
     if (!wasInWishlist) {
-      toast.wishlistAdd(product.name);
+      sonnerToast.custom(
+        () => (
+          <div className="bg-gradient-to-r from-rose-500 to-pink-500 rounded-2xl p-4 text-white min-w-[280px] shadow-xl shadow-rose-500/30 animate-toast-slide">
+            <div className="flex items-center gap-3">
+              <div className="bg-white/20 p-2.5 rounded-xl animate-toast-bounce">
+                <Heart className="w-6 h-6 fill-current animate-toast-sparkle" />
+              </div>
+              <div>
+                <p className="font-bold">Додано в бажання! ❤️</p>
+              </div>
+            </div>
+          </div>
+        ),
+        { duration: 2500, position: 'bottom-center' }
+      );
     }
   };
 
