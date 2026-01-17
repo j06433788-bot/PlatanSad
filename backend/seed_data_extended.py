@@ -198,3 +198,62 @@ for p in hvoyni_products:
 PRODUCTS.extend(hvoyni_products)
 
 print("Part 3 loaded: Hvoyni (30)")
+
+# === ЛИСТОПАДНІ ДЕРЕВА ТА КУЩІ (25 товарів) ===
+listopadni_products = [
+    {"id": "prod-ld001", "name": "Верба Хакуро Нішікі 1.2-1.3м штамб", "price": 550, "image": "https://images.prom.ua/6929254264_w640_h640_verba-hakuro-nishiki12-13.jpg", "badges": ["hit"], "stock": 25},
+    {"id": "prod-ld002", "name": "Гортензія деревовидна Анабель 40-50см", "price": 350, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["new"], "stock": 40},
+    {"id": "prod-ld003", "name": "Гортензія метельчата Лаймлайт 50-60см", "price": 400, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "stock": 35},
+    {"id": "prod-ld004", "name": "Бузина чорна Блек Лейс 60-80см", "price": 450, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["hit"], "stock": 20},
+    {"id": "prod-ld005", "name": "Спірея японська Голдфлейм 30-40см", "price": 250, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "stock": 50},
+    {"id": "prod-ld006", "name": "Дерен білий Елегантіссіма 60-80см", "price": 300, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["new"], "stock": 30},
+    {"id": "prod-ld007", "name": "Пухироплідник калинолистий Діабло 60-80см", "price": 320, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "stock": 35},
+    {"id": "prod-ld008", "name": "Бересклет Форчуна Емеральд Гаєті 30-40см", "price": 280, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["hit"], "stock": 45},
+    {"id": "prod-ld009", "name": "Форзиція проміжна 60-80см", "price": 350, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "stock": 25},
+    {"id": "prod-ld010", "name": "Вейгела квітуча Ред Прінц 40-50см", "price": 300, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["new"], "stock": 30},
+    {"id": "prod-ld011", "name": "Барбарис Тунберга Атропурпуреа 40-50см", "price": 270, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "stock": 40},
+    {"id": "prod-ld012", "name": "Смородина альпійська Шмідт 60-80см", "price": 250, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["hit"], "stock": 35},
+    {"id": "prod-ld013", "name": "Чубушник вінцевий 60-80см", "price": 300, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "stock": 28},
+    {"id": "prod-ld014", "name": "Бузок звичайний фіолетовий 60-80см", "price": 400, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["new"], "stock": 22},
+    {"id": "prod-ld015", "name": "Калина бульденеж 60-80см", "price": 450, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["hit"], "stock": 18},
+    {"id": "prod-ld016", "name": "Айва японська 40-50см", "price": 280, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "stock": 25},
+    {"id": "prod-ld017", "name": "Кизильник блискучий 50-60см", "price": 220, "oldPrice": 270, "discount": 19, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["sale"], "stock": 40},
+    {"id": "prod-ld018", "name": "Глід одноматочковий 80-100см", "price": 350, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "stock": 15},
+    {"id": "prod-ld019", "name": "Шовковиця чорна 100-120см", "price": 550, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["hit"], "stock": 12},
+    {"id": "prod-ld020", "name": "Жасмин садовий 60-80см", "price": 320, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "stock": 30},
+    {"id": "prod-ld021", "name": "Айлант найвищий 80-100см", "price": 450, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["new"], "stock": 10},
+    {"id": "prod-ld022", "name": "Магонія падуболиста 30-40см", "price": 350, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "stock": 20},
+    {"id": "prod-ld023", "name": "Вишня декоративна Канзан 120-140см", "price": 850, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["hit"], "stock": 8},
+    {"id": "prod-ld024", "name": "Горобина звичайна 100-120см", "price": 400, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "stock": 15},
+    {"id": "prod-ld025", "name": "Бузина червона 60-80см", "price": 280, "oldPrice": 350, "discount": 20, "image": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg", "badges": ["sale"], "stock": 25},
+]
+for p in listopadni_products:
+    p["category"] = "Листопадні дерева та кущі"
+    p["description"] = f"{p['name']}. Декоративні листопадні рослини для ландшафтного дизайну."
+    if "oldPrice" not in p: p["oldPrice"] = None
+    if "discount" not in p: p["discount"] = 0
+    if "badges" not in p: p["badges"] = []
+PRODUCTS.extend(listopadni_products)
+
+# === КУЛЯСТА ТУЯ ГЛОБОСА (10 товарів) ===
+globosa_products = [
+    {"id": "prod-glob001", "name": "Туя Глобоса D20-25см", "price": 250, "image": "https://images.prom.ua/4858672644_w640_h640_kulyasta-tuya-globosa.jpg", "badges": ["hit"], "stock": 60},
+    {"id": "prod-glob002", "name": "Туя Глобоса D25-30см", "price": 320, "image": "https://images.prom.ua/4858672644_w640_h640_kulyasta-tuya-globosa.jpg", "stock": 50},
+    {"id": "prod-glob003", "name": "Туя Глобоса D30-35см", "price": 400, "image": "https://images.prom.ua/4858672644_w640_h640_kulyasta-tuya-globosa.jpg", "badges": ["new"], "stock": 45},
+    {"id": "prod-glob004", "name": "Туя Глобоса D35-40см", "price": 500, "image": "https://images.prom.ua/4858672644_w640_h640_kulyasta-tuya-globosa.jpg", "stock": 40},
+    {"id": "prod-glob005", "name": "Туя Глобоса D40-45см", "price": 650, "image": "https://images.prom.ua/4858672644_w640_h640_kulyasta-tuya-globosa.jpg", "badges": ["hit"], "stock": 35},
+    {"id": "prod-glob006", "name": "Туя Глобоса D45-50см", "price": 800, "image": "https://images.prom.ua/4858672644_w640_h640_kulyasta-tuya-globosa.jpg", "stock": 25},
+    {"id": "prod-glob007", "name": "Туя Глобоса D50-60см", "price": 1000, "image": "https://images.prom.ua/4858672644_w640_h640_kulyasta-tuya-globosa.jpg", "badges": ["new"], "stock": 20},
+    {"id": "prod-glob008", "name": "Туя Глобоса D60-70см", "price": 1300, "image": "https://images.prom.ua/4858672644_w640_h640_kulyasta-tuya-globosa.jpg", "stock": 15},
+    {"id": "prod-glob009", "name": "Туя Глобоса D70-80см", "price": 1600, "oldPrice": 1800, "discount": 11, "image": "https://images.prom.ua/4858672644_w640_h640_kulyasta-tuya-globosa.jpg", "badges": ["sale"], "stock": 10},
+    {"id": "prod-glob010", "name": "Туя Глобоса D80-90см", "price": 2000, "image": "https://images.prom.ua/4858672644_w640_h640_kulyasta-tuya-globosa.jpg", "badges": ["hit"], "stock": 8},
+]
+for p in globosa_products:
+    p["category"] = "Куляста Туя Глобоса"
+    p["description"] = f"{p['name']}. Компактна куляста форма, ідеально для альпінаріїв та контейнерів."
+    if "oldPrice" not in p: p["oldPrice"] = None
+    if "discount" not in p: p["discount"] = 0
+    if "badges" not in p: p["badges"] = []
+PRODUCTS.extend(globosa_products)
+
+print("Part 4 loaded: Listopadni (25) + Globosa (10)")
