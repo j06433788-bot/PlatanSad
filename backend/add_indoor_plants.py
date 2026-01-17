@@ -1,0 +1,86 @@
+"""
+Add more indoor plants to the catalog
+"""
+import asyncio
+from database import AsyncSessionLocal, Product
+
+# Extended indoor plants catalog (30 more items)
+new_indoor_plants = [
+    # Фікуси
+    {"id": "prod-kim016", "article": "KIM-016", "name": "Фікус лірата 100-120см", "price": 650, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["hit"], "stock": 10},
+    {"id": "prod-kim017", "article": "KIM-017", "name": "Фікус еластика Робуста 80-100см", "price": 480, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 12},
+    {"id": "prod-kim018", "article": "KIM-018", "name": "Фікус Бенджаміна Даніель 60-80см", "price": 380, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["new"], "stock": 15},
+    
+    # Пальми
+    {"id": "prod-kim019", "article": "KIM-019", "name": "Хамедорея елегантна 60-80см", "price": 520, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["hit"], "stock": 8},
+    {"id": "prod-kim020", "article": "KIM-020", "name": "Кентія 100-120см", "price": 950, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 6},
+    {"id": "prod-kim021", "article": "KIM-021", "name": "Фінікова пальма 80-100см", "price": 700, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["new"], "stock": 8},
+    
+    # Кактуси та сукуленти
+    {"id": "prod-kim022", "article": "KIM-022", "name": "Кактус мікс 15-20см", "price": 150, "old_price": 180, "discount": 17, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["sale"], "stock": 40},
+    {"id": "prod-kim023", "article": "KIM-023", "name": "Ехінокактус Грузона 20-25см", "price": 280, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 15},
+    {"id": "prod-kim024", "article": "KIM-024", "name": "Молочай тригранний 60-80см", "price": 420, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["hit"], "stock": 10},
+    {"id": "prod-kim025", "article": "KIM-025", "name": "Крассула (грошове дерево) 40-50см", "price": 320, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 20},
+    
+    # Декоративнолистяні
+    {"id": "prod-kim026", "article": "KIM-026", "name": "Калатея Медальйон 30-40см", "price": 450, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["new"], "stock": 12},
+    {"id": "prod-kim027", "article": "KIM-027", "name": "Маранта трьохколірна 30-40см", "price": 380, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 15},
+    {"id": "prod-kim028", "article": "KIM-028", "name": "Аглаонема Сільвер Квін 40-50см", "price": 420, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["hit"], "stock": 10},
+    {"id": "prod-kim029", "article": "KIM-029", "name": "Фіттонія червона 20-25см", "price": 180, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 25},
+    {"id": "prod-kim030", "article": "KIM-030", "name": "Колеус мікс 25-30см", "price": 200, "old_price": 250, "discount": 20, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["sale"], "stock": 30},
+    
+    # Ампельні рослини
+    {"id": "prod-kim031", "article": "KIM-031", "name": "Сциндапсус золотистий 40-50см", "price": 280, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["hit"], "stock": 20},
+    {"id": "prod-kim032", "article": "KIM-032", "name": "Циссус ромболистий 50-60см", "price": 250, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 18},
+    {"id": "prod-kim033", "article": "KIM-033", "name": "Плющ звичайний 40-50см", "price": 220, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["new"], "stock": 22},
+    {"id": "prod-kim034", "article": "KIM-034", "name": "Традесканція зебрина 30-40см", "price": 180, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 25},
+    
+    # Квітучі
+    {"id": "prod-kim035", "article": "KIM-035", "name": "Бегонія еліатор червона 25-30см", "price": 320, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["hit"], "stock": 15},
+    {"id": "prod-kim036", "article": "KIM-036", "name": "Цикламен персидський 25-30см", "price": 350, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 12},
+    {"id": "prod-kim037", "article": "KIM-037", "name": "Каланхое Блоссфельда мікс 20-25см", "price": 200, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["new"], "stock": 20},
+    {"id": "prod-kim038", "article": "KIM-038", "name": "Сенполія (фіалка) мікс 15-20см", "price": 150, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 30},
+    {"id": "prod-kim039", "article": "KIM-039", "name": "Азалія індійська 30-40см", "price": 480, "old_price": 550, "discount": 13, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["sale"], "stock": 10},
+    
+    # Орхідеї
+    {"id": "prod-kim040", "article": "KIM-040", "name": "Орхідея Фаленопсис біла 50-60см", "price": 550, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["hit"], "stock": 12},
+    {"id": "prod-kim041", "article": "KIM-041", "name": "Орхідея Фаленопсис рожева 50-60см", "price": 550, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["hit"], "stock": 12},
+    {"id": "prod-kim042", "article": "KIM-042", "name": "Орхідея Фаленопсис мікс 45-55см", "price": 500, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "stock": 15},
+    {"id": "prod-kim043", "article": "KIM-043", "name": "Орхідея Дендробіум 50-60см", "price": 620, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["new"], "stock": 8},
+    
+    # Великі рослини
+    {"id": "prod-kim044", "article": "KIM-044", "name": "Стрелітція королівська 100-120см", "price": 1200, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["hit"], "stock": 5},
+    {"id": "prod-kim045", "article": "KIM-045", "name": "Філодендрон монстера делісіоза 80-100см", "price": 750, "old_price": 850, "discount": 12, "image": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg", "badges": ["sale"], "stock": 8},
+]
+
+# Add descriptions
+for p in new_indoor_plants:
+    p["category"] = "Кімнатні рослини"
+    p["description"] = f"{p['name']}. Декоративна кімнатна рослина для дому та офісу. Очищає повітря."
+    if "old_price" not in p:
+        p["old_price"] = None
+    if "discount" not in p:
+        p["discount"] = 0
+    if "badges" not in p:
+        p["badges"] = []
+
+async def add_plants():
+    print(f"🌿 Додавання {len(new_indoor_plants)} кімнатних рослин...")
+    
+    async with AsyncSessionLocal() as session:
+        count = 0
+        for prod_data in new_indoor_plants:
+            try:
+                product = Product(**prod_data)
+                session.add(product)
+                count += 1
+                if count % 10 == 0:
+                    await session.commit()
+                    print(f"  ✅ {count}/{len(new_indoor_plants)}")
+            except Exception as e:
+                print(f"  ⚠️  {prod_data['id']}: {str(e)[:80]}")
+        
+        await session.commit()
+        print(f"✅ Додано {count} кімнатних рослин!")
+
+asyncio.run(add_plants())
