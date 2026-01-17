@@ -8,7 +8,7 @@ from database import Product, Category
 from dotenv import load_dotenv
 from pathlib import Path
 
-ROOT_DIR = Path(__file__).parent
+ROOT_DIR = Path("/app/backend")
 load_dotenv(ROOT_DIR / '.env')
 
 # CATEGORIES
