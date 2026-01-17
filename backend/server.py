@@ -1197,7 +1197,7 @@ async def health_check(db: AsyncSession = Depends(get_db)):
 
 from liqpay_service import liqpay_service
 
-@api_router.post("/liqpay/create-checkout")
+@api_router.get("/liqpay/create-checkout")
 async def create_liqpay_checkout(
     order_id: str = Query(..., description="Order ID"),
     amount: float = Query(..., description="Payment amount"),
