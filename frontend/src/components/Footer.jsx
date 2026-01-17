@@ -18,41 +18,41 @@ const Footer = () => {
         />
 
         {/* Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-3 py-3 md:py-6">
-          <div className="flex flex-col items-center text-center space-y-2 md:space-y-3">
+        <div className="relative z-10 max-w-7xl mx-auto px-4 py-6 md:py-8">
+          <div className="flex flex-col items-center text-center space-y-4 md:space-y-5">
             
-            {/* Phone numbers - horizontal on mobile */}
-            <div className="flex items-center justify-center gap-2 sm:gap-4 flex-wrap">
+            {/* Phone numbers - horizontal on mobile with better size */}
+            <div className="flex items-center justify-center gap-3 sm:gap-5 flex-wrap">
               <a 
                 href="tel:+380636507449" 
-                className="text-white hover:text-green-400 transition-colors font-semibold text-xs sm:text-sm md:text-base"
+                className="text-white hover:text-green-400 transition-colors font-semibold text-sm sm:text-base md:text-lg"
                 data-testid="footer-phone-1"
               >
                 +380 (63) 650-74-49
               </a>
-              <span className="text-gray-500 text-sm">•</span>
+              <span className="text-gray-500 text-base">•</span>
               <a 
                 href="tel:+380952510347" 
-                className="text-white hover:text-green-400 transition-colors font-semibold text-xs sm:text-sm md:text-base"
+                className="text-white hover:text-green-400 transition-colors font-semibold text-sm sm:text-base md:text-lg"
                 data-testid="footer-phone-2"
               >
                 +380 (95) 251-03-47
               </a>
             </div>
 
-            {/* Payment methods - horizontal strip */}
-            <div className="flex flex-col items-center gap-1 md:gap-2">
-              <p className="text-gray-400 text-[9px] sm:text-[10px] md:text-xs">Приймаємо до оплати:</p>
+            {/* Payment methods - horizontal strip with better visibility */}
+            <div className="flex flex-col items-center gap-2 md:gap-3">
+              <p className="text-gray-400 text-xs sm:text-sm md:text-base">Приймаємо до оплати:</p>
               <div className="flex items-center justify-center">
-                <img src="/mastercard.webp" alt="Mastercard" className="h-5 sm:h-6 md:h-7 w-auto object-contain opacity-90 hover:opacity-100 transition-opacity" />
+                <img src="/mastercard.webp" alt="Mastercard" className="h-7 sm:h-8 md:h-9 w-auto object-contain opacity-90 hover:opacity-100 transition-opacity" />
               </div>
             </div>
             
-            {/* Links - horizontal on all screens */}
-            <div className="flex items-center justify-center gap-2 sm:gap-3 text-[10px] sm:text-xs md:text-sm flex-wrap">
+            {/* Links - horizontal on all screens with better size */}
+            <div className="flex items-center justify-center gap-4 sm:gap-5 text-xs sm:text-sm md:text-base flex-wrap">
               <button 
                 onClick={() => setIsAboutModalOpen(true)}
-                className="text-green-400 hover:text-green-300 transition-colors"
+                className="text-green-400 hover:text-green-300 transition-colors font-medium"
                 data-testid="about-nursery-btn"
               >
                 Про розсадник
@@ -60,30 +60,30 @@ const Footer = () => {
               <span className="text-gray-600">•</span>
               <button 
                 onClick={() => navigate('/contacts')}
-                className="text-green-400 hover:text-green-300 transition-colors"
+                className="text-green-400 hover:text-green-300 transition-colors font-medium"
                 data-testid="contact-info-btn"
               >
                 Контакти
               </button>
             </div>
             
-            {/* Copyright - minimal */}
-            <div className="pt-1 md:pt-2">
-              <p className="text-gray-400 text-[9px] sm:text-xs md:text-sm">
+            {/* Copyright - better visibility */}
+            <div className="pt-2 md:pt-3">
+              <p className="text-gray-400 text-xs sm:text-sm md:text-base">
                 © 2026 PlatanSad
               </p>
             </div>
           </div>
         </div>
 
-        {/* Scroll to top button */}
+        {/* Scroll to top button - better positioning for mobile */}
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-          className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 w-10 h-10 sm:w-11 sm:h-11 bg-green-600 hover:bg-green-700 rounded-full flex items-center justify-center shadow-xl transition-all duration-300 hover:scale-110 active:scale-95 z-50 group"
+          className="fixed bottom-24 sm:bottom-8 right-4 sm:right-6 w-12 h-12 sm:w-13 sm:h-13 bg-green-600 hover:bg-green-700 rounded-full flex items-center justify-center shadow-xl transition-all duration-300 hover:scale-110 active:scale-95 z-50 group"
           aria-label="Вгору"
           data-testid="scroll-to-top"
         >
-          <ChevronUp className="w-5 h-5 sm:w-6 sm:h-6 text-white group-hover:animate-bounce" />
+          <ChevronUp className="w-6 h-6 sm:w-7 sm:h-7 text-white group-hover:animate-bounce" />
         </button>
       </footer>
 
