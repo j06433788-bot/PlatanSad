@@ -5,9 +5,8 @@ import { ordersApi } from '../api/ordersApi';
 import { liqpayApi } from '../api/liqpayApi';
 import { toast } from 'sonner';
 import { 
-  ArrowLeft, ShoppingBag, MapPin, Package, CreditCard, 
-  Truck, Wallet, CheckCircle2, Shield, Clock, ChevronRight,
-  Banknote, Smartphone
+  ArrowLeft, MapPin, Package, CreditCard, 
+  Truck, CheckCircle2, ChevronDown, Banknote, X
 } from 'lucide-react';
 import { searchCities, getWarehouses, popularCities } from '../api/novaPoshtaApi';
 
@@ -15,9 +14,7 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const { cartItems, cartTotal, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
-  const [showLiqPayForm, setShowLiqPayForm] = useState(false);
   const [liqpayData, setLiqpayData] = useState(null);
-  const [currentStep, setCurrentStep] = useState(1);
   
   const [formData, setFormData] = useState({
     customerName: '',
@@ -39,27 +36,29 @@ const CheckoutPage = () => {
   const [warehouses, setWarehouses] = useState([]);
   const [showCityDropdown, setShowCityDropdown] = useState(false);
   const [showWarehouseDropdown, setShowWarehouseDropdown] = useState(false);
+  const [loadingCities, setLoadingCities] = useState(false);
   const [loadingWarehouses, setLoadingWarehouses] = useState(false);
   
   const cityInputRef = useRef(null);
   const warehouseInputRef = useRef(null);
   const liqpayFormRef = useRef(null);
 
-  // Пошук міст при введенні
+  // Пошук міст
   useEffect(() => {
     const searchDebounce = setTimeout(async () => {
       if (citySearch.length >= 2) {
+        setLoadingCities(true);
         const results = await searchCities(citySearch);
         setCities(results);
+        setLoadingCities(false);
       } else {
         setCities([]);
       }
     }, 300);
-
     return () => clearTimeout(searchDebounce);
   }, [citySearch]);
 
-  // Завантаження відділень при виборі міста
+  // Завантаження відділень
   useEffect(() => {
     const loadWarehouses = async () => {
       if (formData.city?.ref) {
@@ -69,11 +68,10 @@ const CheckoutPage = () => {
         setLoadingWarehouses(false);
       }
     };
-
     loadWarehouses();
   }, [formData.city]);
 
-  // Закриття dropdown при кліку поза ним
+  // Закриття dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (cityInputRef.current && !cityInputRef.current.contains(event.target)) {
@@ -83,12 +81,11 @@ const CheckoutPage = () => {
         setShowWarehouseDropdown(false);
       }
     };
-
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Auto-submit LiqPay form when data is ready
+  // LiqPay form submit
   useEffect(() => {
     if (liqpayData && liqpayFormRef.current) {
       liqpayFormRef.current.submit();
@@ -97,23 +94,17 @@ const CheckoutPage = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8 px-4">
-        <div className="max-w-md mx-auto">
-          <div className="bg-white rounded-3xl shadow-xl p-8 text-center">
-            <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-green-100 to-emerald-100 rounded-full flex items-center justify-center">
-              <ShoppingBag className="w-12 h-12 text-green-500" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-3">Кошик порожній</h2>
-            <p className="text-gray-500 mb-6">
-              Додайте товари до кошика перед оформленням
-            </p>
-            <button
-              onClick={() => navigate('/catalog')}
-              className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-4 rounded-2xl font-semibold shadow-lg shadow-green-500/30 active:scale-[0.98] transition-all"
-            >
-              Перейти до каталогу
-            </button>
-          </div>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl p-8 text-center max-w-sm w-full shadow-lg">
+          <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-gray-800 mb-2">Кошик порожній</h2>
+          <p className="text-gray-500 mb-6 text-sm">Додайте товари перед оформленням</p>
+          <button
+            onClick={() => navigate('/catalog')}
+            className="w-full bg-green-500 text-white py-3 rounded-xl font-semibold"
+          >
+            До каталогу
+          </button>
         </div>
       </div>
     );
@@ -121,40 +112,18 @@ const CheckoutPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
     if (name === 'customerPhone') {
-      if (!value.startsWith('+380')) {
-        return;
-      }
+      if (!value.startsWith('+380')) return;
       const phoneDigits = value.slice(4).replace(/\D/g, '');
-      const formattedPhone = '+380' + phoneDigits.slice(0, 9);
-      
-      setFormData(prev => ({
-        ...prev,
-        [name]: formattedPhone
-      }));
+      setFormData(prev => ({ ...prev, [name]: '+380' + phoneDigits.slice(0, 9) }));
     } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }));
+      setFormData(prev => ({ ...prev, [name]: value }));
     }
-    
-    if (errors[name]) {
-      setErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
+    if (errors[name]) setErrors(prev => ({ ...prev, [name]: '' }));
   };
 
   const handleCitySelect = (city) => {
-    setFormData(prev => ({
-      ...prev,
-      city: city,
-      warehouse: null,
-      deliveryAddress: ''
-    }));
+    setFormData(prev => ({ ...prev, city, warehouse: null, deliveryAddress: '' }));
     setCitySearch(city.name);
     setShowCityDropdown(false);
     setWarehouses([]);
@@ -163,7 +132,7 @@ const CheckoutPage = () => {
   const handleWarehouseSelect = (warehouse) => {
     setFormData(prev => ({
       ...prev,
-      warehouse: warehouse,
+      warehouse,
       deliveryAddress: `${formData.city.name}, ${warehouse.description}`
     }));
     setShowWarehouseDropdown(false);
@@ -171,46 +140,26 @@ const CheckoutPage = () => {
 
   const validateForm = () => {
     const newErrors = {};
-
-    if (!formData.customerName.trim()) {
-      newErrors.customerName = "Введіть ім'я";
-    }
-
-    if (!formData.customerPhone.trim() || formData.customerPhone === '+380') {
-      newErrors.customerPhone = 'Введіть телефон';
-    } else if (formData.customerPhone.length < 13) {
-      newErrors.customerPhone = 'Введіть повний номер';
-    }
-
-    if (!formData.customerEmail.trim()) {
-      newErrors.customerEmail = 'Введіть email';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.customerEmail)) {
-      newErrors.customerEmail = 'Невірний формат';
-    }
-
+    if (!formData.customerName.trim()) newErrors.customerName = "Обов'язкове поле";
+    if (!formData.customerPhone.trim() || formData.customerPhone.length < 13) 
+      newErrors.customerPhone = 'Введіть номер';
+    if (!formData.customerEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.customerEmail)) 
+      newErrors.customerEmail = 'Невірний email';
     if (formData.deliveryMethod === 'nova_poshta') {
-      if (!formData.city) {
-        newErrors.city = 'Оберіть місто';
-      }
-      if (!formData.warehouse) {
-        newErrors.warehouse = 'Оберіть відділення';
-      }
+      if (!formData.city) newErrors.city = 'Оберіть місто';
+      if (!formData.warehouse) newErrors.warehouse = 'Оберіть відділення';
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validateForm()) {
-      toast.error('Заповніть всі обов\'язкові поля');
+      toast.error('Заповніть всі поля');
       return;
     }
-
     setLoading(true);
-
     try {
       const orderData = {
         ...formData,
@@ -223,491 +172,342 @@ const CheckoutPage = () => {
         })),
         totalAmount: cartTotal,
         userId: 'guest',
-        paymentStatus: formData.paymentMethod === 'liqpay' ? 'pending' : 'pending'
+        paymentStatus: 'pending'
       };
 
       const order = await ordersApi.createOrder(orderData);
       
-      // If LiqPay payment selected, create checkout
       if (formData.paymentMethod === 'liqpay') {
         const resultUrl = `${window.location.origin}/order-success/${order.id}`;
-        const serverUrl = `${process.env.REACT_APP_BACKEND_URL || ''}/api/liqpay/callback`;
-        
         const checkout = await liqpayApi.createCheckout(
-          order.id,
-          cartTotal,
-          `Замовлення #${order.id} - PlatanSad`,
-          resultUrl,
-          serverUrl
+          order.id, cartTotal, `Замовлення #${order.id}`, resultUrl
         );
-        
         setLiqpayData(checkout);
-        setShowLiqPayForm(true);
-        
-        // Don't clear cart yet - will be cleared after successful payment
-        toast.success('Перенаправлення на сторінку оплати...');
+        toast.success('Перенаправлення на оплату...');
       } else {
-        // Cash on delivery - clear cart and redirect
         await clearCart();
-        toast.success('Замовлення успішно оформлено!');
+        toast.success('Замовлення оформлено!');
         navigate(`/order-success/${order.id}`);
       }
     } catch (error) {
-      console.error('Error creating order:', error);
-      toast.error('Помилка оформлення. Спробуйте ще раз.');
+      toast.error('Помилка оформлення');
     } finally {
       setLoading(false);
     }
   };
 
-  // Progress Steps Component
-  const ProgressSteps = () => (
-    <div className="flex items-center justify-center gap-2 mb-6">
-      {[1, 2, 3].map((step) => (
-        <div key={step} className="flex items-center">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all ${
-            currentStep >= step 
-              ? 'bg-green-500 text-white' 
-              : 'bg-gray-200 text-gray-500'
-          }`}>
-            {currentStep > step ? <CheckCircle2 className="w-5 h-5" /> : step}
-          </div>
-          {step < 3 && (
-            <div className={`w-8 h-1 mx-1 rounded ${
-              currentStep > step ? 'bg-green-500' : 'bg-gray-200'
-            }`} />
-          )}
-        </div>
-      ))}
-    </div>
-  );
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white pb-32 lg:pb-8">
-      {/* Hidden LiqPay Form */}
-      {showLiqPayForm && liqpayData && (
-        <form 
-          ref={liqpayFormRef}
-          method="POST" 
-          action={liqpayData.checkout_url}
-          acceptCharset="utf-8"
-          className="hidden"
-        >
+    <div className="min-h-screen bg-gray-50">
+      {/* LiqPay Form */}
+      {liqpayData && (
+        <form ref={liqpayFormRef} method="POST" action={liqpayData.checkout_url} className="hidden">
           <input type="hidden" name="data" value={liqpayData.data} />
           <input type="hidden" name="signature" value={liqpayData.signature} />
         </form>
       )}
 
       {/* Header */}
-      <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => navigate('/cart')}
-              className="p-2 -ml-2 hover:bg-gray-100 rounded-xl transition-colors"
-            >
-              <ArrowLeft className="w-5 h-5 text-gray-600" />
-            </button>
-            <h1 className="text-lg font-bold text-gray-800">Оформлення</h1>
-          </div>
+      <div className="sticky top-0 z-50 bg-white border-b">
+        <div className="flex items-center gap-3 px-4 py-3">
+          <button onClick={() => navigate('/cart')} className="p-1">
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <h1 className="font-bold text-lg">Оформлення</h1>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-4">
-        {/* Mobile Progress */}
-        <div className="lg:hidden">
-          <ProgressSteps />
+      <div className="p-4 pb-32">
+        {/* Order Summary */}
+        <div className="bg-white rounded-xl p-4 mb-4 shadow-sm">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-gray-600">Товарів: {cartItems.length}</span>
+            <span className="text-xl font-bold text-green-600">{cartTotal.toLocaleString()} ₴</span>
+          </div>
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {cartItems.slice(0, 4).map((item) => (
+              <img key={item.id} src={item.productImage} alt="" 
+                className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
+            ))}
+            {cartItems.length > 4 && (
+              <div className="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                <span className="text-sm text-gray-500">+{cartItems.length - 4}</span>
+              </div>
+            )}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Form */}
-          <div className="lg:col-span-2 space-y-4">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              
-              {/* Contact Card */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="bg-gradient-to-r from-green-500 to-emerald-500 px-4 py-3">
-                  <h2 className="text-white font-semibold flex items-center gap-2">
-                    <Smartphone className="w-5 h-5" />
-                    Контактні дані
-                  </h2>
-                </div>
-                <div className="p-4 space-y-4">
-                  {/* Name */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                      Ім'я та прізвище
-                    </label>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Contact */}
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <h2 className="font-semibold mb-3 flex items-center gap-2">
+              <span className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs">1</span>
+              Контактні дані
+            </h2>
+            <div className="space-y-3">
+              <div>
+                <input
+                  type="text"
+                  name="customerName"
+                  value={formData.customerName}
+                  onChange={handleChange}
+                  placeholder="Ім'я та прізвище *"
+                  className={`w-full px-4 py-3 bg-gray-50 rounded-xl border-2 ${errors.customerName ? 'border-red-400' : 'border-transparent'} focus:border-green-500 focus:bg-white outline-none`}
+                />
+                {errors.customerName && <p className="text-red-500 text-xs mt-1">{errors.customerName}</p>}
+              </div>
+              <div>
+                <input
+                  type="tel"
+                  name="customerPhone"
+                  value={formData.customerPhone}
+                  onChange={handleChange}
+                  placeholder="+380XXXXXXXXX *"
+                  className={`w-full px-4 py-3 bg-gray-50 rounded-xl border-2 ${errors.customerPhone ? 'border-red-400' : 'border-transparent'} focus:border-green-500 focus:bg-white outline-none`}
+                />
+                {errors.customerPhone && <p className="text-red-500 text-xs mt-1">{errors.customerPhone}</p>}
+              </div>
+              <div>
+                <input
+                  type="email"
+                  name="customerEmail"
+                  value={formData.customerEmail}
+                  onChange={handleChange}
+                  placeholder="Email *"
+                  className={`w-full px-4 py-3 bg-gray-50 rounded-xl border-2 ${errors.customerEmail ? 'border-red-400' : 'border-transparent'} focus:border-green-500 focus:bg-white outline-none`}
+                />
+                {errors.customerEmail && <p className="text-red-500 text-xs mt-1">{errors.customerEmail}</p>}
+              </div>
+            </div>
+          </div>
+
+          {/* Delivery */}
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <h2 className="font-semibold mb-3 flex items-center gap-2">
+              <span className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs">2</span>
+              Доставка
+            </h2>
+            
+            {/* Delivery Method */}
+            <div className="flex gap-2 mb-4">
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, deliveryMethod: 'nova_poshta' }))}
+                className={`flex-1 p-3 rounded-xl border-2 flex items-center gap-2 ${
+                  formData.deliveryMethod === 'nova_poshta' ? 'border-green-500 bg-green-50' : 'border-gray-200'
+                }`}
+              >
+                <Truck className={`w-5 h-5 ${formData.deliveryMethod === 'nova_poshta' ? 'text-green-600' : 'text-gray-400'}`} />
+                <span className="text-sm font-medium">Нова Пошта</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, deliveryMethod: 'self_pickup' }))}
+                className={`flex-1 p-3 rounded-xl border-2 flex items-center gap-2 ${
+                  formData.deliveryMethod === 'self_pickup' ? 'border-green-500 bg-green-50' : 'border-gray-200'
+                }`}
+              >
+                <MapPin className={`w-5 h-5 ${formData.deliveryMethod === 'self_pickup' ? 'text-green-600' : 'text-gray-400'}`} />
+                <span className="text-sm font-medium">Самовивіз</span>
+              </button>
+            </div>
+
+            {/* Nova Poshta Fields */}
+            {formData.deliveryMethod === 'nova_poshta' && (
+              <div className="space-y-3">
+                {/* City */}
+                <div className="relative" ref={cityInputRef}>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                     <input
                       type="text"
-                      name="customerName"
-                      value={formData.customerName}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3.5 bg-gray-50 border-2 rounded-xl focus:outline-none focus:ring-0 focus:border-green-500 focus:bg-white transition-all ${
-                        errors.customerName ? 'border-red-400 bg-red-50' : 'border-transparent'
-                      }`}
-                      placeholder="Іван Іваненко"
-                      data-testid="customer-name-input"
+                      value={citySearch}
+                      onChange={(e) => {
+                        setCitySearch(e.target.value);
+                        setShowCityDropdown(true);
+                        setFormData(prev => ({ ...prev, city: null, warehouse: null }));
+                      }}
+                      onFocus={() => setShowCityDropdown(true)}
+                      placeholder="Місто / село *"
+                      className={`w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl border-2 ${errors.city ? 'border-red-400' : 'border-transparent'} focus:border-green-500 focus:bg-white outline-none`}
                     />
-                    {errors.customerName && (
-                      <p className="mt-1.5 text-xs text-red-500 font-medium">{errors.customerName}</p>
+                    {formData.city && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCitySearch('');
+                          setFormData(prev => ({ ...prev, city: null, warehouse: null }));
+                        }}
+                        className="absolute right-3 top-1/2 -translate-y-1/2"
+                      >
+                        <X className="w-4 h-4 text-gray-400" />
+                      </button>
                     )}
                   </div>
-
-                  {/* Phone */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                      Телефон
-                    </label>
-                    <input
-                      type="tel"
-                      name="customerPhone"
-                      value={formData.customerPhone}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3.5 bg-gray-50 border-2 rounded-xl focus:outline-none focus:ring-0 focus:border-green-500 focus:bg-white transition-all ${
-                        errors.customerPhone ? 'border-red-400 bg-red-50' : 'border-transparent'
-                      }`}
-                      placeholder="+380 XX XXX XX XX"
-                      data-testid="customer-phone-input"
-                    />
-                    {errors.customerPhone && (
-                      <p className="mt-1.5 text-xs text-red-500 font-medium">{errors.customerPhone}</p>
-                    )}
-                  </div>
-
-                  {/* Email */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      name="customerEmail"
-                      value={formData.customerEmail}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3.5 bg-gray-50 border-2 rounded-xl focus:outline-none focus:ring-0 focus:border-green-500 focus:bg-white transition-all ${
-                        errors.customerEmail ? 'border-red-400 bg-red-50' : 'border-transparent'
-                      }`}
-                      placeholder="example@email.com"
-                      data-testid="customer-email-input"
-                    />
-                    {errors.customerEmail && (
-                      <p className="mt-1.5 text-xs text-red-500 font-medium">{errors.customerEmail}</p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Delivery Card */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="bg-gradient-to-r from-blue-500 to-indigo-500 px-4 py-3">
-                  <h2 className="text-white font-semibold flex items-center gap-2">
-                    <Truck className="w-5 h-5" />
-                    Доставка
-                  </h2>
-                </div>
-                <div className="p-4 space-y-3">
-                  {/* Delivery Methods */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => handleChange({ target: { name: 'deliveryMethod', value: 'nova_poshta' }})}
-                      className={`p-4 rounded-xl border-2 transition-all text-left ${
-                        formData.deliveryMethod === 'nova_poshta'
-                          ? 'border-green-500 bg-green-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <Package className={`w-6 h-6 mb-2 ${formData.deliveryMethod === 'nova_poshta' ? 'text-green-600' : 'text-gray-400'}`} />
-                      <div className="font-semibold text-sm text-gray-800">Нова Пошта</div>
-                      <div className="text-xs text-gray-500 mt-0.5">До відділення</div>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleChange({ target: { name: 'deliveryMethod', value: 'self_pickup' }})}
-                      className={`p-4 rounded-xl border-2 transition-all text-left ${
-                        formData.deliveryMethod === 'self_pickup'
-                          ? 'border-green-500 bg-green-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <MapPin className={`w-6 h-6 mb-2 ${formData.deliveryMethod === 'self_pickup' ? 'text-green-600' : 'text-gray-400'}`} />
-                      <div className="font-semibold text-sm text-gray-800">Самовивіз</div>
-                      <div className="text-xs text-gray-500 mt-0.5">смт. Смига</div>
-                    </button>
-                  </div>
-
-                  {/* Nova Poshta Fields */}
-                  {formData.deliveryMethod === 'nova_poshta' && (
-                    <div className="space-y-3 pt-2">
-                      {/* City Search */}
-                      <div className="relative" ref={cityInputRef}>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">Місто</label>
-                        <div className="relative">
-                          <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                          <input
-                            type="text"
-                            value={citySearch}
-                            onChange={(e) => {
-                              setCitySearch(e.target.value);
-                              setShowCityDropdown(true);
-                              setFormData(prev => ({ ...prev, city: null, warehouse: null }));
-                            }}
-                            onFocus={() => setShowCityDropdown(true)}
-                            className={`w-full pl-10 pr-4 py-3.5 bg-gray-50 border-2 rounded-xl focus:outline-none focus:border-green-500 focus:bg-white transition-all ${
-                              errors.city ? 'border-red-400 bg-red-50' : 'border-transparent'
-                            }`}
-                            placeholder="Почніть вводити..."
-                            data-testid="city-search-input"
-                          />
-                        </div>
-                        {errors.city && <p className="mt-1.5 text-xs text-red-500 font-medium">{errors.city}</p>}
-
-                        {/* City Dropdown */}
-                        {showCityDropdown && (citySearch.length >= 2 ? cities.length > 0 : true) && (
-                          <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-52 overflow-y-auto">
-                            {citySearch.length < 2 && (
-                              <>
-                                <div className="px-4 py-2 bg-gray-50 text-xs font-semibold text-gray-500 sticky top-0">
-                                  Популярні міста
-                                </div>
-                                {popularCities.map((cityName, index) => (
-                                  <div
-                                    key={index}
-                                    onClick={async () => {
-                                      setCitySearch(cityName);
-                                      const results = await searchCities(cityName);
-                                      if (results.length > 0) handleCitySelect(results[0]);
-                                    }}
-                                    className="px-4 py-3 hover:bg-green-50 cursor-pointer flex items-center gap-3"
-                                  >
-                                    <MapPin className="w-4 h-4 text-gray-400" />
-                                    <span className="text-sm">{cityName}</span>
-                                  </div>
-                                ))}
-                              </>
-                            )}
-                            {citySearch.length >= 2 && cities.map((city) => (
-                              <div
-                                key={city.ref}
-                                onClick={() => handleCitySelect(city)}
-                                className="px-4 py-3 hover:bg-green-50 cursor-pointer border-b border-gray-50 last:border-0"
-                              >
-                                <div className="font-medium text-sm text-gray-800">{city.name}</div>
-                                <div className="text-xs text-gray-500">{city.area}</div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Warehouse Select */}
-                      {formData.city && (
-                        <div className="relative" ref={warehouseInputRef}>
-                          <label className="block text-sm font-medium text-gray-700 mb-1.5">Відділення</label>
-                          <div className="relative">
-                            <Package className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                            <input
-                              type="text"
-                              value={formData.warehouse ? formData.warehouse.description : ''}
-                              onFocus={() => setShowWarehouseDropdown(true)}
-                              readOnly
-                              className={`w-full pl-10 pr-4 py-3.5 bg-gray-50 border-2 rounded-xl cursor-pointer focus:outline-none focus:border-green-500 focus:bg-white transition-all ${
-                                errors.warehouse ? 'border-red-400 bg-red-50' : 'border-transparent'
-                              }`}
-                              placeholder={loadingWarehouses ? "Завантаження..." : "Оберіть відділення"}
-                              data-testid="warehouse-select-input"
-                            />
-                            <ChevronRight className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                          </div>
-                          {errors.warehouse && <p className="mt-1.5 text-xs text-red-500 font-medium">{errors.warehouse}</p>}
-
-                          {/* Warehouse Dropdown */}
-                          {showWarehouseDropdown && warehouses.length > 0 && (
-                            <div className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-xl shadow-xl max-h-52 overflow-y-auto">
-                              {warehouses.map((warehouse) => (
-                                <div
-                                  key={warehouse.ref}
-                                  onClick={() => handleWarehouseSelect(warehouse)}
-                                  className="px-4 py-3 hover:bg-green-50 cursor-pointer border-b border-gray-50 last:border-0"
-                                >
-                                  <div className="font-medium text-sm text-gray-800">{warehouse.description}</div>
-                                  <div className="text-xs text-gray-500">{warehouse.shortAddress}</div>
-                                </div>
-                              ))}
+                  {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
+                  
+                  {/* City Dropdown */}
+                  {showCityDropdown && (
+                    <div className="absolute z-50 w-full mt-1 bg-white border rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                      {loadingCities ? (
+                        <div className="p-3 text-center text-gray-500 text-sm">Пошук...</div>
+                      ) : citySearch.length < 2 ? (
+                        <>
+                          <div className="px-3 py-2 bg-gray-50 text-xs text-gray-500 font-medium">Популярні міста</div>
+                          {popularCities.slice(0, 8).map((city, i) => (
+                            <div
+                              key={i}
+                              onClick={async () => {
+                                setCitySearch(city);
+                                const results = await searchCities(city);
+                                if (results.length > 0) handleCitySelect(results[0]);
+                              }}
+                              className="px-3 py-2.5 hover:bg-gray-50 cursor-pointer text-sm"
+                            >
+                              {city}
                             </div>
-                          )}
-                        </div>
+                          ))}
+                        </>
+                      ) : cities.length > 0 ? (
+                        cities.map((city) => (
+                          <div
+                            key={city.ref}
+                            onClick={() => handleCitySelect(city)}
+                            className="px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b last:border-0"
+                          >
+                            <div className="text-sm font-medium">{city.name}</div>
+                            <div className="text-xs text-gray-500">{city.area} обл.</div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="p-3 text-center text-gray-500 text-sm">Не знайдено</div>
                       )}
                     </div>
                   )}
                 </div>
-              </div>
 
-              {/* Payment Card */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div className="bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-3">
-                  <h2 className="text-white font-semibold flex items-center gap-2">
-                    <Wallet className="w-5 h-5" />
-                    Оплата
-                  </h2>
-                </div>
-                <div className="p-4 space-y-3">
-                  {/* Payment Methods */}
-                  <button
-                    type="button"
-                    onClick={() => handleChange({ target: { name: 'paymentMethod', value: 'cash_on_delivery' }})}
-                    className={`w-full p-4 rounded-xl border-2 transition-all flex items-center gap-4 ${
-                      formData.paymentMethod === 'cash_on_delivery'
-                        ? 'border-green-500 bg-green-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                      formData.paymentMethod === 'cash_on_delivery' ? 'bg-green-500' : 'bg-gray-100'
-                    }`}>
-                      <Banknote className={`w-6 h-6 ${formData.paymentMethod === 'cash_on_delivery' ? 'text-white' : 'text-gray-400'}`} />
-                    </div>
-                    <div className="text-left flex-1">
-                      <div className="font-semibold text-gray-800">Накладений платіж</div>
-                      <div className="text-xs text-gray-500">Оплата при отриманні</div>
-                    </div>
-                    {formData.paymentMethod === 'cash_on_delivery' && (
-                      <CheckCircle2 className="w-6 h-6 text-green-500" />
-                    )}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => handleChange({ target: { name: 'paymentMethod', value: 'liqpay' }})}
-                    className={`w-full p-4 rounded-xl border-2 transition-all flex items-center gap-4 ${
-                      formData.paymentMethod === 'liqpay'
-                        ? 'border-green-500 bg-green-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                      formData.paymentMethod === 'liqpay' ? 'bg-[#7AB72B]' : 'bg-gray-100'
-                    }`}>
-                      <CreditCard className={`w-6 h-6 ${formData.paymentMethod === 'liqpay' ? 'text-white' : 'text-gray-400'}`} />
-                    </div>
-                    <div className="text-left flex-1">
-                      <div className="font-semibold text-gray-800 flex items-center gap-2">
-                        LiqPay
-                        <span className="text-[10px] bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded font-bold">ТЕСТ</span>
+                {/* Warehouse */}
+                {formData.city && (
+                  <div className="relative" ref={warehouseInputRef}>
+                    <div 
+                      onClick={() => setShowWarehouseDropdown(true)}
+                      className={`w-full px-4 py-3 bg-gray-50 rounded-xl border-2 ${errors.warehouse ? 'border-red-400' : 'border-transparent'} cursor-pointer flex items-center justify-between`}
+                    >
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <Package className="w-5 h-5 text-gray-400 flex-shrink-0" />
+                        <span className={`truncate ${formData.warehouse ? 'text-gray-800' : 'text-gray-400'}`}>
+                          {loadingWarehouses ? 'Завантаження...' : formData.warehouse?.description || 'Відділення *'}
+                        </span>
                       </div>
-                      <div className="text-xs text-gray-500">Visa, Mastercard, Apple Pay</div>
+                      <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
                     </div>
-                    {formData.paymentMethod === 'liqpay' && (
-                      <CheckCircle2 className="w-6 h-6 text-green-500" />
+                    {errors.warehouse && <p className="text-red-500 text-xs mt-1">{errors.warehouse}</p>}
+                    
+                    {/* Warehouse Dropdown */}
+                    {showWarehouseDropdown && warehouses.length > 0 && (
+                      <div className="absolute z-50 w-full mt-1 bg-white border rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                        {warehouses.map((warehouse) => (
+                          <div
+                            key={warehouse.ref}
+                            onClick={() => handleWarehouseSelect(warehouse)}
+                            className="px-3 py-2.5 hover:bg-gray-50 cursor-pointer border-b last:border-0"
+                          >
+                            <div className="text-sm">{warehouse.description}</div>
+                          </div>
+                        ))}
+                      </div>
                     )}
-                  </button>
-
-                  {/* LiqPay Info */}
-                  {formData.paymentMethod === 'liqpay' && (
-                    <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 mt-3">
-                      <p className="text-xs text-yellow-800">
-                        <strong>Тестовий режим:</strong> Використовуйте тестову картку 4242 4242 4242 4242, будь-яку дату та CVV.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Notes */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Коментар (необов'язково)
-                </label>
-                <textarea
-                  name="notes"
-                  value={formData.notes}
-                  onChange={handleChange}
-                  rows="2"
-                  className="w-full px-4 py-3 bg-gray-50 border-2 border-transparent rounded-xl focus:outline-none focus:border-green-500 focus:bg-white transition-all resize-none"
-                  placeholder="Додаткова інформація..."
-                  data-testid="order-notes-input"
-                />
-              </div>
-            </form>
-          </div>
-
-          {/* Order Summary - Desktop */}
-          <div className="hidden lg:block">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-24">
-              <h2 className="text-lg font-bold text-gray-800 mb-4">Ваше замовлення</h2>
-
-              <div className="space-y-3 mb-6 max-h-64 overflow-y-auto">
-                {cartItems.map((item) => (
-                  <div key={item.id} className="flex gap-3">
-                    <img
-                      src={item.productImage}
-                      alt={item.productName}
-                      className="w-14 h-14 object-cover rounded-lg"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-gray-800 line-clamp-1">{item.productName}</div>
-                      <div className="text-xs text-gray-500">{item.quantity} шт × {item.price} ₴</div>
-                    </div>
-                    <div className="text-sm font-semibold text-gray-800">
-                      {(item.price * item.quantity).toFixed(0)} ₴
-                    </div>
                   </div>
-                ))}
+                )}
               </div>
+            )}
 
-              <div className="border-t pt-4 space-y-2">
-                <div className="flex justify-between text-gray-600">
-                  <span>Товари</span>
-                  <span>{cartTotal.toFixed(0)} ₴</span>
-                </div>
-                <div className="flex justify-between text-gray-600">
-                  <span>Доставка</span>
-                  <span className="text-green-600 text-sm">За тарифами</span>
-                </div>
-                <div className="border-t pt-3 flex justify-between text-xl font-bold">
-                  <span>Разом</span>
-                  <span className="text-green-600">{cartTotal.toFixed(0)} ₴</span>
-                </div>
+            {formData.deliveryMethod === 'self_pickup' && (
+              <div className="bg-green-50 p-3 rounded-xl">
+                <p className="text-sm text-green-800">
+                  <strong>Адреса:</strong> смт. Смига, вул. Садова, 15
+                </p>
+                <p className="text-xs text-green-600 mt-1">Пн-Сб: 9:00-18:00</p>
               </div>
-
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                className="w-full mt-6 bg-gradient-to-r from-green-500 to-emerald-500 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? 'Оформлення...' : formData.paymentMethod === 'liqpay' ? 'Оплатити' : 'Підтвердити'}
-              </button>
-
-              <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-500">
-                <Shield className="w-4 h-4 text-green-500" />
-                <span>Безпечна оплата</span>
-              </div>
-            </div>
+            )}
           </div>
-        </div>
+
+          {/* Payment */}
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <h2 className="font-semibold mb-3 flex items-center gap-2">
+              <span className="w-6 h-6 bg-purple-500 text-white rounded-full flex items-center justify-center text-xs">3</span>
+              Оплата
+            </h2>
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, paymentMethod: 'cash_on_delivery' }))}
+                className={`w-full p-3 rounded-xl border-2 flex items-center gap-3 ${
+                  formData.paymentMethod === 'cash_on_delivery' ? 'border-green-500 bg-green-50' : 'border-gray-200'
+                }`}
+              >
+                <Banknote className={`w-6 h-6 ${formData.paymentMethod === 'cash_on_delivery' ? 'text-green-600' : 'text-gray-400'}`} />
+                <div className="text-left flex-1">
+                  <div className="font-medium text-sm">Накладений платіж</div>
+                  <div className="text-xs text-gray-500">Оплата при отриманні</div>
+                </div>
+                {formData.paymentMethod === 'cash_on_delivery' && <CheckCircle2 className="w-5 h-5 text-green-500" />}
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, paymentMethod: 'liqpay' }))}
+                className={`w-full p-3 rounded-xl border-2 flex items-center gap-3 ${
+                  formData.paymentMethod === 'liqpay' ? 'border-green-500 bg-green-50' : 'border-gray-200'
+                }`}
+              >
+                <CreditCard className={`w-6 h-6 ${formData.paymentMethod === 'liqpay' ? 'text-green-600' : 'text-gray-400'}`} />
+                <div className="text-left flex-1">
+                  <div className="font-medium text-sm flex items-center gap-2">
+                    LiqPay
+                    <span className="text-[10px] bg-yellow-200 text-yellow-800 px-1.5 py-0.5 rounded">ТЕСТ</span>
+                  </div>
+                  <div className="text-xs text-gray-500">Visa, Mastercard</div>
+                </div>
+                {formData.paymentMethod === 'liqpay' && <CheckCircle2 className="w-5 h-5 text-green-500" />}
+              </button>
+            </div>
+            
+            {formData.paymentMethod === 'liqpay' && (
+              <div className="mt-3 p-2 bg-yellow-50 rounded-lg">
+                <p className="text-xs text-yellow-700">
+                  Тестова картка: <strong>4242 4242 4242 4242</strong>
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Notes */}
+          <div className="bg-white rounded-xl p-4 shadow-sm">
+            <textarea
+              name="notes"
+              value={formData.notes}
+              onChange={handleChange}
+              placeholder="Коментар до замовлення (необов'язково)"
+              rows="2"
+              className="w-full px-4 py-3 bg-gray-50 rounded-xl border-2 border-transparent focus:border-green-500 focus:bg-white outline-none resize-none text-sm"
+            />
+          </div>
+        </form>
       </div>
 
-      {/* Mobile Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-2xl lg:hidden z-40 safe-area-pb">
+      {/* Fixed Bottom */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-4 shadow-lg">
         <div className="flex items-center gap-4">
-          <div className="flex-1">
+          <div>
             <div className="text-xs text-gray-500">До сплати</div>
-            <div className="text-2xl font-bold text-green-600">{cartTotal.toFixed(0)} ₴</div>
+            <div className="text-2xl font-bold text-green-600">{cartTotal.toLocaleString()} ₴</div>
           </div>
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white py-4 rounded-xl font-bold shadow-lg shadow-green-500/30 active:scale-[0.98] transition-all disabled:opacity-50"
+            className="flex-1 bg-green-500 text-white py-4 rounded-xl font-bold text-base disabled:opacity-50 active:bg-green-600 transition-colors"
           >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <Clock className="w-5 h-5 animate-spin" />
-                Зачекайте...
-              </span>
-            ) : (
-              formData.paymentMethod === 'liqpay' ? 'Оплатити' : 'Підтвердити'
-            )}
+            {loading ? 'Зачекайте...' : 'Оформити замовлення'}
           </button>
         </div>
       </div>
