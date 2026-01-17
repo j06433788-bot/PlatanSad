@@ -75,7 +75,7 @@ export const toast = {
       />
     ), {
       duration: 3000,
-      position: 'top-center',
+      position: 'bottom-center',
     });
   },
 
@@ -90,7 +90,7 @@ export const toast = {
       />
     ), {
       duration: 4000,
-      position: 'top-center',
+      position: 'bottom-center',
     });
   },
 
@@ -105,7 +105,7 @@ export const toast = {
       />
     ), {
       duration: 3000,
-      position: 'top-center',
+      position: 'bottom-center',
     });
   },
 
@@ -120,7 +120,7 @@ export const toast = {
       />
     ), {
       duration: 3000,
-      position: 'top-center',
+      position: 'bottom-center',
     });
   },
 
@@ -134,7 +134,7 @@ export const toast = {
       />
     ), {
       duration: 2000,
-      position: 'top-center',
+      position: 'bottom-center',
     });
   },
 
@@ -149,7 +149,7 @@ export const toast = {
       />
     ), {
       duration: 3000,
-      position: 'top-center',
+      position: 'bottom-center',
     });
   },
 
@@ -164,7 +164,7 @@ export const toast = {
       />
     ), {
       duration: 4000,
-      position: 'top-center',
+      position: 'bottom-center',
     });
   },
 
@@ -172,7 +172,7 @@ export const toast = {
   error: (message) => {
     sonnerToast.error(message, {
       duration: 4000,
-      position: 'top-center',
+      position: 'bottom-center',
     });
   },
 };
