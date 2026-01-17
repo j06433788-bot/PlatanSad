@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { ordersApi } from '../api/ordersApi';
 import { liqpayApi } from '../api/liqpayApi';
-import { toast } from 'sonner';
+import { toast } from '../components/CustomToast';
 import { 
   ArrowLeft, MapPin, Package, CreditCard, 
   Truck, CheckCircle2, ChevronDown, Banknote, X
