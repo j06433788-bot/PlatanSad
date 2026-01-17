@@ -462,6 +462,124 @@ async def get_payment_status(order_id: str):
     }
 
 
+# ==================== ADMIN ENDPOINTS ====================
+
+@api_router.post("/admin/login", response_model=AdminToken)
+async def admin_login(credentials: AdminLogin):
+    """Admin login endpoint"""
+    if not authenticate_admin(credentials.username, credentials.password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    access_token = create_access_token(data={"sub": credentials.username})
+    return AdminToken(access_token=access_token, token_type="bearer")
+
+
+@api_router.get("/admin/dashboard", response_model=DashboardStats)
+async def get_dashboard_stats(current_admin: str = Depends(get_current_admin)):
+    """Get dashboard statistics"""
+    total_products = await db.products.count_documents({})
+    total_orders = await db.orders.count_documents({})
+    pending_orders = await db.orders.count_documents({"status": "pending"})
+    
+    # Calculate revenue
+    pipeline = [
+        {"$match": {"paymentStatus": "paid"}},
+        {"$group": {"_id": None, "total": {"$sum": "$totalAmount"}}}
+    ]
+    revenue_result = await db.orders.aggregate(pipeline).to_list(1)
+    total_revenue = revenue_result[0]["total"] if revenue_result else 0
+    
+    # Recent orders
+    recent_orders = await db.orders.find(
+        {}, {"_id": 0}
+    ).sort("createdAt", -1).limit(10).to_list(10)
+    
+    return DashboardStats(
+        totalProducts=total_products,
+        totalOrders=total_orders,
+        pendingOrders=pending_orders,
+        totalRevenue=total_revenue,
+        recentOrders=recent_orders
+    )
+
+
+@api_router.put("/admin/orders/{order_id}/status")
+async def update_order_status(
+    order_id: str, 
+    status_update: OrderStatusUpdate,
+    current_admin: str = Depends(get_current_admin)
+):
+    """Update order status"""
+    result = await db.orders.update_one(
+        {"id": order_id},
+        {"$set": {"status": status_update.status}}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Order not found")
+    return {"message": "Order status updated", "order_id": order_id, "status": status_update.status}
+
+
+@api_router.get("/admin/orders/stats", response_model=OrderStats)
+async def get_order_stats(current_admin: str = Depends(get_current_admin)):
+    """Get order statistics"""
+    pending = await db.orders.count_documents({"status": "pending"})
+    processing = await db.orders.count_documents({"status": "processing"})
+    shipped = await db.orders.count_documents({"status": "shipped"})
+    delivered = await db.orders.count_documents({"status": "delivered"})
+    cancelled = await db.orders.count_documents({"status": "cancelled"})
+    
+    return OrderStats(
+        pending=pending,
+        processing=processing,
+        shipped=shipped,
+        delivered=delivered,
+        cancelled=cancelled
+    )
+
+
+@api_router.post("/admin/categories", response_model=Category)
+async def create_category(
+    category: CategoryCreate,
+    current_admin: str = Depends(get_current_admin)
+):
+    """Create new category"""
+    import uuid
+    category_dict = category.model_dump()
+    category_dict["id"] = f"cat-{uuid.uuid4().hex[:8]}"
+    await db.categories.insert_one(category_dict)
+    del category_dict["_id"] if "_id" in category_dict else None
+    return Category(**category_dict)
+
+
+@api_router.put("/admin/categories/{category_id}")
+async def update_category(
+    category_id: str,
+    category_update: CategoryUpdate,
+    current_admin: str = Depends(get_current_admin)
+):
+    """Update category"""
+    update_data = {k: v for k, v in category_update.model_dump().items() if v is not None}
+    result = await db.categories.update_one(
+        {"id": category_id},
+        {"$set": update_data}
+    )
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Category not found")
+    return {"message": "Category updated", "category_id": category_id}
+
+
+@api_router.delete("/admin/categories/{category_id}")
+async def delete_category(
+    category_id: str,
+    current_admin: str = Depends(get_current_admin)
+):
+    """Delete category"""
+    result = await db.categories.delete_one({"id": category_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Category not found")
+    return {"message": "Category deleted", "category_id": category_id}
+
+
 # ==================== HEALTH CHECK ====================
 
 @api_router.get("/")
