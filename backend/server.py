@@ -547,7 +547,8 @@ async def create_category(
     category_dict = category.model_dump()
     category_dict["id"] = f"cat-{uuid.uuid4().hex[:8]}"
     await db.categories.insert_one(category_dict)
-    del category_dict["_id"] if "_id" in category_dict else None
+    if "_id" in category_dict:
+        del category_dict["_id"]
     return Category(**category_dict)
 
 
