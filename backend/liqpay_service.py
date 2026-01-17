@@ -4,6 +4,7 @@ LiqPay Payment Service - Sandbox Mode
 import hashlib
 import base64
 import json
+import os
 from datetime import datetime
 import uuid
 
