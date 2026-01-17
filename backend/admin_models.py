@@ -52,14 +52,11 @@ class ImageUploadResponse(BaseModel):
 
 
 class OrderStats(BaseModel):
-    totalOrders: int
-    completedOrders: int
-    cancelledOrders: int
-    pendingOrders: int
-    totalRevenue: float
-    averageOrderValue: float
-    todayOrders: int
-    todayRevenue: float
+    pending: int = 0
+    processing: int = 0
+    shipped: int = 0
+    delivered: int = 0
+    cancelled: int = 0
 
 
 class OrdersChartData(BaseModel):
