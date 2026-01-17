@@ -19,8 +19,9 @@ class DashboardStats(BaseModel):
     totalOrders: int
     totalRevenue: float
     pendingOrders: int
-    lowStockProducts: int
-    totalCategories: int
+    lowStockProducts: int = 0
+    totalCategories: int = 0
+    recentOrders: List[dict] = []
 
 
 class RevenueData(BaseModel):
