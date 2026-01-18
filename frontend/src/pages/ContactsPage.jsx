@@ -29,11 +29,11 @@ const ContactsPage = () => {
               title: 'Телефон',
               content: (
                 <>
-                  <a href="tel:+380636507449" className="block text-green-600 font-medium text-sm md:text-base">
-                    +380 (63) 650-74-49
+                  <a href={`tel:${settings?.phone1?.replace(/\s/g, '')}`} className="block text-green-600 font-medium text-sm md:text-base">
+                    {settings?.phone1 || '+380 (63) 650-74-49'}
                   </a>
-                  <a href="tel:+380952510347" className="block text-green-600 font-medium text-sm md:text-base">
-                    +380 (95) 251-03-47
+                  <a href={`tel:${settings?.phone2?.replace(/\s/g, '')}`} className="block text-green-600 font-medium text-sm md:text-base">
+                    {settings?.phone2 || '+380 (95) 251-03-47'}
                   </a>
                 </>
               )
@@ -42,8 +42,8 @@ const ContactsPage = () => {
               icon: <Mail />,
               title: 'Email',
               content: (
-                <a href="mailto:info@platansad.ua" className="text-green-600 font-medium break-all text-sm md:text-base">
-                  felton297051@gmail.com
+                <a href={`mailto:${settings?.email}`} className="text-green-600 font-medium break-all text-sm md:text-base">
+                  {settings?.email || 'info@platansad.ua'}
                 </a>
               )
             },
@@ -52,8 +52,7 @@ const ContactsPage = () => {
               title: 'Адреса',
               content: (
                 <p className="text-gray-600 text-xs md:text-sm">
-                  Рівненська обл., Дубенський р-н,<br />
-                  Смига, Україна
+                  {settings?.address || 'Рівненська обл., Дубенський р-н, Смига, Україна'}
                 </p>
               )
             },
@@ -62,8 +61,8 @@ const ContactsPage = () => {
               title: 'Графік роботи',
               content: (
                 <p className="text-gray-600 text-xs md:text-sm">
-                  Пн-Пт <br />
-                  <span className="font-semibold text-green-600">8:00 – 20:00</span>
+                  {settings?.workingHours || 'Пн-Пт: 8:00 – 20:00'} <br />
+                  {settings?.weekend || 'Нд: вихідний'}
                 </p>
               )
             }
