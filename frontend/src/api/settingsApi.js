@@ -3,7 +3,7 @@ import api from './api';
 // Get public settings
 export const getPublicSettings = async () => {
   try {
-    const response = await api.get('/settings');
+    const response = await api.get('/api/settings');
     return response.data;
   } catch (error) {
     console.error('Error fetching public settings:', error);
@@ -14,7 +14,7 @@ export const getPublicSettings = async () => {
 // Get admin settings
 export const getAdminSettings = async (token) => {
   try {
-    const response = await api.get('/admin/site-settings', {
+    const response = await api.get('/api/admin/site-settings', {
       headers: {
         Authorization: `Bearer ${token}`
       }
@@ -29,7 +29,7 @@ export const getAdminSettings = async (token) => {
 // Save admin settings
 export const saveAdminSettings = async (settingsData, token) => {
   try {
-    const response = await api.post('/admin/site-settings', 
+    const response = await api.post('/api/admin/site-settings', 
       { settings_data: settingsData },
       {
         headers: {
