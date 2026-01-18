@@ -161,3 +161,23 @@ export const getTopCustomers = async (limit = 10) => {
   });
   return response.data;
 };
+
+
+// Site Settings Management
+export const getSiteSettings = async () => {
+  const response = await axios.get(`${API_URL}/api/admin/site-settings`, {
+    headers: getAuthHeader()
+  });
+  return response.data;
+};
+
+export const saveSiteSettings = async (settingsData) => {
+  const response = await axios.post(`${API_URL}/api/admin/site-settings`, 
+    { settings_data: settingsData },
+    {
+      headers: getAuthHeader()
+    }
+  );
+  return response.data;
+};
+
