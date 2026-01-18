@@ -102,17 +102,23 @@ const ProductSection = () => {
         </button>
 
         {/* Products container */}
-        <div 
-          ref={scrollRef}
-          className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory lg:grid lg:grid-cols-4 xl:grid-cols-5 lg:overflow-visible"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          {filteredProducts.map((product) => (
-            <div key={product.id} className="min-w-[170px] sm:min-w-[210px] lg:min-w-0 snap-start">
-              <ProductCard product={product} />
-            </div>
-          ))}
-        </div>
+        {filteredProducts.length > 0 ? (
+          <div 
+            ref={scrollRef}
+            className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory lg:grid lg:grid-cols-4 xl:grid-cols-5 lg:overflow-visible"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
+            {filteredProducts.map((product) => (
+              <div key={product.id} className="min-w-[170px] sm:min-w-[210px] lg:min-w-0 snap-start">
+                <ProductCard product={product} />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 text-gray-500">
+            Товарів у цій категорії поки немає
+          </div>
+        )}
         
         {/* Show count */}
         {filteredProducts.length > 0 && (
