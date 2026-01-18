@@ -273,6 +273,7 @@ function App() {
               </CompareProvider>
             </WishlistProvider>
           </CartProvider>
+          </SettingsProvider>
         </AdminAuthProvider>
       </ThemeProvider>
     </Router>
