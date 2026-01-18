@@ -6,6 +6,7 @@ import { WishlistProvider } from "./context/WishlistContext";
 import { CompareProvider } from "./context/CompareContext";
 import { AdminAuthProvider } from "./admin/context/AdminAuthContext";
 import { ThemeProvider } from "./admin/context/ThemeContext";
+import { SettingsProvider } from "./context/SettingsContext";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
