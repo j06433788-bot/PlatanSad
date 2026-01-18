@@ -321,30 +321,6 @@ const CheckoutPage = () => {
                   </p>
                 )}
               </div>
-
-              {/* Email */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="email"
-                    name="customerEmail"
-                    value={formData.customerEmail}
-                    onChange={handleChange}
-                    placeholder="example@mail.com"
-                    className={`w-full pl-12 pr-4 py-4 bg-gray-50 rounded-2xl border-2 transition-all ${
-                      errors.customerEmail ? 'border-red-400 bg-red-50' : 'border-transparent focus:border-green-500 focus:bg-white'
-                    } outline-none text-base`}
-                  />
-                </div>
-                {errors.customerEmail && (
-                  <p className="text-red-500 text-xs mt-2 ml-1 flex items-center gap-1">
-                    <X className="w-3 h-3" />
-                    {errors.customerEmail}
-                  </p>
-                )}
-              </div>
             </div>
           </div>
 
