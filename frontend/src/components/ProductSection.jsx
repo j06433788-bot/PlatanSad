@@ -107,12 +107,19 @@ const ProductSection = () => {
           className="flex gap-3 sm:gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory md:grid md:grid-cols-4 md:overflow-visible"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {filteredProducts.slice(0, 12).map((product) => (
+          {filteredProducts.map((product) => (
             <div key={product.id} className="min-w-[170px] sm:min-w-[210px] md:min-w-0 snap-start">
               <ProductCard product={product} />
             </div>
           ))}
         </div>
+        
+        {/* Show count */}
+        {filteredProducts.length > 0 && (
+          <div className="text-center mt-4 text-sm text-gray-500">
+            Показано {filteredProducts.length} {filteredProducts.length === 1 ? 'товар' : filteredProducts.length < 5 ? 'товари' : 'товарів'}
+          </div>
+        )}
       </div>
     </section>
   );
