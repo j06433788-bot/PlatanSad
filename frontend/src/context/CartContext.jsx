@@ -22,10 +22,11 @@ export const CartProvider = ({ children }) => {
     try {
       setLoading(true);
       const items = await cartApi.getCart(userId);
-      setCartItems(items);
+      setCartItems(items || []);
     } catch (error) {
       console.error('Error fetching cart:', error);
-      toast.error('Помилка завантаження кошика');
+      // Don't show error toast on initial load, just set empty cart
+      setCartItems([]);
     } finally {
       setLoading(false);
     }
