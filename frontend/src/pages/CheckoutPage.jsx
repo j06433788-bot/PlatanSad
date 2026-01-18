@@ -145,8 +145,6 @@ const CheckoutPage = () => {
     if (!formData.customerName.trim()) newErrors.customerName = "Обов'язкове поле";
     if (!formData.customerPhone.trim() || formData.customerPhone.length < 13) 
       newErrors.customerPhone = 'Введіть коректний номер';
-    if (!formData.customerEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.customerEmail)) 
-      newErrors.customerEmail = 'Невірний email';
     if (formData.deliveryMethod === 'nova_poshta') {
       if (!formData.city) newErrors.city = 'Оберіть місто';
       if (!formData.warehouse) newErrors.warehouse = 'Оберіть відділення';
