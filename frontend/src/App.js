@@ -41,10 +41,11 @@ function App() {
     <Router>
       <ThemeProvider>
         <AdminAuthProvider>
-          <CartProvider>
-            <WishlistProvider>
-              <CompareProvider>
-                <Routes>
+          <SettingsProvider>
+            <CartProvider>
+              <WishlistProvider>
+                <CompareProvider>
+                  <Routes>
                 {/* Admin Routes */}
                 <Route path="/admin/login" element={<AdminLogin />} />
                 <Route
