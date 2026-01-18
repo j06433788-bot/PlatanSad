@@ -55,7 +55,7 @@ async def get_products(
     minPrice: Optional[float] = Query(None, description="Minimum price"),
     maxPrice: Optional[float] = Query(None, description="Maximum price"),
     sortBy: Optional[str] = Query("name", description="Sort by: name, price, -price (desc)"),
-    limit: Optional[int] = Query(100, description="Limit results"),
+    limit: Optional[int] = Query(500, description="Limit results"),
     skip: Optional[int] = Query(0, description="Skip results for pagination"),
     db: AsyncSession = Depends(get_db)
 ):
