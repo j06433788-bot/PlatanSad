@@ -38,13 +38,11 @@ const Hero = () => {
               {/* Background image */}
               <img
                 src={slide.image}
-                alt={slide.alt}
+                alt={slide.title}
                 className="w-full h-full object-cover relative z-10"
               />
-              {/* Overlay gradient - тільки якщо не noOverlay */}
-              {!slide.noOverlay && (
-                <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent z-20" />
-              )}
+              {/* Overlay gradient */}
+              <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent z-20" />
               
               {/* Text content - тільки якщо є title */}
               {slide.title && (
