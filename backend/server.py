@@ -20,7 +20,7 @@ from models import (
     QuickOrder as QuickOrderSchema, QuickOrderCreate
 )
 from database import (
-    Product, Category, CartItem, WishlistItem, Order, QuickOrder,
+    Product, Category, CartItem, WishlistItem, Order, QuickOrder, SiteSettings,
     get_db, init_db, close_db
 )
 from admin_auth import authenticate_admin, create_access_token, get_current_admin
