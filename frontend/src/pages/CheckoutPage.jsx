@@ -20,7 +20,6 @@ const CheckoutPage = () => {
   const [formData, setFormData] = useState({
     customerName: '',
     customerPhone: '+380',
-    customerEmail: '',
     deliveryAddress: '',
     deliveryMethod: 'nova_poshta',
     paymentMethod: 'cash_on_delivery',
