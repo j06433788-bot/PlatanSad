@@ -149,3 +149,16 @@ class QuickOrderCreate(BaseModel):
     customerName: str
     customerPhone: str
     notes: Optional[str] = None
+
+
+
+# Site Settings Models
+class SiteSettings(BaseModel):
+    id: str = "main"
+    settings_data: dict
+    updated_at: Optional[datetime] = None
+
+
+class SiteSettingsUpdate(BaseModel):
+    settings_data: dict
+
