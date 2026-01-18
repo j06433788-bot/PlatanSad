@@ -1,35 +1,20 @@
 import React, { useState, useEffect } from 'react';
-
-const slides = [
-  { 
-    image: 'https://images.unsplash.com/photo-1494825514961-674db1ac2700?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODl8MHwxfHNlYXJjaHwzfHxldmVyZ3JlZW4lMjB0cmVlc3xlbnwwfHx8fDE3Njg2NTk0MTN8MA&ixlib=rb-4.1.0&q=85', 
-    title: 'PlatanSad',
-    subtitle: 'Професійний розсадник рослин',
-    alt: 'PlatanSad - Професійний розсадник хвойних рослин',
-    noOverlay: false
-  },
-  { 
-    image: 'https://images.prom.ua/6510283244_w640_h640_bonsaj-nivaki-pinus.jpg', 
-    title: 'Бонсай Нівакі',
-    subtitle: 'Японський стиль для вашого саду',
-    alt: 'PlatanSad - Бонсай Нівакі' 
-  },
-  { 
-    image: 'https://images.prom.ua/5107353705_w640_h640_tuya-smaragd-smaragd.jpg', 
-    title: 'Туя Смарагд',
-    subtitle: 'Ідеальний живопліт',
-    alt: 'PlatanSad - Туя Смарагд' 
-  },
-  { 
-    image: 'https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg', 
-    title: 'Хвойні рослини',
-    subtitle: 'Вічнозелена краса',
-    alt: 'PlatanSad - Хвойні рослини' 
-  },
-];
+import { useSettings } from '../context/SettingsContext';
 
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const { settings } = useSettings();
+  
+  // Get active slides from settings
+  const slides = settings?.heroSlides?.filter(slide => slide.active) || [
+    { 
+      id: 1,
+      image: 'https://images.unsplash.com/photo-1494825514961-674db1ac2700', 
+      title: 'PlatanSad',
+      subtitle: 'Професійний розсадник рослин',
+      active: true
+    }
+  ];
 
   useEffect(() => {
     const timer = setInterval(() => {
