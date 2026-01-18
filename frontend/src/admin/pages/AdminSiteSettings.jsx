@@ -73,18 +73,33 @@ const AdminSiteSettings = () => {
   });
 
   useEffect(() => {
-    const saved = localStorage.getItem('siteSettings');
-    if (saved) {
-      setSettings({ ...settings, ...JSON.parse(saved) });
-    }
+    loadSettings();
   }, []);
+
+  const loadSettings = async () => {
+    setInitialLoading(true);
+    try {
+      const data = await getSiteSettings();
+      if (data.settings_data) {
+        setSettings(data.settings_data);
+      }
+    } catch (error) {
+      console.error('Error loading settings:', error);
+      toast.error('Помилка завантаження налаштувань');
+    } finally {
+      setInitialLoading(false);
+    }
+  };
 
   const handleSave = async () => {
     setLoading(true);
     try {
-      localStorage.setItem('siteSettings', JSON.stringify(settings));
+      await saveSiteSettings(settings);
+      // Refresh public settings context
+      refreshSettings();
       toast.success('✅ Налаштування успішно збережені!');
     } catch (error) {
+      console.error('Error saving settings:', error);
       toast.error('❌ Помилка збереження');
     } finally {
       setLoading(false);
