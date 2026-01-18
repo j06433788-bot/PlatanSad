@@ -1306,6 +1306,152 @@ async def liqpay_callback(
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ==================== SITE SETTINGS ENDPOINTS ====================
+
+from models import SiteSettings as SiteSettingsSchema, SiteSettingsUpdate
+from database import SiteSettings
+
+@api_router.get("/settings")
+async def get_public_settings(db: AsyncSession = Depends(get_db)):
+    """Get site settings (public access)"""
+    result = await db.execute(select(SiteSettings).where(SiteSettings.id == "main"))
+    settings = result.scalar_one_or_none()
+    
+    if not settings:
+        # Return default settings if none exist
+        default_settings = {
+            "phone1": "+380 (63) 650-74-49",
+            "phone2": "+380 (95) 251-03-47",
+            "email": "info@platansad.ua",
+            "viber": "+380636507449",
+            "address": "смт. Смига, вул. Садова, 15",
+            "workingHours": "Пн-Сб: 9:00-18:00",
+            "weekend": "Нд: вихідний",
+            "instagram": "https://www.instagram.com/platansad.uaa?igsh=cmhhbG4zbjNkMTBr",
+            "tiktok": "https://www.tiktok.com/@platansad.ua?_r=1&_t=ZM-939QCCJ5tAx",
+            "facebook": "",
+            "youtube": "",
+            "siteName": "PlatanSad",
+            "siteDescription": "Професійний розсадник рослин в Україні",
+            "siteKeywords": "розсадник, рослини, туя, бонсай, хвойні",
+            "heroSlides": [
+                {"id": 1, "image": "https://images.unsplash.com/photo-1494825514961-674db1ac2700", "title": "PlatanSad", "subtitle": "Професійний розсадник рослин", "active": True},
+                {"id": 2, "image": "https://images.prom.ua/6510283244_w640_h640_bonsaj-nivaki-pinus.jpg", "title": "Бонсай Нівакі", "subtitle": "Японський стиль для вашого саду", "active": True},
+                {"id": 3, "image": "https://images.prom.ua/5107353705_w640_h640_tuya-smaragd-smaragd.jpg", "title": "Туя Смарагд", "subtitle": "Ідеальний живопліт", "active": True},
+                {"id": 4, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "title": "Хвойні рослини", "subtitle": "Вічнозелена краса", "active": True}
+            ],
+            "topBanner": {"text": "🎉 Знижка 20% на всі туї до кінця місяця!", "active": False, "color": "#10b981"},
+            "deliveryText": "Ми працюємо з Новою Поштою. Безкоштовна доставка при замовленні від 1000₴.",
+            "paymentText": "Приймаємо оплату: накладений платіж, LiqPay (Visa/Mastercard).",
+            "returnPolicy": "Повернення та обмін товару протягом 14 днів.",
+            "freeDeliveryFrom": 1000,
+            "firstOrderDiscount": 0,
+            "bulkOrderDiscount": 0,
+            "primaryColor": "#10b981",
+            "secondaryColor": "#059669",
+            "accentColor": "#f59e0b",
+            "orderNotificationEmail": "orders@platansad.ua",
+            "supportEmail": "support@platansad.ua",
+            "currency": "₴",
+            "language": "uk",
+            "timezone": "Europe/Kiev",
+            "showStock": True,
+            "showReviews": True
+        }
+        return {"settings_data": default_settings}
+    
+    return {"settings_data": settings.settings_data, "updated_at": settings.updated_at}
+
+
+@api_router.get("/admin/site-settings")
+async def get_admin_settings(
+    current_admin: dict = Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    """Get site settings (admin only)"""
+    result = await db.execute(select(SiteSettings).where(SiteSettings.id == "main"))
+    settings = result.scalar_one_or_none()
+    
+    if not settings:
+        # Return default settings if none exist
+        default_settings = {
+            "phone1": "+380 (63) 650-74-49",
+            "phone2": "+380 (95) 251-03-47",
+            "email": "info@platansad.ua",
+            "viber": "+380636507449",
+            "address": "смт. Смига, вул. Садова, 15",
+            "workingHours": "Пн-Сб: 9:00-18:00",
+            "weekend": "Нд: вихідний",
+            "instagram": "https://www.instagram.com/platansad.uaa?igsh=cmhhbG4zbjNkMTBr",
+            "tiktok": "https://www.tiktok.com/@platansad.ua?_r=1&_t=ZM-939QCCJ5tAx",
+            "facebook": "",
+            "youtube": "",
+            "siteName": "PlatanSad",
+            "siteDescription": "Професійний розсадник рослин в Україні",
+            "siteKeywords": "розсадник, рослини, туя, бонсай, хвойні",
+            "heroSlides": [
+                {"id": 1, "image": "https://images.unsplash.com/photo-1494825514961-674db1ac2700", "title": "PlatanSad", "subtitle": "Професійний розсадник рослин", "active": True},
+                {"id": 2, "image": "https://images.prom.ua/6510283244_w640_h640_bonsaj-nivaki-pinus.jpg", "title": "Бонсай Нівакі", "subtitle": "Японський стиль для вашого саду", "active": True},
+                {"id": 3, "image": "https://images.prom.ua/5107353705_w640_h640_tuya-smaragd-smaragd.jpg", "title": "Туя Смарагд", "subtitle": "Ідеальний живопліт", "active": True},
+                {"id": 4, "image": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg", "title": "Хвойні рослини", "subtitle": "Вічнозелена краса", "active": True}
+            ],
+            "topBanner": {"text": "🎉 Знижка 20% на всі туї до кінця місяця!", "active": False, "color": "#10b981"},
+            "deliveryText": "Ми працюємо з Новою Поштою. Безкоштовна доставка при замовленні від 1000₴.",
+            "paymentText": "Приймаємо оплату: накладений платіж, LiqPay (Visa/Mastercard).",
+            "returnPolicy": "Повернення та обмін товару протягом 14 днів.",
+            "freeDeliveryFrom": 1000,
+            "firstOrderDiscount": 0,
+            "bulkOrderDiscount": 0,
+            "primaryColor": "#10b981",
+            "secondaryColor": "#059669",
+            "accentColor": "#f59e0b",
+            "orderNotificationEmail": "orders@platansad.ua",
+            "supportEmail": "support@platansad.ua",
+            "currency": "₴",
+            "language": "uk",
+            "timezone": "Europe/Kiev",
+            "showStock": True,
+            "showReviews": True
+        }
+        return {"settings_data": default_settings}
+    
+    return {"settings_data": settings.settings_data, "updated_at": settings.updated_at}
+
+
+@api_router.post("/admin/site-settings")
+async def save_admin_settings(
+    settings_update: SiteSettingsUpdate,
+    current_admin: dict = Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    """Save site settings (admin only)"""
+    result = await db.execute(select(SiteSettings).where(SiteSettings.id == "main"))
+    settings = result.scalar_one_or_none()
+    
+    if settings:
+        # Update existing settings
+        settings.settings_data = settings_update.settings_data
+        settings.updated_at = datetime.utcnow()
+    else:
+        # Create new settings
+        settings = SiteSettings(
+            id="main",
+            settings_data=settings_update.settings_data,
+            updated_at=datetime.utcnow()
+        )
+        db.add(settings)
+    
+    await db.commit()
+    await db.refresh(settings)
+    
+    return {
+        "success": True,
+        "message": "Settings saved successfully",
+        "settings_data": settings.settings_data,
+        "updated_at": settings.updated_at
+    }
+
+
 # Include the router in the main app
 app.include_router(api_router)
 
