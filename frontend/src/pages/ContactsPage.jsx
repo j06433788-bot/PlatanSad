@@ -1,7 +1,9 @@
 import React from 'react';
 import { Phone, Mail, MapPin, Clock, Send } from 'lucide-react';
+import { useSettings } from '../context/SettingsContext';
 
 const ContactsPage = () => {
+  const { settings } = useSettings();
   return (
     <div className="min-h-screen bg-gray-50">
 
