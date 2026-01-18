@@ -106,7 +106,7 @@ class Order(BaseModel):
     totalAmount: float
     customerName: str
     customerPhone: str
-    customerEmail: str
+    customerEmail: Optional[str] = None
     deliveryAddress: str
     deliveryMethod: str  # "nova_poshta" or "self_pickup"
     paymentMethod: str  # "cash_on_delivery" or "card"
@@ -120,7 +120,7 @@ class OrderCreate(BaseModel):
     totalAmount: float
     customerName: str
     customerPhone: str
-    customerEmail: str
+    customerEmail: Optional[str] = None
     deliveryAddress: str
     deliveryMethod: str
     paymentMethod: str
