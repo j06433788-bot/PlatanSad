@@ -121,6 +121,15 @@ class QuickOrder(Base):
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
 
 
+# Site Settings Model
+class SiteSettings(Base):
+    __tablename__ = "site_settings"
+    
+    id = Column(String, primary_key=True, default="main")
+    settings_data = Column(JSON, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
 # Database helper functions
 async def get_db():
     """Dependency to get database session"""
