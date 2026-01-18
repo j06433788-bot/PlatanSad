@@ -95,7 +95,7 @@ class Order(Base):
     total_amount = Column(Float, nullable=False)
     customer_name = Column(String, nullable=False)
     customer_phone = Column(String, nullable=False)
-    customer_email = Column(String, nullable=False)
+    customer_email = Column(String, nullable=True)
     delivery_address = Column(Text, nullable=False)
     delivery_method = Column(String, nullable=False)
     payment_method = Column(String, nullable=False)
