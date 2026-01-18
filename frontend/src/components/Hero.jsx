@@ -22,7 +22,7 @@ const Hero = () => {
     }, 5000);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [slides.length]);
 
   return (
     <section className="max-w-7xl mx-auto px-0 sm:px-4 py-0 sm:py-4">
