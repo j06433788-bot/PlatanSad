@@ -14,6 +14,7 @@ const ProductSection = () => {
       try {
         setLoading(true);
         const data = await productsApi.getProducts();
+        console.log('Products loaded:', data.length);
         setProducts(data);
       } catch (error) {
         console.error('Error fetching products:', error);
