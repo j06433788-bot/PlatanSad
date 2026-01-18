@@ -44,17 +44,15 @@ const Hero = () => {
               {/* Overlay gradient */}
               <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent z-20" />
               
-              {/* Text content - тільки якщо є title */}
-              {slide.title && (
-                <div className="absolute inset-0 flex flex-col justify-center px-4 sm:px-10 md:px-16 z-30">
-                  <h2 className="text-xl sm:text-4xl md:text-5xl font-bold text-white mb-1.5 sm:mb-3 leading-tight">
-                    {slide.title}
-                  </h2>
-                  <p className="text-green-400 text-sm sm:text-xl md:text-2xl font-medium">
-                    {slide.subtitle}
-                  </p>
-                </div>
-              )}
+              {/* Text content */}
+              <div className="absolute inset-0 flex flex-col justify-center px-4 sm:px-10 md:px-16 z-30">
+                <h2 className="text-xl sm:text-4xl md:text-5xl font-bold text-white mb-1.5 sm:mb-3 leading-tight">
+                  {slide.title}
+                </h2>
+                <p className="text-green-400 text-sm sm:text-xl md:text-2xl font-medium">
+                  {slide.subtitle}
+                </p>
+              </div>
             </div>
           ))}
         </div>
