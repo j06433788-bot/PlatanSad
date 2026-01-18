@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronUp, Sprout } from 'lucide-react';
 import AboutModal from './AboutModal';
+import { useSettings } from '../context/SettingsContext';
 
 const Footer = () => {
   const navigate = useNavigate();
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
+  const { settings } = useSettings();
 
   return (
     <>
