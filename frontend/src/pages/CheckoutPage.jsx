@@ -6,7 +6,7 @@ import { liqpayApi } from '../api/liqpayApi';
 import { toast } from 'sonner';
 import { 
   ArrowLeft, MapPin, Package, CreditCard, 
-  Truck, CheckCircle2, ChevronDown, Banknote, X, User, Phone, Mail,
+  Truck, CheckCircle2, ChevronDown, Banknote, X, User, Phone,
   MessageSquare, ShoppingBag, Check
 } from 'lucide-react';
 import { searchCities, getWarehouses, popularCities } from '../api/novaPoshtaApi';
