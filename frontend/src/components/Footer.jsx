@@ -72,7 +72,7 @@ const Footer = () => {
             {/* Copyright - better visibility */}
             <div className="pt-2 md:pt-3">
               <p className="text-gray-400 text-xs sm:text-sm md:text-base">
-                © 2026 PlatanSad
+                © 2026 {settings?.siteName || 'PlatanSad'}
               </p>
             </div>
           </div>
