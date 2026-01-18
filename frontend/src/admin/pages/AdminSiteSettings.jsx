@@ -8,7 +8,9 @@ import { useSettings } from '../../context/SettingsContext';
 
 const AdminSiteSettings = () => {
   const { theme } = useTheme();
+  const { refreshSettings } = useSettings();
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('contacts');
   
   const [settings, setSettings] = useState({
