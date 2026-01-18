@@ -26,19 +26,19 @@ const Footer = () => {
             {/* Phone numbers - horizontal on mobile with better size */}
             <div className="flex items-center justify-center gap-3 sm:gap-5 flex-wrap">
               <a 
-                href="tel:+380636507449" 
+                href={`tel:${settings?.phone1?.replace(/\s/g, '')}`}
                 className="text-white hover:text-green-400 transition-colors font-semibold text-sm sm:text-base md:text-lg"
                 data-testid="footer-phone-1"
               >
-                +380 (63) 650-74-49
+                {settings?.phone1 || '+380 (63) 650-74-49'}
               </a>
               <span className="text-gray-500 text-base">•</span>
               <a 
-                href="tel:+380952510347" 
+                href={`tel:${settings?.phone2?.replace(/\s/g, '')}`}
                 className="text-white hover:text-green-400 transition-colors font-semibold text-sm sm:text-base md:text-lg"
                 data-testid="footer-phone-2"
               >
-                +380 (95) 251-03-47
+                {settings?.phone2 || '+380 (95) 251-03-47'}
               </a>
             </div>
 
