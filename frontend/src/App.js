@@ -30,6 +30,7 @@ import AdminProducts from "./admin/pages/AdminProducts";
 import AdminOrders from "./admin/pages/AdminOrders";
 import AdminOrdersStats from "./admin/pages/AdminOrdersStats";
 import AdminCategories from "./admin/pages/AdminCategories";
+import AdminSiteSettings from "./admin/pages/AdminSiteSettings";
 import ProtectedRoute from "./admin/components/ProtectedRoute";
 
 import "./App.css";
