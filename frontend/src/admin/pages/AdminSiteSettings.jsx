@@ -3,6 +3,8 @@ import { Save, Phone, MapPin, Clock, Instagram, Globe, Image as ImageIcon, FileT
 import { useTheme } from '../context/ThemeContext';
 import AdminLayout from '../components/AdminLayout';
 import { toast } from 'sonner';
+import { getSiteSettings, saveSiteSettings } from '../api/adminApi';
+import { useSettings } from '../../context/SettingsContext';
 
 const AdminSiteSettings = () => {
   const { theme } = useTheme();
