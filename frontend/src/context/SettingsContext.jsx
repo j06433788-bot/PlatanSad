@@ -25,7 +25,7 @@ export const SettingsProvider = ({ children }) => {
       setSettings(data.settings_data);
     } catch (error) {
       console.error('Error loading settings:', error);
-      // Set default settings on error
+      // Set default settings on error - don't block the app
       setSettings({
         phone1: '+380 (63) 650-74-49',
         phone2: '+380 (95) 251-03-47',
