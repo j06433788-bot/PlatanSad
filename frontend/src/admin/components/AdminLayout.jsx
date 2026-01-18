@@ -30,6 +30,7 @@ const AdminLayout = ({ children }) => {
     { name: 'Замовлення', href: '/admin/orders', icon: ShoppingCart },
     { name: 'Статистика замовлень', href: '/admin/orders/stats', icon: TrendingUp },
     { name: 'Категорії', href: '/admin/categories', icon: FolderTree },
+    { name: 'Налаштування сайту', href: '/admin/settings', icon: Settings },
   ];
 
   const isActive = (path) => location.pathname === path;
