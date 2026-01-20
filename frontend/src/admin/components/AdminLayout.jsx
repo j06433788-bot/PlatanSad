@@ -13,7 +13,8 @@ import {
   Moon,
   Menu,
   X,
-  TrendingUp
+  TrendingUp,
+  FileText
 } from 'lucide-react';
 import { useState } from 'react';
 
