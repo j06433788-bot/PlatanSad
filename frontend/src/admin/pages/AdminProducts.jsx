@@ -230,11 +230,16 @@ const AdminProducts = () => {
               <div className="relative h-48 bg-gray-100 dark:bg-gray-700">
                 {product.image ? (
                   <img
-                    src={process.env.REACT_APP_BACKEND_URL + product.image}
+                    src={product.image}
                     alt={product.name}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'flex';
+                    }}
                   />
-                ) : (
+                ) : null}
+                {!product.image && (
                   <div className="flex items-center justify-center h-full">
                     <Package className="text-gray-400" size={48} />
                   </div>
