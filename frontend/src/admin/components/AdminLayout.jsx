@@ -31,6 +31,7 @@ const AdminLayout = ({ children }) => {
     { name: 'Замовлення', href: '/admin/orders', icon: ShoppingCart },
     { name: 'Статистика замовлень', href: '/admin/orders/stats', icon: TrendingUp },
     { name: 'Категорії', href: '/admin/categories', icon: FolderTree },
+    { name: 'Контент сторінок', href: '/admin/content', icon: FileText },
     { name: 'Налаштування сайту', href: '/admin/settings', icon: Settings },
   ];
 
