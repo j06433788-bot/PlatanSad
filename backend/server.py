@@ -141,7 +141,7 @@ async def get_product(product_id: str, db: AsyncSession = Depends(get_db)):
         discount=product.discount,
         image=product.image,
         category=product.category,
-        badges=product.badges,
+        badges=json.loads(product.badges) if isinstance(product.badges, str) else product.badges,
         description=product.description,
         stock=product.stock,
         createdAt=product.created_at
@@ -221,7 +221,7 @@ async def create_product(
         discount=product.discount,
         image=product.image,
         category=product.category,
-        badges=product.badges,
+        badges=json.loads(product.badges) if isinstance(product.badges, str) else product.badges,
         description=product.description,
         stock=product.stock,
         createdAt=product.created_at
@@ -268,7 +268,7 @@ async def update_product(
         discount=product.discount,
         image=product.image,
         category=product.category,
-        badges=product.badges,
+        badges=json.loads(product.badges) if isinstance(product.badges, str) else product.badges,
         description=product.description,
         stock=product.stock,
         createdAt=product.created_at
