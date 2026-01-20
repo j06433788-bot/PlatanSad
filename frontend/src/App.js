@@ -97,6 +97,14 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
+                <Route
+                  path="/admin/content"
+                  element={
+                    <ProtectedRoute>
+                      <AdminContent />
+                    </ProtectedRoute>
+                  }
+                />
 
                 {/* Public Routes with Layout */}
                 <Route
