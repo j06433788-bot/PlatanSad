@@ -339,7 +339,7 @@ const AdminProducts = () => {
                   {formData.image && (
                     <div className="relative w-32 h-32 border border-gray-300 dark:border-gray-600 rounded-lg overflow-hidden">
                       <img
-                        src={process.env.REACT_APP_BACKEND_URL + formData.image}
+                        src={formData.image}
                         alt="Preview"
                         className="w-full h-full object-cover"
                       />
