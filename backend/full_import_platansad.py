@@ -143,8 +143,17 @@ async def scrape_category_products(category_url, category_name, category_id):
                 print(f"   ✓ Found {len(product_links)} products on this page")
                 
                 # Extract product info from listing page
+                # Track articles to avoid duplicates
+                seen_articles = set([p['article'] for p in products])
+                
                 for link in product_links:
                     try:
+                        article = link.split('/')[-1].replace('.html', '')
+                        
+                        # Skip if already seen
+                        if article in seen_articles:
+                            continue
+                        
                         # Get product name from title attribute or text
                         product_elem = soup.find('a', href=link.replace('https://platansad.prom.ua', ''))
                         if not product_elem:
@@ -172,7 +181,7 @@ async def scrape_category_products(category_url, category_name, category_id):
                         product = {
                             'id': str(uuid.uuid4()),
                             'name': name,
-                            'article': link.split('/')[-1].replace('.html', ''),
+                            'article': article,
                             'price': price,
                             'url': link,
                             'image': image_url,
@@ -184,6 +193,7 @@ async def scrape_category_products(category_url, category_name, category_id):
                         }
                         
                         products.append(product)
+                        seen_articles.add(article)
                         
                     except Exception as e:
                         print(f"   ⚠️  Error parsing product: {e}")
