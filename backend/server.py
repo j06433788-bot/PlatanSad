@@ -114,7 +114,7 @@ async def get_products(
             discount=p.discount,
             image=p.image,
             category=p.category,
-            badges=p.badges,
+            badges=json.loads(p.badges) if isinstance(p.badges, str) else p.badges,
             description=p.description,
             stock=p.stock,
             createdAt=p.created_at
