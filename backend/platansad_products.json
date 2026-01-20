@@ -1,0 +1,66 @@
+{
+  "categories": [
+    {
+      "id": "cat-001",
+      "name": "Бонсай Нівакі",
+      "url": "https://platansad.prom.ua/ua/g125670178-bonsaj-nivaki-pinus",
+      "icon": "https://images.prom.ua/6510283244_w640_h640_bonsaj-nivaki-pinus.jpg"
+    },
+    {
+      "id": "cat-002",
+      "name": "Туя Колумна",
+      "url": "https://platansad.prom.ua/ua/g18766610-tuya-kolumna-columna",
+      "icon": "https://images.prom.ua/5107358816_w640_h640_tuya-kolumna-columna.jpg"
+    },
+    {
+      "id": "cat-003",
+      "name": "Туя Смарагд",
+      "url": "https://platansad.prom.ua/ua/g18767376-tuya-zahidna-smaragd",
+      "icon": "https://images.prom.ua/5107353705_w640_h640_tuya-smaragd-smaragd.jpg"
+    },
+    {
+      "id": "cat-004",
+      "name": "Самшит",
+      "url": "https://platansad.prom.ua/ua/g18723912-samshit-vichnozelenij-arborestsens",
+      "icon": "https://images.prom.ua/5027226901_w640_h640_samshit-vichnozelenij-arborestsens.jpg"
+    },
+    {
+      "id": "cat-005",
+      "name": "Хвойні рослини",
+      "url": "https://platansad.prom.ua/ua/g18714713-hvojni-roslini",
+      "icon": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg"
+    },
+    {
+      "id": "cat-006",
+      "name": "Листопадні дерева та кущі",
+      "url": "https://platansad.prom.ua/ua/g18842921-listopadni-dereva-kuschi",
+      "icon": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg"
+    },
+    {
+      "id": "cat-007",
+      "name": "Куляста Туя Глобоса",
+      "url": "https://platansad.prom.ua/ua/g18770568-tuya-sharovidnaya-globosa",
+      "icon": "https://images.prom.ua/4858672644_w640_h640_kulyasta-tuya-globosa.jpg"
+    },
+    {
+      "id": "cat-008",
+      "name": "Катальпа",
+      "url": "https://platansad.prom.ua/ua/g18842392-katalpa-catalpa",
+      "icon": "https://images.prom.ua/4958829409_w640_h640_katalpa-catalpa.jpg"
+    },
+    {
+      "id": "cat-009",
+      "name": "Ялина",
+      "url": "https://platansad.prom.ua/ua/g18806760-yalina",
+      "icon": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg"
+    },
+    {
+      "id": "cat-010",
+      "name": "Кімнатні рослини",
+      "url": "https://platansad.prom.ua/ua/g148273888-kimnatni-roslini",
+      "icon": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg"
+    }
+  ],
+  "products": [],
+  "total_products": 0
+}
