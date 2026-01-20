@@ -32,6 +32,7 @@ import AdminOrders from "./admin/pages/AdminOrders";
 import AdminOrdersStats from "./admin/pages/AdminOrdersStats";
 import AdminCategories from "./admin/pages/AdminCategories";
 import AdminSiteSettings from "./admin/pages/AdminSiteSettings";
+import AdminContent from "./admin/pages/AdminContent";
 import ProtectedRoute from "./admin/components/ProtectedRoute";
 
 import "./App.css";
