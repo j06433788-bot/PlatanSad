@@ -83,3 +83,4 @@ project.zip
 # Environment files
 *.env
 *.env.*
+site_backup.zip
