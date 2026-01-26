@@ -113,20 +113,16 @@ class TestMediaLibraryAPI:
         # Create a simple test image (1x1 pixel PNG)
         png_data = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82'
         
-        files = {
-            'file': ('TEST_test_image.png', io.BytesIO(png_data), 'image/png')
-        }
-        data = {
-            'folder': 'test',
-            'title': 'TEST_Test Image',
-            'alt_text': 'Test image for API testing'
-        }
-        
-        response = self.session.post(
+        # Use requests without session to avoid Content-Type header issues
+        response = requests.post(
             f"{BASE_URL}/api/media/upload",
-            files=files,
-            data=data,
-            headers=self.auth_headers
+            files={'file': ('TEST_test_image.png', png_data, 'image/png')},
+            data={
+                'folder': 'test',
+                'title': 'TEST_Test Image',
+                'alt_text': 'Test image for API testing'
+            },
+            headers={"Authorization": f"Bearer {self.token}"}
         )
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
@@ -147,13 +143,9 @@ class TestMediaLibraryAPI:
         """Test POST /api/media/upload without auth - should fail"""
         png_data = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82'
         
-        files = {
-            'file': ('test.png', io.BytesIO(png_data), 'image/png')
-        }
-        
-        response = self.session.post(
+        response = requests.post(
             f"{BASE_URL}/api/media/upload",
-            files=files
+            files={'file': ('test.png', png_data, 'image/png')}
             # No auth headers
         )
         
@@ -166,14 +158,10 @@ class TestMediaLibraryAPI:
         # Create a fake executable file
         exe_data = b'MZ\x90\x00\x03\x00\x00\x00'
         
-        files = {
-            'file': ('test.exe', io.BytesIO(exe_data), 'application/x-msdownload')
-        }
-        
-        response = self.session.post(
+        response = requests.post(
             f"{BASE_URL}/api/media/upload",
-            files=files,
-            headers=self.auth_headers
+            files={'file': ('test.exe', exe_data, 'application/x-msdownload')},
+            headers={"Authorization": f"Bearer {self.token}"}
         )
         
         assert response.status_code == 400, f"Expected 400, got {response.status_code}: {response.text}"
@@ -187,21 +175,14 @@ class TestMediaLibraryAPI:
         # First upload a file
         png_data = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82'
         
-        files = {
-            'file': ('TEST_single_file.png', io.BytesIO(png_data), 'image/png')
-        }
-        data = {
-            'title': 'TEST_Single File Test'
-        }
-        
-        upload_response = self.session.post(
+        upload_response = requests.post(
             f"{BASE_URL}/api/media/upload",
-            files=files,
-            data=data,
-            headers=self.auth_headers
+            files={'file': ('TEST_single_file.png', png_data, 'image/png')},
+            data={'title': 'TEST_Single File Test'},
+            headers={"Authorization": f"Bearer {self.token}"}
         )
         
-        assert upload_response.status_code == 200
+        assert upload_response.status_code == 200, f"Upload failed: {upload_response.text}"
         file_id = upload_response.json()["id"]
         self.created_file_ids.append(file_id)
         
@@ -233,22 +214,14 @@ class TestMediaLibraryAPI:
         # First upload a file
         png_data = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82'
         
-        files = {
-            'file': ('TEST_update_test.png', io.BytesIO(png_data), 'image/png')
-        }
-        data = {
-            'title': 'TEST_Original Title',
-            'alt_text': 'Original alt text'
-        }
-        
-        upload_response = self.session.post(
+        upload_response = requests.post(
             f"{BASE_URL}/api/media/upload",
-            files=files,
-            data=data,
-            headers=self.auth_headers
+            files={'file': ('TEST_update_test.png', png_data, 'image/png')},
+            data={'title': 'TEST_Original Title', 'alt_text': 'Original alt text'},
+            headers={"Authorization": f"Bearer {self.token}"}
         )
         
-        assert upload_response.status_code == 200
+        assert upload_response.status_code == 200, f"Upload failed: {upload_response.text}"
         file_id = upload_response.json()["id"]
         self.created_file_ids.append(file_id)
         
@@ -298,17 +271,13 @@ class TestMediaLibraryAPI:
         # First upload a file
         png_data = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82'
         
-        files = {
-            'file': ('TEST_delete_test.png', io.BytesIO(png_data), 'image/png')
-        }
-        
-        upload_response = self.session.post(
+        upload_response = requests.post(
             f"{BASE_URL}/api/media/upload",
-            files=files,
-            headers=self.auth_headers
+            files={'file': ('TEST_delete_test.png', png_data, 'image/png')},
+            headers={"Authorization": f"Bearer {self.token}"}
         )
         
-        assert upload_response.status_code == 200
+        assert upload_response.status_code == 200, f"Upload failed: {upload_response.text}"
         file_id = upload_response.json()["id"]
         
         # Delete the file
@@ -359,20 +328,11 @@ class TestMediaLibraryAPI:
         # 1. CREATE - Upload file
         png_data = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82'
         
-        files = {
-            'file': ('TEST_crud_flow.png', io.BytesIO(png_data), 'image/png')
-        }
-        data = {
-            'title': 'TEST_CRUD Flow Test',
-            'alt_text': 'Initial alt text',
-            'folder': 'test'
-        }
-        
-        create_response = self.session.post(
+        create_response = requests.post(
             f"{BASE_URL}/api/media/upload",
-            files=files,
-            data=data,
-            headers=self.auth_headers
+            files={'file': ('TEST_crud_flow.png', png_data, 'image/png')},
+            data={'title': 'TEST_CRUD Flow Test', 'alt_text': 'Initial alt text', 'folder': 'test'},
+            headers={"Authorization": f"Bearer {self.token}"}
         )
         
         assert create_response.status_code == 200, f"CREATE failed: {create_response.text}"
@@ -460,15 +420,13 @@ class TestMediaStatsIntegration:
         # Upload a file
         png_data = b'\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x02\x00\x00\x00\x90wS\xde\x00\x00\x00\x0cIDATx\x9cc\xf8\x0f\x00\x00\x01\x01\x00\x05\x18\xd8N\x00\x00\x00\x00IEND\xaeB`\x82'
         
-        files = {'file': ('TEST_stats_test.png', io.BytesIO(png_data), 'image/png')}
-        
-        upload_response = self.session.post(
+        upload_response = requests.post(
             f"{BASE_URL}/api/media/upload",
-            files=files,
-            headers=self.auth_headers
+            files={'file': ('TEST_stats_test.png', png_data, 'image/png')},
+            headers={"Authorization": f"Bearer {self.token}"}
         )
         
-        assert upload_response.status_code == 200
+        assert upload_response.status_code == 200, f"Upload failed: {upload_response.text}"
         file_id = upload_response.json()["id"]
         self.created_file_ids.append(file_id)
         
