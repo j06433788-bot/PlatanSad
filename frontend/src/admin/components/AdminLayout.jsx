@@ -32,6 +32,7 @@ const AdminLayout = ({ children }) => {
     { name: 'Статистика замовлень', href: '/admin/orders/stats', icon: TrendingUp },
     { name: 'Категорії', href: '/admin/categories', icon: FolderTree },
     { name: 'CMS - Контент', href: '/admin/cms', icon: FileText },
+    { name: 'Блог', href: '/admin/blog', icon: FileText },
     { name: 'Налаштування сайту', href: '/admin/settings', icon: Settings },
   ];
 
