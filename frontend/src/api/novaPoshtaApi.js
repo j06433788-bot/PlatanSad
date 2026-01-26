@@ -131,37 +131,30 @@ export const getWarehouses = async (cityRef) => {
     const data = await response.json();
     
     if (data.success && data.data) {
-      // Типи відділень Нової Пошти:
-      // '9a68df70-0267-42a8-bb5c-37f427e36ee4' - Поштомат
-      // '841339c7-591a-42e2-8233-7a0a00f0ed6f' - Відділення
-      // '6f8c7162-4b72-4b0a-88e5-906948c6a92f' - Поштове відділення
-      
-      const POSTOMAT_TYPE = '9a68df70-0267-42a8-bb5c-37f427e36ee4';
-      
       return data.data
         // Виключаємо закриті відділення
         .filter(warehouse => warehouse.WarehouseStatus !== 'Closed')
         .map(warehouse => {
-          const isPostomat = warehouse.TypeOfWarehouse === POSTOMAT_TYPE;
+          // Визначаємо чи це поштомат за CategoryOfWarehouse
+          const isPostomat = warehouse.CategoryOfWarehouse === 'Postomat';
           
           return {
             ref: warehouse.Ref,
             description: warehouse.Description,
-            shortAddress: warehouse.shortAddress || warehouse.ShortAddress,
+            shortAddress: warehouse.ShortAddress,
             number: warehouse.Number,
             cityRef: warehouse.CityRef,
             typeOfWarehouse: warehouse.TypeOfWarehouse,
+            categoryOfWarehouse: warehouse.CategoryOfWarehouse,
             warehouseStatus: warehouse.WarehouseStatus,
             isPostomat: isPostomat,
-            // Додаємо позначку до опису для поштоматів
-            displayName: isPostomat 
-              ? `${warehouse.Description} (Поштомат)`
-              : warehouse.Description
+            // Не додаємо позначку до опису, вона буде в UI
+            displayName: warehouse.Description
           };
         })
         // Сортуємо: спочатку відділення, потім поштомати
         .sort((a, b) => {
-          // Спочатку відділення, потім поштомати
+          // Спочатку відділення (Branch), потім поштомати (Postomat)
           if (a.isPostomat !== b.isPostomat) {
             return a.isPostomat ? 1 : -1;
           }
