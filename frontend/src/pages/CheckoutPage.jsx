@@ -475,9 +475,20 @@ const CheckoutPage = () => {
                             <div
                               key={warehouse.ref}
                               onClick={() => handleWarehouseSelect(warehouse)}
-                              className="px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-100 last:border-0"
+                              className={`px-4 py-3 hover:bg-blue-50 cursor-pointer transition-colors border-b border-gray-100 last:border-0 ${
+                                warehouse.isPostomat ? 'bg-yellow-50/30' : ''
+                              }`}
                             >
-                              <div className="text-sm font-medium text-gray-800">{warehouse.description}</div>
+                              <div className="flex items-center gap-2">
+                                <div className="text-sm font-medium text-gray-800 flex-1">
+                                  {warehouse.displayName || warehouse.description}
+                                </div>
+                                {warehouse.isPostomat && (
+                                  <span className="text-[10px] bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded-full font-bold">
+                                    ПОШТОМАТ
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           ))}
                         </div>
