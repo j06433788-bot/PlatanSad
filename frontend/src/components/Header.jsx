@@ -285,7 +285,7 @@ const Header = () => {
           <div className="flex-1 overflow-y-auto py-1">
             {/* Categories Section */}
             <div className="px-4 py-3 bg-green-50 border-b border-green-100">
-              <h3 className="text-sm font-bold text-green-800 uppercase tracking-wide">Категорії товарів</h3>
+              <h3 className="text-sm font-bold text-green-800 uppercase tracking-wide">Категорії рослин</h3>
             </div>
             
             {/* Categories from API */}
