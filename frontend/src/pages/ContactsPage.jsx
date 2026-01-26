@@ -119,6 +119,36 @@ const ContactsPage = () => {
           </form>
         </div>
 
+        {/* Map Section */}
+        <div className="bg-white rounded-lg md:rounded-2xl shadow-lg p-4 md:p-8 mb-6 md:mb-10">
+          <div className="flex items-center gap-2 mb-4 md:mb-6">
+            <MapPin className="w-5 h-5 md:w-6 md:h-6 text-green-500" />
+            <h2 className="text-xl md:text-2xl font-bold">Як нас знайти</h2>
+          </div>
+          
+          <div className="relative w-full h-64 md:h-96 rounded-lg overflow-hidden">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2544.4573485641806!2d26.1875384!3d50.4014433!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x472f13c1e8b8e8e9%3A0x5e8f8e8f8e8f8e8f!2z0KHQvNC40LPQsCwg0KDRltCy0L3QtdC90YHRjNC60LAg0L7QsdC70LDRgdGC0YwsIDM1MjAw!5e0!3m2!1suk!2sua!4v1234567890123!5m2!1suk!2sua"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Розсадник PlatanSad на карті"
+            ></iframe>
+          </div>
+          
+          <div className="mt-4 p-3 md:p-4 bg-green-50 rounded-lg">
+            <p className="text-sm md:text-base text-gray-700">
+              <strong>Адреса:</strong> Рівненська обл., Дубенський р-н, смт. Смига, Україна
+            </p>
+            <p className="text-xs md:text-sm text-gray-600 mt-1">
+              Ми знаходимося в мальовничому місці серед зелені. Завжди раді вашому візиту!
+            </p>
+          </div>
+        </div>
+
         {/* Social Media - Оптимізовано */}
         <div className="bg-white rounded-lg md:rounded-2xl shadow-lg p-6 md:p-12">
           <h2 className="text-xl md:text-3xl font-bold text-gray-800 mb-5 md:mb-6 text-center">Ми в соціальних мережах</h2>
