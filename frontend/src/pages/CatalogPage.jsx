@@ -79,7 +79,7 @@ const CatalogPage = () => {
       <div className="max-w-7xl mx-auto px-3 sm:px-4">
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-800" data-testid="catalog-title">
-            Каталог товарів
+            Каталог рослин
             {products.length > 0 && (
               <span className="text-gray-500 font-normal ml-2 sm:ml-3 text-lg sm:text-xl">({products.length})</span>
             )}
