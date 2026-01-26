@@ -517,7 +517,7 @@ const CheckoutPage = () => {
                     <MapPin className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                     <div>
                       <p className="text-sm font-bold text-green-900 mb-2">Адреса розсадника:</p>
-                      <p className="text-sm text-green-800 font-medium">смт. Смига, вул. Садова, 15</p>
+                      <p className="text-sm text-green-800 font-medium">Рівненська обл., Дубенський р-н, смт. Смига</p>
                       <p className="text-xs text-green-600 mt-2">Пн-Сб: 9:00-18:00 | Нд: вихідний</p>
                     </div>
                   </div>
