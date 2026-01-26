@@ -48,14 +48,6 @@ const ProductDetailPage = () => {
     addToCart(product, quantity);
   };
 
-  const handleCompare = () => {
-    if (isInCompare(product.id)) {
-      removeFromCompare(product.id);
-    } else {
-      addToCompare(product);
-    }
-  };
-
   const incrementQuantity = () => {
     if (quantity < product.stock) {
       setQuantity(quantity + 1);
