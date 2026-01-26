@@ -264,10 +264,9 @@ async def delete_media_file(
 
 @media_router.get("/stats")
 async def get_media_stats(
-    current_admin: dict = Depends(get_current_admin),
     db: AsyncSession = Depends(get_db)
 ):
-    """Get media library statistics"""
+    """Get media library statistics (public)"""
     # Total files
     total_result = await db.execute(select(func.count(MediaFile.id)))
     total_files = total_result.scalar() or 0
