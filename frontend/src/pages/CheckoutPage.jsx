@@ -454,8 +454,18 @@ const CheckoutPage = () => {
                         <span className={`flex-1 text-base ${
                           formData.warehouse ? 'text-gray-800 font-medium' : 'text-gray-400'
                         }`}>
-                          {loadingWarehouses ? 'Завантаження відділень...' : formData.warehouse?.description || 'Оберіть відділення'}
+                          {loadingWarehouses 
+                            ? 'Завантаження відділень...' 
+                            : formData.warehouse 
+                              ? (formData.warehouse.displayName || formData.warehouse.description)
+                              : 'Оберіть відділення'
+                          }
                         </span>
+                        {formData.warehouse?.isPostomat && (
+                          <span className="text-[10px] bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded-full font-bold mr-2">
+                            ПОШТОМАТ
+                          </span>
+                        )}
                         <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
                       </div>
                       {errors.warehouse && (
