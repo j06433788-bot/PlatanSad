@@ -169,6 +169,42 @@ class FooterLink(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
+# CMS Blog Model
+class BlogPost(Base):
+    __tablename__ = "blog_posts"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    slug = Column(String, unique=True, nullable=False, index=True)
+    title = Column(String, nullable=False)
+    excerpt = Column(String, nullable=True)
+    content = Column(Text, nullable=False)
+    image_url = Column(String, nullable=True)
+    author = Column(String, default="PlatanSad")
+    category = Column(String, nullable=True)
+    tags = Column(JSON, default=list)
+    is_published = Column(Boolean, default=True)
+    views = Column(Integer, default=0)
+    meta_description = Column(String, nullable=True)
+    meta_keywords = Column(String, nullable=True)
+    published_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+# CMS Menu Items Model
+class MenuItem(Base):
+    __tablename__ = "menu_items"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    title = Column(String, nullable=False)
+    url = Column(String, nullable=False)
+    icon = Column(String, nullable=True)
+    order = Column(Integer, default=0)
+    is_active = Column(Boolean, default=True)
+    parent_id = Column(String, nullable=True)  # For submenu
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
 # Database helper functions
 async def get_db():
     """Dependency to get database session"""
