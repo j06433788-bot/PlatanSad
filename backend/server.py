@@ -1463,6 +1463,7 @@ app.include_router(api_router)
 app.include_router(cms_router)  # CMS API endpoints
 app.include_router(blog_router)  # Blog API endpoints
 app.include_router(menu_router)  # Menu API endpoints
+app.include_router(media_router)  # Media Library API endpoints
 
 app.add_middleware(
     CORSMiddleware,
