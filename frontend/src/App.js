@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "sonner";
 import { CartProvider } from "./context/CartContext";
 import { WishlistProvider } from "./context/WishlistContext";
-import { CompareProvider } from "./context/CompareContext";
 import { AdminAuthProvider } from "./admin/context/AdminAuthContext";
 import { ThemeProvider } from "./admin/context/ThemeContext";
 import { SettingsProvider } from "./context/SettingsContext";
@@ -22,7 +21,6 @@ import DeliveryPage from "./pages/DeliveryPage";
 import ReturnPage from "./pages/ReturnPage";
 import ContactsPage from "./pages/ContactsPage";
 import BlogPage from "./pages/BlogPage";
-import ComparePage from "./pages/ComparePage";
 
 // Admin imports
 import AdminLogin from "./admin/pages/AdminLogin";
