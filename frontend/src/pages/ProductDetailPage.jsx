@@ -149,17 +149,6 @@ const ProductDetailPage = () => {
                 </span>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={handleCompare}
-                    className={`p-2 rounded-full transition-colors ${
-                      isCompared 
-                        ? 'bg-green-50 text-green-600' 
-                        : 'text-gray-400 hover:bg-gray-100 hover:text-green-600'
-                    }`}
-                    title="Порівняти"
-                  >
-                    <GitCompare className="w-6 h-6" />
-                  </button>
-                  <button
                     onClick={() => toggleWishlist(product.id)}
                     className={`p-2 rounded-full transition-colors ${
                       isFavorite 
