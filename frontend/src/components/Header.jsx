@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Heart, ShoppingBag, X, Menu, Phone, Info, Truck, RefreshCw, MapPin, BookOpen, GitCompare, Clock, Trees, TreePine, Leaf, Circle, Flower2, Flower, Sprout, ChevronRight, ChevronDown } from 'lucide-react';
+import { Search, Heart, ShoppingBag, X, Menu, Phone, Info, Truck, RefreshCw, MapPin, BookOpen, Clock, Trees, TreePine, Leaf, Circle, Flower2, Flower, Sprout, ChevronRight, ChevronDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
