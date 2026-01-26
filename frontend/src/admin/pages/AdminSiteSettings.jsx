@@ -19,7 +19,7 @@ const AdminSiteSettings = () => {
     phone2: '+380 (95) 251-03-47',
     email: 'info@platansad.ua',
     viber: '+380636507449',
-    address: 'смт. Смига, вул. Садова, 15',
+    address: 'Рівненська обл., Дубенський р-н, смт. Смига',
     workingHours: 'Пн-Сб: 9:00-18:00',
     weekend: 'Нд: вихідний',
     
