@@ -3,8 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { productsApi } from '../api/productsApi';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { useCompare } from '../context/CompareContext';
-import { ShoppingCart, Heart, ArrowLeft, Minus, Plus, Zap, GitCompare, Check, Truck, ShieldCheck, CreditCard } from 'lucide-react';
+import { ShoppingCart, Heart, ArrowLeft, Minus, Plus, Zap, Check, Truck, ShieldCheck, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
 import QuickOrderModal from '../components/QuickOrderModal';
 import SimilarProducts from '../components/SimilarProducts';
@@ -20,7 +19,6 @@ const ProductDetailPage = () => {
   
   const { addToCart, cartLoading } = useCart();
   const { isInWishlist, toggleWishlist, wishlistLoading } = useWishlist();
-  const { addToCompare, isInCompare, removeFromCompare } = useCompare();
 
   useEffect(() => {
     const fetchProduct = async () => {
