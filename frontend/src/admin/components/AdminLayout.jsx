@@ -14,7 +14,8 @@ import {
   Menu,
   X,
   TrendingUp,
-  FileText
+  FileText,
+  Image
 } from 'lucide-react';
 import { useState } from 'react';
 
