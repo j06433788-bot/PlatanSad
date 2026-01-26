@@ -32,6 +32,7 @@ import AdminCategories from "./admin/pages/AdminCategories";
 import AdminSiteSettings from "./admin/pages/AdminSiteSettings";
 import AdminContent from "./admin/pages/AdminContent";
 import AdminCMS from "./admin/pages/AdminCMS";
+import AdminBlog from "./admin/pages/AdminBlog";
 import ProtectedRoute from "./admin/components/ProtectedRoute";
 
 import "./App.css";
