@@ -491,10 +491,10 @@ const CheckoutPage = () => {
                             >
                               <div className="flex items-center gap-2">
                                 <div className="text-sm font-medium text-gray-800 flex-1">
-                                  {warehouse.displayName || warehouse.description}
+                                  {warehouse.description}
                                 </div>
                                 {warehouse.isPostomat && (
-                                  <span className="text-[10px] bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded-full font-bold">
+                                  <span className="text-[10px] bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded-full font-bold flex-shrink-0">
                                     ПОШТОМАТ
                                   </span>
                                 )}
