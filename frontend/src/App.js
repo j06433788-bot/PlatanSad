@@ -33,6 +33,7 @@ import AdminSiteSettings from "./admin/pages/AdminSiteSettings";
 import AdminContent from "./admin/pages/AdminContent";
 import AdminCMS from "./admin/pages/AdminCMS";
 import AdminBlog from "./admin/pages/AdminBlog";
+import AdminMedia from "./admin/pages/AdminMedia";
 import ProtectedRoute from "./admin/components/ProtectedRoute";
 
 import "./App.css";
