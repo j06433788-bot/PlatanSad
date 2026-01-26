@@ -1,0 +1,62 @@
+[
+  {
+    "id": "cat-001",
+    "name": "Бонсай Нівакі",
+    "icon": "🌲",
+    "count": 0
+  },
+  {
+    "id": "cat-002",
+    "name": "Туя Колумна",
+    "icon": "https://images.prom.ua/5107358816_w640_h640_tuya-kolumna-columna.jpg",
+    "count": 0
+  },
+  {
+    "id": "cat-003",
+    "name": "Туя Смарагд",
+    "icon": "https://images.prom.ua/5107353705_w640_h640_tuya-smaragd-smaragd.jpg",
+    "count": 0
+  },
+  {
+    "id": "cat-004",
+    "name": "Самшит",
+    "icon": "https://images.prom.ua/5027226901_w640_h640_samshit-vichnozelenij-arborestsens.jpg",
+    "count": 0
+  },
+  {
+    "id": "cat-005",
+    "name": "Хвойні рослини",
+    "icon": "https://images.prom.ua/713633902_w640_h640_hvojni-roslini.jpg",
+    "count": 0
+  },
+  {
+    "id": "cat-006",
+    "name": "Листопадні дерева та кущі",
+    "icon": "https://images.prom.ua/701884790_w640_h640_listopadni-dereva-ta.jpg",
+    "count": 0
+  },
+  {
+    "id": "cat-007",
+    "name": "Куляста Туя Глобоса",
+    "icon": "https://images.prom.ua/4858672644_w640_h640_kulyasta-tuya-globosa.jpg",
+    "count": 0
+  },
+  {
+    "id": "cat-008",
+    "name": "Катальпа",
+    "icon": "https://images.prom.ua/4958829409_w640_h640_katalpa-catalpa.jpg",
+    "count": 0
+  },
+  {
+    "id": "cat-009",
+    "name": "Ялина",
+    "icon": "https://images.prom.ua/5027326802_w640_h640_yalina.jpg",
+    "count": 0
+  },
+  {
+    "id": "cat-010",
+    "name": "Кімнатні рослини",
+    "icon": "https://images.prom.ua/6901216283_w640_h640_kimnatni-roslini.jpg",
+    "count": 0
+  }
+]

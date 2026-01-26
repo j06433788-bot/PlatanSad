@@ -1,0 +1,56 @@
+[
+  {
+    "id": "ff54ab73-ab72-4e66-bba2-34ac84d70795",
+    "title": "Головна",
+    "url": "/",
+    "icon": null,
+    "order": 1,
+    "is_active": true,
+    "parent_id": null
+  },
+  {
+    "id": "1c3547e3-8ab6-4452-91cf-6fa668744f2a",
+    "title": "Каталог",
+    "url": "/catalog",
+    "icon": null,
+    "order": 2,
+    "is_active": true,
+    "parent_id": null
+  },
+  {
+    "id": "b9c5765f-0edb-4f97-8857-67a67ee95678",
+    "title": "Про нас",
+    "url": "/about",
+    "icon": null,
+    "order": 3,
+    "is_active": true,
+    "parent_id": null
+  },
+  {
+    "id": "3b3a0aee-5f69-43bd-8db2-3921b15afa30",
+    "title": "Блог",
+    "url": "/blog",
+    "icon": null,
+    "order": 4,
+    "is_active": true,
+    "parent_id": null
+  },
+  {
+    "id": "1540d84d-b8c3-4cdd-b58a-8f662c10934f",
+    "title": "Доставка",
+    "url": "/delivery",
+    "icon": null,
+    "order": 5,
+    "is_active": true,
+    "parent_id": null
+  },
+  {
+    "id": "f6212044-d524-40ef-9731-0f81c5744a4c",
+    "title": "Контакти",
+    "url": "/contacts",
+    "icon": null,
+    "order": 6,
+    "is_active": true,
+    "parent_id": null
+  }
+]
