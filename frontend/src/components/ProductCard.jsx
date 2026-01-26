@@ -131,16 +131,6 @@ const ProductCard = ({ product }) => {
               >
                 <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
               </button>
-              <button
-                onClick={handleCompare}
-                className={`p-3 rounded-full shadow-lg backdrop-blur-sm transition-all ${
-                  isCompared 
-                    ? 'bg-blue-500 text-white' 
-                    : 'bg-white/90 text-gray-700 hover:bg-blue-500 hover:text-white'
-                }`}
-              >
-                <GitCompare className="w-5 h-5" />
-              </button>
             </div>
           </div>
 
@@ -157,15 +147,7 @@ const ProductCard = ({ product }) => {
             >
               <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
             </button>
-            <button
-              onClick={handleCompare}
-              className={`p-2 rounded-full shadow-md backdrop-blur-sm transition-all ${
-                isCompared 
-                  ? 'bg-blue-500 text-white' 
-                  : 'bg-white/95 text-gray-500'
-              }`}
-            >
-              <GitCompare className="w-4 h-4" />
+          </div>
             </button>
           </div>
         </div>
