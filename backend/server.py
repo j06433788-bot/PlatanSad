@@ -15,6 +15,7 @@ import uuid
 
 # Import CMS router
 from cms_api import cms_router
+from blog_api import blog_router, menu_router
 from models import (
     Product as ProductSchema, ProductCreate, ProductUpdate,
     Category as CategorySchema, CategoryCreate,
@@ -1459,6 +1460,8 @@ async def save_admin_settings(
 # Include the router in the main app
 app.include_router(api_router)
 app.include_router(cms_router)  # CMS API endpoints
+app.include_router(blog_router)  # Blog API endpoints
+app.include_router(menu_router)  # Menu API endpoints
 
 app.add_middleware(
     CORSMiddleware,
