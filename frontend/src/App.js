@@ -266,6 +266,18 @@ function App() {
                     </div>
                   }
                 />
+                <Route
+                  path="/blog/:slug"
+                  element={
+                    <div className="App min-h-screen bg-white flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <BlogPage />
+                      </main>
+                      <Footer />
+                    </div>
+                  }
+                />
               </Routes>
               <Toaster
                 position="top-center"
