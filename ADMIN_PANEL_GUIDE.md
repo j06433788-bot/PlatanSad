@@ -37,7 +37,7 @@
 
 ### Крок 1: Увійдіть в адмін панель
 ```
-URL: https://f3c52cc8-7eb7-4fa1-bd53-9e8ef5872f8d.preview.emergentagent.com/admin/login
+URL: https://plantshop-manager.preview.emergentagent.com/admin/login
 Логін: admin
 Пароль: admin123
 ```

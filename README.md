@@ -158,7 +158,7 @@ CORS_ORIGINS=*
 
 ### Frontend (.env)
 ```
-REACT_APP_BACKEND_URL=https://archive-unpacker-4.preview.emergentagent.com
+REACT_APP_BACKEND_URL=https://plantshop-manager.preview.emergentagent.com
 ```
 
 ## База даних PostgreSQL

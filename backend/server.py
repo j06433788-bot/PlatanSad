@@ -1466,7 +1466,7 @@ app.include_router(menu_router)  # Menu API endpoints
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=["https://archive-unpacker-4.preview.emergentagent.com", "http://localhost:3000", "http://localhost:8001"],
+    allow_origins=["https://plantshop-manager.preview.emergentagent.com", "http://localhost:3000", "http://localhost:8001"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
