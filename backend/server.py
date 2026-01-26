@@ -12,6 +12,9 @@ from typing import List, Optional
 from datetime import datetime, timedelta
 import shutil
 import uuid
+
+# Import CMS router
+from cms_api import cms_router
 from models import (
     Product as ProductSchema, ProductCreate, ProductUpdate,
     Category as CategorySchema, CategoryCreate,
