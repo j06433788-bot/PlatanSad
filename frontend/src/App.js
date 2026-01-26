@@ -43,7 +43,6 @@ function App() {
           <SettingsProvider>
             <CartProvider>
               <WishlistProvider>
-                <CompareProvider>
                   <Routes>
                 {/* Admin Routes */}
                 <Route path="/admin/login" element={<AdminLogin />} />
