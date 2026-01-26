@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { ShoppingCart, Heart, Zap, GitCompare, Check } from 'lucide-react';
+import { ShoppingCart, Heart, Zap, Check } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { useCompare } from '../context/CompareContext';
 import QuickOrderModal from './QuickOrderModal';
 import { toast as sonnerToast } from 'sonner';
 
@@ -11,25 +10,14 @@ const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const { addToCart, loading: cartLoading } = useCart();
   const { isInWishlist, toggleWishlist, loading: wishlistLoading } = useWishlist();
-  const { addToCompare, isInCompare, removeFromCompare } = useCompare();
   const [showQuickOrder, setShowQuickOrder] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
   
   const isFavorite = isInWishlist(product.id);
-  const isCompared = isInCompare(product.id);
 
   const hasSale = product.badges?.includes('sale');
   const isNew = product.badges?.includes('new');
   const isHit = product.badges?.includes('hit');
-
-  const handleCompare = (e) => {
-    e.stopPropagation();
-    if (isCompared) {
-      removeFromCompare(product.id);
-    } else {
-      addToCompare(product);
-    }
-  };
 
   const handleAddToCart = async (e) => {
     e.stopPropagation();
