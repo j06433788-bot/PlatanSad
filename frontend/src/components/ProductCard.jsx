@@ -148,8 +148,6 @@ const ProductCard = ({ product }) => {
               <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
             </button>
           </div>
-            </button>
-          </div>
         </div>
 
         {/* Content */}
