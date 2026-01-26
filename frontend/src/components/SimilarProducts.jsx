@@ -17,10 +17,10 @@ const SimilarProducts = ({ category, currentProductId }) => {
         // Note: The backend API supports filtering by category name
         const data = await productsApi.getProducts({ category, limit: 10 });
         
-        // Filter out current product and limit to 4 items
+        // Filter out current product and limit to 6 items for mobile scroll
         const filtered = data
           .filter(p => p.id !== currentProductId)
-          .slice(0, 4);
+          .slice(0, 6);
           
         setProducts(filtered);
       } catch (error) {
