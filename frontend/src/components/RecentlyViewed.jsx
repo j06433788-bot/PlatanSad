@@ -11,7 +11,7 @@ const RecentlyViewed = ({ currentProductId }) => {
       // Filter out current product from display if needed, or show it. 
       // Usually we show what was viewed *before*, or just the history including current.
       // Let's exclude current product from the list to avoid duplication if it's the main focus
-      const filtered = viewed.filter(p => p.id !== currentProductId).slice(0, 4);
+      const filtered = viewed.filter(p => p.id !== currentProductId).slice(0, 6);
       setRecentProducts(filtered);
     } catch (e) {
       console.error(e);
