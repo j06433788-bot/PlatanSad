@@ -85,7 +85,6 @@ const ProductDetailPage = () => {
   }
 
   const isFavorite = isInWishlist(product.id);
-  const isCompared = isInCompare(product.id);
 
   return (
     <div className="min-h-screen bg-gray-50 pb-12">
