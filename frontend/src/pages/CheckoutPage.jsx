@@ -661,47 +661,37 @@ const CheckoutPage = () => {
               className="w-full px-4 py-4 bg-gray-50 rounded-2xl border-2 border-transparent focus:border-green-500 focus:bg-white outline-none resize-none text-sm transition-all"
             />
           </div>
-        </form>
-      </div>
 
-      {/* Fixed Bottom Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
-            {/* Amount - Compact on mobile, expanded on desktop */}
-            <div className="flex items-center justify-between sm:flex-1">
-              <div className="text-xs text-gray-500 font-medium">До сплати</div>
-              <div className="text-2xl sm:text-3xl font-bold text-green-600">{cartTotal.toLocaleString()} ₴</div>
-            </div>
-            
-            {/* Action Button - Full width on mobile */}
+          {/* Submit Button - Moved here */}
+          <div className="pt-4">
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className="w-full sm:w-auto sm:min-w-[280px] bg-gradient-to-r from-green-500 to-emerald-500 text-white py-4 px-6 sm:px-8 rounded-2xl font-bold text-base disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+              type="button"
+              className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white py-4 px-6 rounded-2xl font-bold text-base disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span className="hidden sm:inline">Оформлення...</span>
-                  <span className="sm:hidden">Зачекайте...</span>
-                </>
-              ) : formData.paymentMethod === 'liqpay' ? (
-                <>
-                  <CreditCard className="w-5 h-5" />
-                  <span className="hidden sm:inline">Перейти до оплати</span>
-                  <span className="sm:hidden">Оплатити</span>
+                  <span>Оформлення...</span>
                 </>
               ) : (
                 <>
                   <Check className="w-5 h-5" />
-                  <span className="hidden sm:inline">Підтвердити замовлення</span>
-                  <span className="sm:hidden">Замовити</span>
+                  <span>Підтвердити замовлення</span>
                 </>
               )}
             </button>
+            
+            {/* Total Amount Display */}
+            <div className="mt-4 p-4 bg-green-50 rounded-2xl border-2 border-green-200">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-gray-700">До сплати:</span>
+                <span className="text-2xl font-bold text-green-600">{cartTotal.toLocaleString()} ₴</span>
+              </div>
+            </div>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
