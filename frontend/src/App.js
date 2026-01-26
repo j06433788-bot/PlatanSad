@@ -105,6 +105,14 @@ function App() {
                   }
                 />
                 <Route
+                  path="/admin/blog"
+                  element={
+                    <ProtectedRoute>
+                      <AdminBlog />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/admin/content"
                   element={
                     <ProtectedRoute>
