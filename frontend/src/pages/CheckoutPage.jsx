@@ -575,74 +575,7 @@ const CheckoutPage = () => {
                   )}
                 </div>
               </button>
-              
-              {/* LiqPay */}
-              <button
-                type="button"
-                onClick={() => setFormData(prev => ({ ...prev, paymentMethod: 'liqpay' }))}
-                className={`w-full p-4 sm:p-5 rounded-2xl border-2 transition-all text-left ${
-                  formData.paymentMethod === 'liqpay'
-                    ? 'border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-md'
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 ${
-                    formData.paymentMethod === 'liqpay' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-400'
-                  }`}>
-                    <CreditCard className="w-7 h-7" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-bold text-base">LiqPay</span>
-                      <span className="text-[10px] bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded-full font-bold">ТЕСТ</span>
-                    </div>
-                    <div className="text-xs text-gray-500">Visa, Mastercard</div>
-                  </div>
-                  {formData.paymentMethod === 'liqpay' && (
-                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Check className="w-5 h-5 text-white" />
-                    </div>
-                  )}
-                </div>
-              </button>
             </div>
-            
-            {/* Test Card Info */}
-            {formData.paymentMethod === 'liqpay' && (
-              <div className="mt-4 space-y-3">
-                <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-2xl">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-yellow-200 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-yellow-800 text-lg">⚠️</span>
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-yellow-800 mb-1">Для тестування LiqPay</p>
-                      <p className="text-xs text-yellow-700">
-                        Потрібні <span className="font-bold">реальні sandbox ключі</span> з вашого кабінету LiqPay.
-                      </p>
-                      <p className="text-xs text-yellow-700 mt-1">
-                        Отримайте ключі на: <a href="https://www.liqpay.ua/" target="_blank" rel="noopener noreferrer" className="underline font-semibold">liqpay.ua</a>
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl">
-                  <div className="flex items-start gap-3">
-                    <div className="w-8 h-8 bg-blue-200 rounded-full flex items-center justify-center flex-shrink-0">
-                      <span className="text-blue-800 text-lg">ℹ️</span>
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold text-blue-800 mb-1">Альтернатива</p>
-                      <p className="text-xs text-blue-700">
-                        Використовуйте <span className="font-bold">"Накладений платіж"</span> для тестування без потреби в оплаті онлайн.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* 4. Notes */}
