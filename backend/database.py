@@ -130,6 +130,45 @@ class SiteSettings(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
+# CMS Page Content Model
+class PageContent(Base):
+    __tablename__ = "page_contents"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    page_key = Column(String, unique=True, nullable=False, index=True)  # about, delivery, contacts, return
+    title = Column(String, nullable=False)
+    content = Column(Text, nullable=False)
+    meta_description = Column(String, nullable=True)
+    meta_keywords = Column(String, nullable=True)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+# CMS Hero Section Model
+class HeroSection(Base):
+    __tablename__ = "hero_sections"
+    
+    id = Column(String, primary_key=True, default="main")
+    title = Column(String, nullable=False)
+    subtitle = Column(String, nullable=True)
+    button_text = Column(String, nullable=True)
+    button_link = Column(String, nullable=True)
+    background_image = Column(String, nullable=True)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+# CMS Footer Links Model  
+class FooterLink(Base):
+    __tablename__ = "footer_links"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    section = Column(String, nullable=False, index=True)  # company, help, social
+    title = Column(String, nullable=False)
+    url = Column(String, nullable=False)
+    order = Column(Integer, default=0)
+    is_active = Column(Boolean, default=True)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
 # Database helper functions
 async def get_db():
     """Dependency to get database session"""
