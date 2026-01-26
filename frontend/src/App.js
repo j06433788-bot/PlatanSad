@@ -96,6 +96,14 @@ function App() {
                   }
                 />
                 <Route
+                  path="/admin/cms"
+                  element={
+                    <ProtectedRoute>
+                      <AdminCMS />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/admin/content"
                   element={
                     <ProtectedRoute>
