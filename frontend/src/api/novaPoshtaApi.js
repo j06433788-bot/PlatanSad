@@ -103,7 +103,7 @@ export const searchCities = async (query) => {
 };
 
 /**
- * Отримати відділення Нової Пошти в місті (без поштоматів)
+ * Отримати відділення Нової Пошти в місті (включаючи поштомати)
  * @param {string} cityRef - Ref міста
  * @returns {Promise<Array>} Список відділень
  */
@@ -132,28 +132,40 @@ export const getWarehouses = async (cityRef) => {
     
     if (data.success && data.data) {
       // Типи відділень Нової Пошти:
-      // '9a68df70-0267-42a8-bb5c-37f427e36ee4' - Поштомат (виключаємо)
+      // '9a68df70-0267-42a8-bb5c-37f427e36ee4' - Поштомат
       // '841339c7-591a-42e2-8233-7a0a00f0ed6f' - Відділення
       // '6f8c7162-4b72-4b0a-88e5-906948c6a92f' - Поштове відділення
       
       const POSTOMAT_TYPE = '9a68df70-0267-42a8-bb5c-37f427e36ee4';
       
       return data.data
-        // Виключаємо поштомати
-        .filter(warehouse => warehouse.TypeOfWarehouse !== POSTOMAT_TYPE)
         // Виключаємо закриті відділення
         .filter(warehouse => warehouse.WarehouseStatus !== 'Closed')
-        .map(warehouse => ({
-          ref: warehouse.Ref,
-          description: warehouse.Description,
-          shortAddress: warehouse.ShortAddress,
-          number: warehouse.Number,
-          cityRef: warehouse.CityRef,
-          typeOfWarehouse: warehouse.TypeOfWarehouse,
-          warehouseStatus: warehouse.WarehouseStatus
-        }))
-        // Сортуємо за номером відділення
+        .map(warehouse => {
+          const isPostomat = warehouse.TypeOfWarehouse === POSTOMAT_TYPE;
+          
+          return {
+            ref: warehouse.Ref,
+            description: warehouse.Description,
+            shortAddress: warehouse.shortAddress || warehouse.ShortAddress,
+            number: warehouse.Number,
+            cityRef: warehouse.CityRef,
+            typeOfWarehouse: warehouse.TypeOfWarehouse,
+            warehouseStatus: warehouse.WarehouseStatus,
+            isPostomat: isPostomat,
+            // Додаємо позначку до опису для поштоматів
+            displayName: isPostomat 
+              ? `${warehouse.Description} (Поштомат)`
+              : warehouse.Description
+          };
+        })
+        // Сортуємо: спочатку відділення, потім поштомати
         .sort((a, b) => {
+          // Спочатку відділення, потім поштомати
+          if (a.isPostomat !== b.isPostomat) {
+            return a.isPostomat ? 1 : -1;
+          }
+          // Всередині кожної групи сортуємо за номером
           const numA = parseInt(a.number) || 0;
           const numB = parseInt(b.number) || 0;
           return numA - numB;
