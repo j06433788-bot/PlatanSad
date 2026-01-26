@@ -114,6 +114,14 @@ function App() {
                   }
                 />
                 <Route
+                  path="/admin/media"
+                  element={
+                    <ProtectedRoute>
+                      <AdminMedia />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/admin/content"
                   element={
                     <ProtectedRoute>
