@@ -26,7 +26,7 @@ const Categories = () => {
   if (loading) {
     return (
       <section className="max-w-7xl mx-auto px-4 py-6">
-        <h2 className="text-xl font-bold text-center mb-6">Каталог товарів</h2>
+        <h2 className="text-xl font-bold text-center mb-6">Каталог рослин</h2>
         <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
           {[1,2,3,4,5].map((i) => (
             <div key={i} className="flex-shrink-0 w-24 sm:w-28">
@@ -43,7 +43,7 @@ const Categories = () => {
     <section className="max-w-7xl mx-auto px-4 py-6 sm:py-8">
       {/* Title */}
       <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-800 mb-6">
-        Каталог товарів
+        Каталог рослин
       </h2>
 
       {/* Categories - Horizontal scroll on mobile, grid on desktop */}
