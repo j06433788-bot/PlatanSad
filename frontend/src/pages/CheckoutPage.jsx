@@ -2,10 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { ordersApi } from '../api/ordersApi';
-import { liqpayApi } from '../api/liqpayApi';
 import { toast } from 'sonner';
 import { 
-  ArrowLeft, MapPin, Package, CreditCard, 
+  ArrowLeft, MapPin, Package, 
   Truck, CheckCircle2, ChevronDown, Banknote, X, User, Phone,
   MessageSquare, ShoppingBag, Check
 } from 'lucide-react';
@@ -15,7 +14,6 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const { cartItems, cartTotal, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
-  const [liqpayData, setLiqpayData] = useState(null);
   
   const [formData, setFormData] = useState({
     customerName: '',
@@ -41,7 +39,6 @@ const CheckoutPage = () => {
   
   const cityInputRef = useRef(null);
   const warehouseInputRef = useRef(null);
-  const liqpayFormRef = useRef(null);
 
   // Пошук міст
   useEffect(() => {
