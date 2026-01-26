@@ -21,13 +21,26 @@ const RecentlyViewed = ({ currentProductId }) => {
   if (recentProducts.length === 0) return null;
 
   return (
-    <section className="py-8 bg-gray-50 border-t border-gray-200">
+    <section className="py-6 md:py-8 bg-gray-50 border-t border-gray-200">
       <div className="max-w-7xl mx-auto px-4">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6">Ви переглядали</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 md:mb-6">Ви переглядали</h2>
+        
+        {/* Desktop: Grid */}
+        <div className="hidden md:grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {recentProducts.map(product => (
             <ProductCard key={product.id} product={product} />
           ))}
+        </div>
+
+        {/* Mobile: Horizontal scroll */}
+        <div className="md:hidden overflow-x-auto -mx-4 px-4">
+          <div className="flex gap-3 pb-2">
+            {recentProducts.map(product => (
+              <div key={product.id} className="flex-shrink-0 w-[160px]">
+                <ProductCard product={product} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
