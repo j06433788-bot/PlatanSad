@@ -80,7 +80,7 @@ export const searchCities = async (query) => {
 };
 
 /**
- * Отримати відділення Нової Пошти в місті
+ * Отримати відділення Нової Пошти в місті (без поштоматів)
  * @param {string} cityRef - Ref міста
  * @returns {Promise<Array>} Список відділень
  */
@@ -99,7 +99,8 @@ export const getWarehouses = async (cityRef) => {
         calledMethod: 'getWarehouses',
         methodProperties: {
           CityRef: cityRef,
-          Limit: '500'
+          Limit: '500',
+          Language: 'UA'
         }
       })
     });
@@ -107,16 +108,33 @@ export const getWarehouses = async (cityRef) => {
     const data = await response.json();
     
     if (data.success && data.data) {
+      // Типи відділень Нової Пошти:
+      // '9a68df70-0267-42a8-bb5c-37f427e36ee4' - Поштомат (виключаємо)
+      // '841339c7-591a-42e2-8233-7a0a00f0ed6f' - Відділення
+      // '6f8c7162-4b72-4b0a-88e5-906948c6a92f' - Поштове відділення
+      
+      const POSTOMAT_TYPE = '9a68df70-0267-42a8-bb5c-37f427e36ee4';
+      
       return data.data
-        .filter(warehouse => warehouse.TypeOfWarehouse !== '9a68df70-0267-42a8-bb5c-37f427e36ee4') // Виключаємо поштомати за потреби
+        // Виключаємо поштомати
+        .filter(warehouse => warehouse.TypeOfWarehouse !== POSTOMAT_TYPE)
+        // Виключаємо закриті відділення
+        .filter(warehouse => warehouse.WarehouseStatus !== 'Closed')
         .map(warehouse => ({
           ref: warehouse.Ref,
           description: warehouse.Description,
           shortAddress: warehouse.ShortAddress,
           number: warehouse.Number,
-          cityRef: warehouse.CityRef
+          cityRef: warehouse.CityRef,
+          typeOfWarehouse: warehouse.TypeOfWarehouse,
+          warehouseStatus: warehouse.WarehouseStatus
         }))
-        .sort((a, b) => parseInt(a.number) - parseInt(b.number));
+        // Сортуємо за номером відділення
+        .sort((a, b) => {
+          const numA = parseInt(a.number) || 0;
+          const numB = parseInt(b.number) || 0;
+          return numA - numB;
+        });
     }
     
     return [];
