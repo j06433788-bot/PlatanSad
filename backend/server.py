@@ -1458,6 +1458,7 @@ async def save_admin_settings(
 
 # Include the router in the main app
 app.include_router(api_router)
+app.include_router(cms_router)  # CMS API endpoints
 
 app.add_middleware(
     CORSMiddleware,
