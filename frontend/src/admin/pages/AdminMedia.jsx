@@ -48,17 +48,15 @@ const AdminMedia = () => {
   // Load stats
   const loadStats = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL}/api/media/stats`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      const data = await response.json();
-      setStats(data);
+      const response = await fetch(`${API_URL}/api/media/stats`);
+      if (response.ok) {
+        const data = await response.json();
+        setStats(data);
+      }
     } catch (error) {
       console.error('Failed to load stats:', error);
     }
-  }, [API_URL, token]);
+  }, [API_URL]);
 
   useEffect(() => {
     loadFiles();
