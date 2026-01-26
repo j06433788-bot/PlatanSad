@@ -526,45 +526,47 @@ const CheckoutPage = () => {
             )}
           </div>
 
-          {/* 3. Payment */}
-          <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl flex items-center justify-center text-lg font-bold shadow-md">
-                3
-              </div>
-              <h2 className="text-xl font-bold text-gray-800">Спосіб оплати</h2>
-            </div>
-            
-            <div className="space-y-3">
-              {/* Cash on Delivery */}
-              <button
-                type="button"
-                onClick={() => setFormData(prev => ({ ...prev, paymentMethod: 'cash_on_delivery' }))}
-                className={`w-full p-4 sm:p-5 rounded-2xl border-2 transition-all text-left ${
-                  formData.paymentMethod === 'cash_on_delivery'
-                    ? 'border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-md'
-                    : 'border-gray-200 hover:border-gray-300 bg-white'
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 ${
-                    formData.paymentMethod === 'cash_on_delivery' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-400'
-                  }`}>
-                    <Banknote className="w-7 h-7" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-bold text-base mb-1">Накладений платіж</div>
-                    <div className="text-xs text-gray-500">Оплата при отриманні товару</div>
-                  </div>
-                  {formData.paymentMethod === 'cash_on_delivery' && (
-                    <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Check className="w-5 h-5 text-white" />
-                    </div>
-                  )}
+          {/* 3. Payment - Hide for Self Pickup */}
+          {formData.deliveryMethod !== 'self_pickup' && (
+            <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl flex items-center justify-center text-lg font-bold shadow-md">
+                  3
                 </div>
-              </button>
+                <h2 className="text-xl font-bold text-gray-800">Спосіб оплати</h2>
+              </div>
+              
+              <div className="space-y-3">
+                {/* Cash on Delivery */}
+                <button
+                  type="button"
+                  onClick={() => setFormData(prev => ({ ...prev, paymentMethod: 'cash_on_delivery' }))}
+                  className={`w-full p-4 sm:p-5 rounded-2xl border-2 transition-all text-left ${
+                    formData.paymentMethod === 'cash_on_delivery'
+                      ? 'border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-md'
+                      : 'border-gray-200 hover:border-gray-300 bg-white'
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center flex-shrink-0 ${
+                      formData.paymentMethod === 'cash_on_delivery' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-400'
+                    }`}>
+                      <Banknote className="w-7 h-7" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-bold text-base mb-1">Накладений платіж</div>
+                      <div className="text-xs text-gray-500">Оплата при отриманні товару</div>
+                    </div>
+                    {formData.paymentMethod === 'cash_on_delivery' && (
+                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                        <Check className="w-5 h-5 text-white" />
+                      </div>
+                    )}
+                  </div>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* 4. Notes */}
           <div className="bg-white rounded-3xl p-6 shadow-lg border border-gray-100">
