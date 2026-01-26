@@ -1,50 +1,100 @@
-# PlatanSad - Інтернет-магазин рослин
+# PlatanSad - E-commerce Plant Nursery
 
-## Оригінальний запит
-Розпакувати проект та покращити:
-1. Сучасна мобільна версія інтернет-магазину
-2. Інтеграція LiqPay sandbox для оплати
+## Original Problem Statement
+Створення повнофункціонального e-commerce сайту для розсадника рослин "PlatanSad" з CMS системою для адміністратора.
 
-## Технічний стек
-- **Frontend**: React 19, Tailwind CSS, Radix UI
-- **Backend**: FastAPI + MongoDB
-- **Платіжна система**: LiqPay (sandbox mode)
+## User Personas
+- **Покупці:** Садівники, власники ділянок, ландшафтні дизайнери
+- **Адміністратор:** Власник розсадника, який керує товарами, замовленнями та контентом
 
-## Що реалізовано (16.01.2026)
+## Core Requirements
+1. ✅ Каталог рослин з категоріями та фільтрацією
+2. ✅ Корзина та оформлення замовлень
+3. ✅ Інтеграція з Новою Поштою для доставки
+4. ✅ Адмін-панель для управління товарами та замовленнями
+5. ✅ CMS для редагування статичних сторінок
+6. ✅ Блог з можливістю створення статей
+7. ✅ Медіа-бібліотека для зображень
 
-### Мобільна версія (оновлено)
-- ✅ Сучасні картки товарів з градієнтними бейджами
-- ✅ Touch-friendly кнопки (52px height)
-- ✅ Анімована кнопка "Купити" з галочкою підтвердження
-- ✅ Оновлений checkout з прогрес-баром (кроки 1-2-3)
-- ✅ Градієнтні заголовки секцій
-- ✅ Фіксована нижня панель оплати
-- ✅ Responsive дизайн 390px+
+## Tech Stack
+- **Frontend:** React, TailwindCSS, Shadcn/UI
+- **Backend:** FastAPI (Python)
+- **Database:** PostgreSQL (prod: MySQL)
+- **Hosting:** VPS.ua з Webuzo
 
-### LiqPay інтеграція
-- ✅ Backend сервіс `/app/backend/liqpay_service.py`
-- ✅ API endpoints: `/api/liqpay/create-checkout`, `/api/liqpay/callback`, `/api/liqpay/status/{order_id}`
-- ✅ Frontend API клієнт `/app/frontend/src/api/liqpayApi.js`
-- ✅ Sandbox режим з тестовою карткою 4242 4242 4242 4242
-- ✅ Підказка для тестування в UI
+## What's Been Implemented
 
-## Ключові файли
-- `/app/backend/liqpay_service.py` - LiqPay сервіс
-- `/app/frontend/src/pages/CheckoutPage.jsx` - Оновлений checkout
-- `/app/frontend/src/components/ProductCard.jsx` - Оновлені картки товарів
-- `/app/frontend/src/api/liqpayApi.js` - LiqPay API клієнт
+### Phase 1: Core E-commerce (DONE)
+- [x] Product catalog with categories
+- [x] Shopping cart functionality
+- [x] Checkout with Nova Poshta integration
+- [x] Order management
+- [x] Admin authentication
 
-## Тестування
-- Backend: 100% (20/20 тестів)
-- Frontend: 95% (19/20 функцій)
+### Phase 2: CMS Basic (DONE)
+- [x] Static pages management (About, Delivery, Contacts, Return)
+- [x] Hero section editor
+- [x] Site settings management
 
-## Backlog (P1)
-- [ ] Реальні LiqPay ключі для production
-- [ ] Email повідомлення про замовлення
-- [ ] Історія замовлень для користувачів
-- [ ] Push-нотифікації
+### Phase 3: CMS Extended (DONE)
+- [x] Blog system with CRUD operations
+- [x] Menu management
+- [x] Media library with file upload
 
-## Backlog (P2)
-- [ ] Авторизація користувачів
-- [ ] Порівняння товарів
-- [ ] Відгуки та рейтинги
+### Deployment Preparation (DONE - Jan 26, 2026)
+- [x] Export data scripts created
+- [x] Import data scripts for MySQL
+- [x] Deployment guide for VPS.ua with Webuzo
+- [x] MySQL compatibility added
+
+## Prioritized Backlog
+
+### P0 (High Priority)
+- [ ] Deploy to production (platansad.com.ua)
+- [ ] Test all functionality on production
+
+### P1 (Medium Priority)
+- [ ] SEO meta tags management for products
+- [ ] Header/Footer CMS editing
+- [ ] Image optimization for production
+
+### P2 (Low Priority)
+- [ ] Email notifications for orders
+- [ ] Customer reviews system
+- [ ] Analytics integration
+
+## Files Structure
+```
+/app/
+├── backend/
+│   ├── server.py         # Main FastAPI app
+│   ├── database.py       # SQLAlchemy models
+│   ├── media_api.py      # Media library API
+│   ├── blog_api.py       # Blog API
+│   ├── cms_api.py        # CMS pages API
+│   ├── export_data.py    # Data export script
+│   ├── import_data.py    # Data import script
+│   └── export_data/      # Exported JSON files
+├── frontend/
+│   ├── src/
+│   │   ├── admin/        # Admin panel
+│   │   ├── pages/        # Public pages
+│   │   └── components/   # UI components
+├── DEPLOY_GUIDE.md       # Deployment instructions
+└── platansad_deploy.tar.gz  # Ready for deployment
+```
+
+## Key Endpoints
+- `/api/products` - Products CRUD
+- `/api/categories` - Categories
+- `/api/orders` - Orders management
+- `/api/media/files` - Media library
+- `/api/blog/posts` - Blog articles
+- `/api/cms/pages` - Static pages
+
+## Admin Access
+- URL: `/admin/login`
+- Default: admin / admin123
+
+## Domain
+- Production: https://platansad.com.ua
