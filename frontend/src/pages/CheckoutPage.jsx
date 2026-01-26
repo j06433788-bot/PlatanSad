@@ -457,12 +457,12 @@ const CheckoutPage = () => {
                           {loadingWarehouses 
                             ? 'Завантаження відділень...' 
                             : formData.warehouse 
-                              ? (formData.warehouse.displayName || formData.warehouse.description)
+                              ? formData.warehouse.description
                               : 'Оберіть відділення'
                           }
                         </span>
                         {formData.warehouse?.isPostomat && (
-                          <span className="text-[10px] bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded-full font-bold mr-2">
+                          <span className="text-[10px] bg-yellow-200 text-yellow-800 px-2 py-0.5 rounded-full font-bold mr-2 flex-shrink-0">
                             ПОШТОМАТ
                           </span>
                         )}
