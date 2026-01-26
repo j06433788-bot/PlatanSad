@@ -5,7 +5,7 @@ const API_URL = 'https://api.novaposhta.ua/v2.0/json/';
 const API_KEY = '99f431ebd000e0b8f49d8fceb9669b4a';
 
 /**
- * Пошук міст України
+ * Пошук міст України (актуалізовано на 2026 рік)
  * @param {string} query - Назва міста для пошуку
  * @returns {Promise<Array>} Список міст
  */
@@ -24,7 +24,8 @@ export const searchCities = async (query) => {
         calledMethod: 'getCities',
         methodProperties: {
           FindByString: query,
-          Limit: '50'
+          Limit: '50',
+          Language: 'UA'
         }
       })
     });
@@ -32,28 +33,49 @@ export const searchCities = async (query) => {
     const data = await response.json();
     
     if (data.success && data.data) {
-      // Фільтруємо окуповані території (Крим, частина Донецької, Луганської областей)
+      // Фільтруємо тимчасово окуповані території (станом на 2026 рік)
       const occupiedRegions = [
         'Автономна Республіка Крим',
         'Севастопольська',
       ];
       
+      // Список міст у тимчасово окупованих районах (оновлено 2026)
       const occupiedCities = [
+        // Донецька область
         'Донецьк',
         'Макіївка',
         'Горлівка',
         'Єнакієве',
         'Дебальцеве',
+        'Харцизьк',
+        'Сніжне',
+        'Торез',
+        'Шахтарськ',
+        'Ясинувата',
+        'Іловайськ',
+        'Амвросіївка',
+        'Старобешеве',
+        'Новоазовськ',
+        'Тельманове',
+        // Луганська область
         'Луганськ',
         'Алчевськ',
         'Краснодон',
         'Стаханов',
-        'Ровеньки'
+        'Ровеньки',
+        'Красний Луч',
+        'Брянка',
+        'Антрацит',
+        'Первомайськ',
+        'Хрустальний',
+        'Довжанськ',
+        'Лутугине',
+        'Молодогвардійськ'
       ];
 
       return data.data
         .filter(city => {
-          // Виключаємо окуповані області
+          // Виключаємо окуповані області (Крим)
           if (occupiedRegions.includes(city.AreaDescription)) {
             return false;
           }
@@ -68,7 +90,8 @@ export const searchCities = async (query) => {
           name: city.Description,
           nameRu: city.DescriptionRu,
           area: city.AreaDescription,
-          region: city.RegionsDescription
+          region: city.RegionsDescription,
+          deliveryCity: city.DeliveryCity
         }));
     }
     
