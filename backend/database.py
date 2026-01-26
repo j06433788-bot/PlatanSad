@@ -205,6 +205,24 @@ class MenuItem(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
+# Media Library Model
+class MediaFile(Base):
+    __tablename__ = "media_files"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    filename = Column(String, nullable=False)
+    original_name = Column(String, nullable=False)
+    url = Column(String, nullable=False)
+    file_type = Column(String, nullable=False)  # image, video, document
+    mime_type = Column(String, nullable=True)
+    file_size = Column(Integer, nullable=True)  # size in bytes
+    alt_text = Column(String, nullable=True)
+    title = Column(String, nullable=True)
+    folder = Column(String, default="general")  # for organization
+    uploaded_by = Column(String, default="admin")
+    created_at = Column(DateTime, default=datetime.utcnow, index=True)
+
+
 # Database helper functions
 async def get_db():
     """Dependency to get database session"""
