@@ -248,18 +248,6 @@ function App() {
                     </div>
                   }
                 />
-                <Route
-                  path="/compare"
-                  element={
-                    <div className="App min-h-screen bg-white flex flex-col">
-                      <Header />
-                      <main className="flex-1">
-                        <ComparePage />
-                      </main>
-                      <Footer />
-                    </div>
-                  }
-                />
               </Routes>
               <Toaster
                 position="top-center"
@@ -276,7 +264,6 @@ function App() {
                   },
                 }}
               />
-              </CompareProvider>
             </WishlistProvider>
           </CartProvider>
           </SettingsProvider>
