@@ -16,6 +16,7 @@ import uuid
 # Import CMS router
 from cms_api import cms_router
 from blog_api import blog_router, menu_router
+from media_api import media_router
 from models import (
     Product as ProductSchema, ProductCreate, ProductUpdate,
     Category as CategorySchema, CategoryCreate,
