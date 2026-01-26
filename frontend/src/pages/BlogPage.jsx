@@ -1,115 +1,210 @@
-import React from 'react';
-import { BookOpen, Calendar, User, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Calendar, User, Eye, ArrowLeft, Tag } from 'lucide-react';
 
 const BlogPage = () => {
-  // Placeholder blog posts
-  const blogPosts = [
-    {
-      id: 1,
-      title: 'Як доглядати за туєю взимку',
-      excerpt: 'Корисні поради по догляду за туєю в зимовий період. Захист від морозів та правильний полив.',
-      date: '15 січня 2025',
-      author: 'PlatanSad',
-      image: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=800&auto=format&fit=crop'
-    },
-    {
-      id: 2,
-      title: 'Формування бонсай: основні правила',
-      excerpt: 'Детальний гайд по формуванню дерев бонсай. Техніки обрізки та підтримання форми.',
-      date: '10 січня 2025',
-      author: 'PlatanSad',
-      image: 'https://images.unsplash.com/photo-1509587584298-0f3b3a3a1797?w=800&auto=format&fit=crop'
-    },
-    {
-      id: 3,
-      title: 'Топ-5 хвойних рослин для саду',
-      excerpt: 'Підбірка найкращих хвойних рослин для українського клімату.',
-      date: '5 січня 2025',
-      author: 'PlatanSad',
-      image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=800&auto=format&fit=crop'
-    }
-  ];
+  const { slug } = useParams();
+  const navigate = useNavigate();
+  const [posts, setPosts] = useState([]);
+  const [currentPost, setCurrentPost] = useState(null);
+  const [loading, setLoading] = useState(true);
 
+  const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
+  useEffect(() => {
+    if (slug) {
+      loadPost(slug);
+    } else {
+      loadPosts();
+    }
+  }, [slug]);
+
+  const loadPosts = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/api/blog/posts?published_only=true&limit=50`);
+      const data = await response.json();
+      setPosts(data);
+    } catch (error) {
+      console.error('Error loading posts:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadPost = async (postSlug) => {
+    try {
+      setLoading(true);
+      const response = await fetch(`${API_URL}/api/blog/posts/${postSlug}`);
+      if (response.ok) {
+        const data = await response.json();
+        setCurrentPost(data);
+      } else {
+        navigate('/blog');
+      }
+    } catch (error) {
+      console.error('Error loading post:', error);
+      navigate('/blog');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
+      </div>
+    );
+  }
+
+  // Single post view
+  if (currentPost) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        {/* Back button */}
+        <div className="bg-white border-b">
+          <div className="max-w-4xl mx-auto px-4 py-4">
+            <button
+              onClick={() => navigate('/blog')}
+              className="flex items-center gap-2 text-gray-600 hover:text-green-600 transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Назад до блогу
+            </button>
+          </div>
+        </div>
+
+        {/* Post */}
+        <div className="max-w-4xl mx-auto px-4 py-12">
+          <article className="bg-white rounded-2xl shadow-lg p-6 md:p-12">
+            {/* Category */}
+            {currentPost.category && (
+              <span className="inline-block px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium mb-4">
+                {currentPost.category}
+              </span>
+            )}
+
+            {/* Title */}
+            <h1 className="text-3xl md:text-5xl font-bold text-gray-900 mb-4">
+              {currentPost.title}
+            </h1>
+
+            {/* Meta */}
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-8 pb-8 border-b">
+              <div className="flex items-center gap-1">
+                <User className="w-4 h-4" />
+                {currentPost.author}
+              </div>
+              <div className="flex items-center gap-1">
+                <Calendar className="w-4 h-4" />
+                {new Date(currentPost.published_at).toLocaleDateString('uk-UA', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </div>
+              <div className="flex items-center gap-1">
+                <Eye className="w-4 h-4" />
+                {currentPost.views} переглядів
+              </div>
+            </div>
+
+            {/* Content */}
+            <div
+              className="prose prose-lg max-w-none"
+              dangerouslySetInnerHTML={{ __html: currentPost.content }}
+            />
+
+            {/* Tags */}
+            {currentPost.tags && currentPost.tags.length > 0 && (
+              <div className="mt-8 pt-8 border-t">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Tag className="w-4 h-4 text-gray-500" />
+                  {currentPost.tags.map((tag, index) => (
+                    <span
+                      key={index}
+                      className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+          </article>
+        </div>
+      </div>
+    );
+  }
+
+  // Posts list view
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section - Адаптовано */}
-      <div className="bg-gradient-to-r from-green-500 to-green-600 text-white py-8 md:py-16">
+      {/* Hero */}
+      <div className="bg-gradient-to-r from-green-500 to-green-600 text-white py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-4">
-          <h1 className="text-2xl md:text-5xl font-bold mb-3 md:mb-4 text-center" data-testid="blog-title">
-            Блог
+          <h1 className="text-3xl md:text-5xl font-bold text-center mb-4">
+            Блог PlatanSad
           </h1>
-          <p className="text-sm md:text-xl text-center text-green-50 max-w-3xl mx-auto">
-            Корисні статті та поради по догляду за рослинами
+          <p className="text-lg text-center text-green-50 max-w-2xl mx-auto">
+            Корисні поради по догляду за рослинами та ландшафтному дизайну
           </p>
         </div>
       </div>
 
-      {/* Main Content - Оптимізовано для мобільних */}
-      <div className="max-w-7xl mx-auto px-4 py-6 md:py-12">
-        {/* Blog Posts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8 mb-6 md:mb-12">
-          {blogPosts.map((post) => (
-            <article 
-              key={post.id} 
-              className="bg-white rounded-lg md:rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group cursor-pointer"
-              data-testid="blog-post-card"
-            >
-              {/* Image */}
-              <div className="relative h-40 md:h-48 overflow-hidden">
-                <img 
-                  src={post.image} 
-                  alt={post.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                />
-              </div>
-              
-              {/* Content */}
-              <div className="p-4 md:p-6">
-                {/* Meta */}
-                <div className="flex items-center gap-3 md:gap-4 text-xs md:text-sm text-gray-500 mb-2 md:mb-3">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="w-3 h-3 md:w-4 md:h-4" />
-                    <span>{post.date}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <User className="w-3 h-3 md:w-4 md:h-4" />
-                    <span>{post.author}</span>
-                  </div>
-                </div>
-
-                {/* Title */}
-                <h2 className="text-base md:text-xl font-bold text-gray-800 mb-2 md:mb-3 group-hover:text-green-600 transition-colors">
-                  {post.title}
-                </h2>
-
-                {/* Excerpt */}
-                <p className="text-sm md:text-base text-gray-600 mb-3 md:mb-4 line-clamp-3">
-                  {post.excerpt}
-                </p>
-
-                {/* Read More */}
-                <div className="flex items-center gap-2 text-green-600 font-medium group-hover:gap-3 transition-all text-sm md:text-base">
-                  <span>Читати далі</span>
-                  <ArrowRight className="w-4 h-4" />
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-
-        {/* Coming Soon Message - Оптимізовано */}
-        <div className="bg-white rounded-lg md:rounded-2xl shadow-lg p-6 md:p-12 text-center">
-          <div className="bg-green-100 w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6">
-            <BookOpen className="w-8 h-8 md:w-10 md:h-10 text-green-600" />
+      {/* Posts Grid */}
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        {posts.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-600 text-lg">Статей поки немає</p>
           </div>
-          <h2 className="text-xl md:text-3xl font-bold text-gray-800 mb-3 md:mb-4">Більше статей незабаром</h2>
-          <p className="text-sm md:text-base text-gray-600 max-w-2xl mx-auto mb-5 md:mb-8">
-            Ми регулярно публікуємо нові статті про догляд за рослинами, поради по садівництву та новинки нашого асортименту.
-          </p>
-          <button className="bg-green-500 hover:bg-green-600 text-white px-6 py-2.5 md:px-8 md:py-3 rounded-lg font-medium transition-colors text-sm md:text-base">
-            Підписатися на новини
-          </button>
-        </div>
+        ) : (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {posts.map(post => (
+              <article
+                key={post.id}
+                onClick={() => navigate(`/blog/${post.slug}`)}
+                className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
+              >
+                {/* Category badge */}
+                {post.category && (
+                  <div className="px-4 pt-4">
+                    <span className="inline-block px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
+                      {post.category}
+                    </span>
+                  </div>
+                )}
+
+                <div className="p-6">
+                  {/* Title */}
+                  <h2 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 hover:text-green-600 transition-colors">
+                    {post.title}
+                  </h2>
+
+                  {/* Excerpt */}
+                  {post.excerpt && (
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                      {post.excerpt}
+                    </p>
+                  )}
+
+                  {/* Meta */}
+                  <div className="flex items-center gap-4 text-xs text-gray-500 pt-4 border-t">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      {new Date(post.published_at).toLocaleDateString('uk-UA')}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Eye className="w-3 h-3" />
+                      {post.views}
+                    </div>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
