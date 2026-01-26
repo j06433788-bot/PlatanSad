@@ -167,18 +167,9 @@ const CheckoutPage = () => {
 
       const order = await ordersApi.createOrder(orderData);
       
-      if (formData.paymentMethod === 'liqpay') {
-        const resultUrl = `${window.location.origin}/order-success/${order.id}`;
-        const checkout = await liqpayApi.createCheckout(
-          order.id, cartTotal, `Замовлення #${order.id}`, resultUrl
-        );
-        setLiqpayData(checkout);
-        toast.info('Перенаправлення на оплату...');
-      } else {
-        await clearCart();
-        toast.success('Замовлення успішно оформлено!');
-        navigate(`/order-success/${order.id}`);
-      }
+      await clearCart();
+      toast.success('Замовлення успішно оформлено!');
+      navigate(`/order-success/${order.id}`);
     } catch (error) {
       toast.error('Помилка оформлення замовлення');
     } finally {
@@ -188,20 +179,6 @@ const CheckoutPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 pb-32">
-      {/* LiqPay Form */}
-      {liqpayData && (
-        <form 
-          ref={liqpayFormRef} 
-          method="POST" 
-          action="https://www.liqpay.ua/api/3/checkout" 
-          acceptCharset="utf-8"
-          className="hidden"
-        >
-          <input type="hidden" name="data" value={liqpayData.data} />
-          <input type="hidden" name="signature" value={liqpayData.signature} />
-        </form>
-      )}
-
       {/* Header */}
       <div className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="max-w-4xl mx-auto">
