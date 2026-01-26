@@ -82,13 +82,6 @@ const CheckoutPage = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // LiqPay form submit
-  useEffect(() => {
-    if (liqpayData && liqpayFormRef.current) {
-      liqpayFormRef.current.submit();
-    }
-  }, [liqpayData]);
-
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-4">
