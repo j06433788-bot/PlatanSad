@@ -20,7 +20,7 @@ const HomePage = () => {
           data-testid="catalog-main-btn"
         >
           <LayoutGrid className="w-5 h-5 sm:w-6 sm:h-6" />
-          <span>Каталог товарів</span>
+          <span>Каталог рослин</span>
         </button>
       </div>
 
