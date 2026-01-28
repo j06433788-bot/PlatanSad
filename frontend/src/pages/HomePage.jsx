@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { LayoutGrid } from "lucide-react";
+import { LayoutGrid, Play } from "lucide-react";
 import Hero from "../components/Hero";
 import ProductSection from "../components/ProductSection";
 import CatalogModal from "../components/CatalogModal";
@@ -7,102 +7,152 @@ import CatalogModal from "../components/CatalogModal";
 const HomePage = () => {
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
 
-  // Video performance (pause when not visible)
+  // Video logic
   const videoRef = useRef(null);
-  const sectionRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const containerRef = useRef(null);
 
+  const [isVisible, setIsVisible] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+  const [autoplayBlocked, setAutoplayBlocked] = useState(false);
+
+  // Intersection observer (mobile friendly)
   useEffect(() => {
-    const el = sectionRef.current;
+    const el = containerRef.current;
     if (!el) return;
 
-    const obs = new IntersectionObserver(
-      ([entry]) => setIsVisible(entry.isIntersecting),
-      { threshold: 0.35 }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.4 }
     );
 
-    obs.observe(el);
-    return () => obs.disconnect();
+    observer.observe(el);
+    return () => observer.disconnect();
   }, []);
 
+  // Autoplay logic
   useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
+    const video = videoRef.current;
+    if (!video) return;
 
-    // If out of view -> pause (saves battery/CPU)
-    if (!isVisible) v.pause();
+    const playVideo = async () => {
+      try {
+        setAutoplayBlocked(false);
+        await video.play();
+      } catch {
+        setAutoplayBlocked(true);
+      }
+    };
+
+    if (isVisible) {
+      playVideo();
+    } else {
+      video.pause();
+    }
   }, [isVisible]);
 
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-
-    // Pause if tab goes background (mobile)
-    const onVis = () => {
-      if (document.hidden) v.pause();
-    };
-    document.addEventListener("visibilitychange", onVis);
-    return () => document.removeEventListener("visibilitychange", onVis);
-  }, []);
+  const handleManualPlay = async () => {
+    try {
+      await videoRef.current.play();
+      setAutoplayBlocked(false);
+    } catch {}
+  };
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Banner */}
+
+      {/* HERO */}
       <Hero />
 
-      {/* Catalog Button - Opens modal */}
-      <div className="max-w-7xl mx-auto px-2 sm:px-4 pt-6 pb-4">
-        <button
-          onClick={() => setIsCatalogOpen(true)}
-          className="w-full bg-green-500 hover:bg-green-600 text-white py-2.5 sm:py-3 rounded-xl font-bold text-base sm:text-lg flex items-center justify-center gap-3 transition-all duration-300 shadow-md hover:shadow-lg active:scale-[0.98]"
-          data-testid="catalog-main-btn"
+      {/* COMPACT PREMIUM VIDEO BLOCK */}
+      <section className="max-w-7xl mx-auto px-2 sm:px-4 pt-4 sm:pt-6">
+        <div
+          ref={containerRef}
+          className="relative overflow-hidden rounded-2xl bg-black ring-1 ring-black/10 shadow-lg"
         >
-          <LayoutGrid className="w-5 h-5 sm:w-6 sm:h-6" />
-          <span>Каталог рослин</span>
-        </button>
-      </div>
 
-      {/* Product Tabs Section (Хіти / Розпродаж / Новинки) */}
-      <ProductSection />
+          {/* Responsive height */}
+          <div className="relative w-full h-[52vw] sm:h-[38vw] lg:h-[320px] max-h-[360px]">
 
-      {/* FULL-WIDTH VIDEO (UNDER PRODUCTS) */}
-      <section ref={sectionRef} className="w-full pt-5 sm:pt-7">
-        {/* edge-to-edge container */}
-        <div className="relative w-full overflow-hidden bg-black">
-          {/* compact height but wide */}
-          <div className="relative w-full h-[58vw] sm:h-[40vw] lg:h-[420px] max-h-[520px]">
+            {/* Poster blur while loading */}
+            <div
+              className={`absolute inset-0 transition-opacity duration-500 ${
+                isReady ? "opacity-0" : "opacity-100"
+              }`}
+              style={{
+                backgroundImage: "url(/nursery-poster.jpg)",
+                backgroundSize: "cover",
+                backgroundPosition: "center"
+              }}
+            />
+
+            {/* Video */}
             <video
               ref={videoRef}
-              className="absolute inset-0 w-full h-full object-cover"
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
+                isReady ? "opacity-100" : "opacity-0"
+              }`}
               src="/nursery.mp4"
               playsInline
-              // IMPORTANT: sound enabled (no muted)
-              controls
+              muted
+              loop
               preload="metadata"
+              onCanPlay={() => setIsReady(true)}
             />
-            {/* small minimal label */}
-            <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4">
-              <div className="bg-black/55 backdrop-blur-md px-3 py-1.5 rounded-xl ring-1 ring-white/15">
+
+            {/* Dark bottom fade */}
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/70 to-transparent" />
+
+            {/* Manual play overlay (if blocked) */}
+            {autoplayBlocked && (
+              <button
+                onClick={handleManualPlay}
+                className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+              >
+                <div className="flex items-center gap-2 bg-black/70 text-white px-4 py-2 rounded-xl ring-1 ring-white/20">
+                  <Play className="w-5 h-5" />
+                  <span className="text-sm font-semibold">Відтворити</span>
+                </div>
+              </button>
+            )}
+
+            {/* Minimal label */}
+            <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3">
+              <div className="bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-xl ring-1 ring-white/15">
                 <p className="text-[11px] sm:text-xs font-semibold text-white">
                   🌿 Відео з нашого розсадника PlatanSad
                 </p>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* ultra small description */}
-        <div className="px-3 sm:px-4 pt-2">
-          <p className="text-[11px] sm:text-xs text-black/55">
-            Коротке відео з нашого розсадника — реальні рослини та якість пакування.
-          </p>
+          </div>
         </div>
       </section>
 
-      {/* Catalog Modal */}
-      <CatalogModal isOpen={isCatalogOpen} onClose={() => setIsCatalogOpen(false)} />
+      {/* CATALOG BUTTON */}
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 pt-5 pb-4">
+        <button
+          onClick={() => setIsCatalogOpen(true)}
+          className="w-full bg-green-500 hover:bg-green-600 text-white py-2.5 sm:py-3 rounded-xl font-bold text-base sm:text-lg flex items-center justify-center gap-3 transition-all duration-300 shadow-md hover:shadow-lg active:scale-[0.98]"
+        >
+          <LayoutGrid className="w-5 h-5 sm:w-6 sm:h-6" />
+          Каталог рослин
+        </button>
+      </div>
+
+      {/* PRODUCTS */}
+      <ProductSection />
+
+      {/* MODAL */}
+      <CatalogModal
+        isOpen={isCatalogOpen}
+        onClose={() => setIsCatalogOpen(false)}
+      />
+
     </div>
   );
 };
 
 export default HomePage;
+
