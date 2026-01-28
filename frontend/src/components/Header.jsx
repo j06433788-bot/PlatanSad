@@ -1,5 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Heart, ShoppingBag, X, Menu, Phone, Info, Truck, RefreshCw, MapPin, BookOpen, Clock, Trees, TreePine, Leaf, Circle, Flower2, Flower, Sprout, ChevronRight, ChevronDown } from 'lucide-react';
+import {
+  Search,
+  Heart,
+  ShoppingBag,
+  X,
+  Menu,
+  Info,
+  Truck,
+  RefreshCw,
+  MapPin,
+  BookOpen,
+  Clock,
+  Trees,
+  TreePine,
+  Leaf,
+  Flower,
+  Sprout,
+  ChevronRight,
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -12,8 +30,9 @@ const Header = () => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const [expandedCategories, setExpandedCategories] = useState({});
+
   const navigate = useNavigate();
-  const { cartItems, removeFromCart, updateQuantity, cartCount, clearCart, cartTotal } = useCart();
+  const { cartItems, removeFromCart, updateQuantity, cartCount, cartTotal } = useCart();
   const { wishlistCount } = useWishlist();
 
   // Structured categories with subcategories based on platansad.prom.ua
@@ -26,7 +45,7 @@ const Header = () => {
         { id: 'sub-001-1', name: 'Pinus sylvestris (Сосна звичайна)', count: 101 },
         { id: 'sub-001-2', name: 'Нівакі на штамбі', count: 15 },
         { id: 'sub-001-3', name: 'Топіари формовані', count: 25 },
-      ]
+      ],
     },
     {
       id: 'cat-002',
@@ -38,7 +57,7 @@ const Header = () => {
         { id: 'sub-002-3', name: 'Куляста Туя Глобоса (Globosa)', count: 6 },
         { id: 'sub-002-4', name: 'Туя карликова', count: 8 },
         { id: 'sub-002-5', name: 'Топіари з туї', count: 12 },
-      ]
+      ],
     },
     {
       id: 'cat-003',
@@ -48,7 +67,7 @@ const Header = () => {
         { id: 'sub-003-1', name: 'Самшит Арборесценс', count: 33 },
         { id: 'sub-003-2', name: 'Топіари з самшиту', count: 15 },
         { id: 'sub-003-3', name: 'Самшит формований', count: 10 },
-      ]
+      ],
     },
     {
       id: 'cat-004',
@@ -60,7 +79,7 @@ const Header = () => {
         { id: 'sub-004-3', name: 'Зебріна голд', count: 5 },
         { id: 'sub-004-4', name: 'Ельвангера', count: 7 },
         { id: 'sub-004-5', name: 'Інші хвойні', count: 7 },
-      ]
+      ],
     },
     {
       id: 'cat-005',
@@ -71,15 +90,13 @@ const Header = () => {
         { id: 'sub-005-2', name: 'Верба Хакуро Нішікі', count: 12 },
         { id: 'sub-005-3', name: 'Спіралі формовані', count: 15 },
         { id: 'sub-005-4', name: 'Інші листопадні', count: 16 },
-      ]
+      ],
     },
     {
       id: 'cat-006',
       name: 'Кімнатні рослини',
       icon: 'indoor',
-      subcategories: [
-        { id: 'sub-006-1', name: 'Декоративні рослини', count: 21 },
-      ]
+      subcategories: [{ id: 'sub-006-1', name: 'Декоративні рослини', count: 21 }],
     },
   ];
 
@@ -96,11 +113,11 @@ const Header = () => {
     fetchCategories();
   }, []);
 
-  // Toggle category expansion
+  // Toggle category expansion (не використовується нижче, але залишаю як було)
   const toggleCategory = (categoryId) => {
-    setExpandedCategories(prev => ({
+    setExpandedCategories((prev) => ({
       ...prev,
-      [categoryId]: !prev[categoryId]
+      [categoryId]: !prev[categoryId],
     }));
   };
 
@@ -113,7 +130,7 @@ const Header = () => {
     }
   };
 
-  // Get icon for category based on type
+  // Get icon for category based on type (не використовується нижче, але залишаю як було)
   const getCategoryIcon = (iconType) => {
     switch (iconType) {
       case 'bonsai':
@@ -143,84 +160,86 @@ const Header = () => {
       <header className="w-full sticky top-0 z-50 bg-white shadow-sm">
         {/* Main header */}
         <div className="bg-white">
-          <div className="max-w-7xl mx-auto px-4 py-5 md:py-6 lg:py-8">
-            <div className="flex items-center justify-between w-full">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-5 md:py-6 lg:py-8">
+            <div className="flex items-center justify-between w-full gap-2 sm:gap-4">
               {/* Left - Menu & Search (mobile) / Search only (desktop) */}
-              <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
-                {/* Burger menu - mobile only - Extra large touch target */}
-                <button 
+              <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2 flex-shrink-0">
+                {/* Burger menu - mobile only */}
+                <button
                   onClick={() => setIsMenuOpen(true)}
-                  className="p-3 md:p-2 text-gray-600 hover:text-green-500 transition-colors hover:bg-gray-100 rounded-full md:hidden active:scale-95"
+                  className="p-2 sm:p-3 md:p-2 text-gray-600 hover:text-green-500 transition-colors hover:bg-gray-100 rounded-full md:hidden active:scale-95"
                   data-testid="menu-toggle"
                   aria-label="Відкрити меню"
                 >
-                  <Menu className="w-7 h-7 md:w-6 md:h-6" />
+                  <Menu className="w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6" />
                 </button>
-                
-                {/* Search icon - Extra large touch target */}
-                <button 
+
+                {/* Search icon */}
+                <button
                   onClick={() => setIsSearchOpen(true)}
-                  className="p-3 md:p-2 text-gray-600 hover:text-green-500 transition-colors hover:bg-gray-100 rounded-full active:scale-95"
+                  className="p-2 sm:p-3 md:p-2 text-gray-600 hover:text-green-500 transition-colors hover:bg-gray-100 rounded-full active:scale-95"
                   data-testid="search-toggle"
                   aria-label="Пошук"
                 >
-                  <Search className="w-7 h-7 md:w-6 md:h-6" />
+                  <Search className="w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6" />
                 </button>
               </div>
 
-              {/* Center - Logo - Extra large */}
-              <div 
-                className="flex items-center gap-0.5 sm:gap-1 md:gap-2 cursor-pointer active:scale-95 transition-transform flex-1 justify-center md:justify-center"
+              {/* Center - Logo */}
+              <div
+                className="flex items-center gap-0.5 sm:gap-1 md:gap-2 cursor-pointer active:scale-95 transition-transform min-w-0 justify-center"
                 onClick={() => navigate('/')}
               >
-                <img 
-                  src="/logo.webp" 
-                  alt="PlatanSad Logo" 
-                  className="w-16 h-16 sm:w-20 sm:h-20 md:w-32 md:h-32 lg:w-40 lg:h-40 object-contain mix-blend-multiply"
+                <img
+                  src="/logo.webp"
+                  alt="PlatanSad Logo"
+                  className="w-8 h-8 sm:w-12 sm:h-12 md:w-32 md:h-32 lg:w-40 lg:h-40 object-contain mix-blend-multiply flex-shrink-0"
                   style={{ filter: 'drop-shadow(0 0 0 transparent)' }}
                 />
-                <span className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold text-gray-800">
+                <span className="text-base sm:text-xl md:text-5xl lg:text-6xl font-bold text-gray-800 whitespace-nowrap">
                   Platan<span className="text-green-500">Sad</span>
                 </span>
               </div>
 
-              {/* Right - Wishlist & Cart - Larger touch targets */}
-              <div className="flex items-center gap-1 md:gap-3 flex-shrink-0">
-                {/* Wishlist - Extra large touch area */}
-                <button 
+              {/* Right - Wishlist & Cart */}
+              <div className="flex items-center gap-0.5 sm:gap-1 md:gap-3 flex-shrink-0">
+                {/* Wishlist */}
+                <button
                   onClick={() => navigate('/wishlist')}
-                  className={`p-3 md:p-2 transition-all duration-300 rounded-full relative active:scale-95 ${
-                    wishlistCount > 0 
-                      ? 'text-red-500 hover:text-red-600 hover:bg-red-50' 
-                      : 'text-gray-400 hover:text-gray-500 hover:bg-gray-100 cursor-default'
+                  className={`p-2 sm:p-3 md:p-2 transition-all duration-300 rounded-full relative active:scale-95 ${
+                    wishlistCount > 0
+                      ? 'text-red-500 hover:text-red-600 hover:bg-red-50'
+                      : 'text-gray-400 hover:text-gray-500 hover:bg-gray-100'
                   }`}
                   data-testid="wishlist-icon"
                   aria-label="Список бажань"
-                  disabled={wishlistCount === 0}
                 >
-                  <Heart 
-                    className={`w-7 h-7 md:w-6 md:h-6 transition-all duration-300 ${
+                  <Heart
+                    className={`w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6 transition-all duration-300 ${
                       wishlistCount > 0 ? 'fill-red-500' : ''
-                    }`} 
+                    }`}
                   />
                   {wishlistCount > 0 && (
-                    <span className="absolute -top-1 -right-1 md:-top-1 md:-right-1 bg-red-500 text-white text-xs min-w-[22px] h-[22px] px-1 rounded-full flex items-center justify-center font-bold animate-pulse shadow-md">
+                    <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-red-500 text-white text-[10px] sm:text-xs min-w-[18px] sm:min-w-[22px] h-[18px] sm:h-[22px] px-0.5 sm:px-1 rounded-full flex items-center justify-center font-bold animate-pulse shadow-md">
                       {wishlistCount}
                     </span>
                   )}
                 </button>
 
-                {/* Cart - Extra large touch area - Opens side panel */}
-                <button 
+                {/* Cart - Opens side panel */}
+                <button
                   onClick={() => setIsCartOpen(true)}
-                  className="p-3 md:p-2 text-gray-600 hover:text-green-500 transition-colors hover:bg-gray-100 rounded-full relative active:scale-95"
+                  className="p-2 sm:p-3 md:p-2 text-gray-600 hover:text-green-500 transition-colors hover:bg-gray-100 rounded-full relative active:scale-95"
                   data-testid="cart-icon"
                   aria-label="Кошик"
                 >
                   <div className="relative">
-                    <ShoppingBag className="w-7 h-7 md:w-6 md:h-6" />
+                    <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6" />
                     {cartCount > 0 && (
-                      <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs min-w-[22px] h-[22px] px-1 rounded-full flex items-center justify-center font-bold shadow-md" data-testid="cart-count">
+                      <span
+                        className="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 bg-green-500 text-white text-[10px] sm:text-xs min-w-[18px] sm:min-w-[22px] h-[18px] sm:h-[22px] px-0.5 sm:px-1 rounded-full flex items-center justify-center font-bold shadow-md"
+                        data-testid="cart-count"
+                      >
                         {cartCount}
                       </span>
                     )}
@@ -236,11 +255,36 @@ const Header = () => {
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between py-2 md:py-3">
               <div className="flex items-center gap-4 md:gap-6 text-xs md:text-sm">
-                <button onClick={() => navigate('/about')} className="hover:text-green-400 transition-colors whitespace-nowrap">Про нас</button>
-                <button onClick={() => navigate('/delivery')} className="hover:text-green-400 transition-colors whitespace-nowrap">Оплата і доставка</button>
-                <button onClick={() => navigate('/return')} className="hover:text-green-400 transition-colors whitespace-nowrap">Обмін та повернення</button>
-                <button onClick={() => navigate('/contacts')} className="hover:text-green-400 transition-colors whitespace-nowrap">Контакти</button>
-                <button onClick={() => navigate('/blog')} className="hover:text-green-400 transition-colors whitespace-nowrap">Блог</button>
+                <button
+                  onClick={() => navigate('/about')}
+                  className="hover:text-green-400 transition-colors whitespace-nowrap"
+                >
+                  Про нас
+                </button>
+                <button
+                  onClick={() => navigate('/delivery')}
+                  className="hover:text-green-400 transition-colors whitespace-nowrap"
+                >
+                  Оплата і доставка
+                </button>
+                <button
+                  onClick={() => navigate('/return')}
+                  className="hover:text-green-400 transition-colors whitespace-nowrap"
+                >
+                  Обмін та повернення
+                </button>
+                <button
+                  onClick={() => navigate('/contacts')}
+                  className="hover:text-green-400 transition-colors whitespace-nowrap"
+                >
+                  Контакти
+                </button>
+                <button
+                  onClick={() => navigate('/blog')}
+                  className="hover:text-green-400 transition-colors whitespace-nowrap"
+                >
+                  Блог
+                </button>
               </div>
             </div>
           </div>
@@ -248,21 +292,21 @@ const Header = () => {
       </header>
 
       {/* Slide-out Menu */}
-      <div 
+      <div
         className={`fixed inset-0 z-[100] transition-all duration-300 ${
           isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
         }`}
       >
         {/* Backdrop */}
-        <div 
+        <div
           className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${
             isMenuOpen ? 'opacity-100' : 'opacity-0'
           }`}
           onClick={() => setIsMenuOpen(false)}
         />
-        
+
         {/* Menu Panel */}
-        <div 
+        <div
           className={`absolute top-0 left-0 h-full w-[92vw] max-w-[400px] bg-white shadow-2xl transition-transform duration-300 ease-out flex flex-col ${
             isMenuOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
@@ -273,7 +317,7 @@ const Header = () => {
               <img src="/logo.webp" alt="PlatanSad" className="w-9 h-9 bg-white rounded-full p-0.5" />
               <span className="font-bold text-lg">PlatanSad</span>
             </div>
-            <button 
+            <button
               onClick={() => setIsMenuOpen(false)}
               className="p-2 hover:bg-white/20 rounded-full transition-colors"
             >
@@ -287,11 +331,10 @@ const Header = () => {
             <div className="px-4 py-3 bg-green-50 border-b border-green-100">
               <h3 className="text-sm font-bold text-green-800 uppercase tracking-wide">Категорії рослин</h3>
             </div>
-            
+
             {/* Categories from API */}
             {categories.map((category) => (
               <div key={category.id} className="border-b border-gray-100">
-                {/* Category Button - Navigate to catalog with category filter */}
                 <button
                   onClick={() => {
                     navigate(`/catalog?category=${encodeURIComponent(category.name)}`);
@@ -417,30 +460,27 @@ const Header = () => {
           <div className="flex-shrink-0 border-t border-gray-200 bg-gray-50 p-4">
             <p className="text-xs font-semibold text-gray-500 uppercase mb-3">Ми в соц мережах</p>
             <div className="flex items-center gap-3">
-              {/* Instagram */}
-              <a 
-                href="https://www.instagram.com/platansad.uaa?igsh=cmhhbG4zbjNkMTBr" 
-                target="_blank" 
+              <a
+                href="https://www.instagram.com/platansad.uaa?igsh=cmhhbG4zbjNkMTBr"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="w-11 h-11 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-md"
               >
                 <img src="/instagram.png" alt="Instagram" className="w-11 h-11 rounded-full" />
               </a>
-              
-              {/* TikTok */}
-              <a 
-                href="https://www.tiktok.com/@platansad.ua?_r=1&_t=ZM-939QCCJ5tAx" 
-                target="_blank" 
+
+              <a
+                href="https://www.tiktok.com/@platansad.ua?_r=1&_t=ZM-939QCCJ5tAx"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="w-11 h-11 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-md"
               >
                 <img src="/tiktok.png" alt="TikTok" className="w-11 h-11 rounded-full" />
               </a>
 
-              {/* Viber */}
-              <a 
-                href="viber://chat?number=+380636507449" 
-                target="_blank" 
+              <a
+                href="viber://chat?number=+380636507449"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="w-11 h-11 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-md"
               >
@@ -452,21 +492,21 @@ const Header = () => {
       </div>
 
       {/* Cart Side Panel */}
-      <div 
+      <div
         className={`fixed inset-0 z-[100] transition-all duration-300 ${
           isCartOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
         }`}
       >
         {/* Backdrop */}
-        <div 
+        <div
           className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${
             isCartOpen ? 'opacity-100' : 'opacity-0'
           }`}
           onClick={() => setIsCartOpen(false)}
         />
-        
+
         {/* Cart Panel - from right */}
-        <div 
+        <div
           className={`absolute top-0 right-0 h-full w-[92vw] max-w-[400px] bg-white shadow-2xl transition-transform duration-300 ease-out flex flex-col ${
             isCartOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
@@ -482,7 +522,7 @@ const Header = () => {
                 </span>
               )}
             </div>
-            <button 
+            <button
               onClick={() => setIsCartOpen(false)}
               className="p-2 hover:bg-white/20 rounded-full transition-colors"
             >
@@ -511,23 +551,15 @@ const Header = () => {
               <div className="space-y-4">
                 {cartItems.map((item) => (
                   <div key={item.id} className="flex gap-3 bg-white border border-gray-200 rounded-lg p-3">
-                    {/* Product Image */}
                     <img
                       src={item.productImage || '/placeholder.png'}
                       alt={item.productName}
                       className="w-20 h-20 object-cover rounded-md flex-shrink-0"
                     />
-                    
-                    {/* Product Details */}
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-semibold text-gray-800 mb-1 line-clamp-2">
-                        {item.productName}
-                      </h4>
-                      <p className="text-sm font-bold text-green-600 mb-2">
-                        {item.price} ₴
-                      </p>
-                      
-                      {/* Quantity Controls */}
+                      <h4 className="text-sm font-semibold text-gray-800 mb-1 line-clamp-2">{item.productName}</h4>
+                      <p className="text-sm font-bold text-green-600 mb-2">{item.price} ₴</p>
+
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
@@ -542,10 +574,7 @@ const Header = () => {
                         >
                           +
                         </button>
-                        <button
-                          onClick={() => removeFromCart(item.id)}
-                          className="ml-auto text-red-500 hover:text-red-600 text-sm"
-                        >
+                        <button onClick={() => removeFromCart(item.id)} className="ml-auto text-red-500 hover:text-red-600 text-sm">
                           <X className="w-5 h-5" />
                         </button>
                       </div>
@@ -559,13 +588,11 @@ const Header = () => {
           {/* Cart Footer - Fixed */}
           {cartItems.length > 0 && (
             <div className="flex-shrink-0 border-t border-gray-200 bg-white p-4 space-y-3">
-              {/* Total */}
               <div className="flex justify-between items-center text-lg font-bold">
                 <span>Всього:</span>
                 <span className="text-green-600">{cartTotal.toFixed(2)} ₴</span>
               </div>
-              
-              {/* Buttons */}
+
               <div className="space-y-2">
                 <button
                   onClick={handleCheckout}
@@ -589,37 +616,28 @@ const Header = () => {
       </div>
 
       {/* Search Overlay */}
-      <div 
+      <div
         className={`fixed inset-0 z-[100] transition-all duration-300 ${
           isSearchOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
         }`}
       >
-        {/* Backdrop */}
-        <div 
-          className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-          onClick={() => setIsSearchOpen(false)}
-        />
-        
-        {/* Search Panel */}
-        <div 
+        <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setIsSearchOpen(false)} />
+
+        <div
           className={`absolute top-0 left-0 right-0 bg-white shadow-2xl transition-transform duration-300 ${
             isSearchOpen ? 'translate-y-0' : '-translate-y-full'
           }`}
         >
           <div className="max-w-3xl mx-auto px-4 py-6 md:py-8">
-            {/* Close button */}
-            <button 
+            <button
               onClick={() => setIsSearchOpen(false)}
               className="absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
 
-            {/* Search form */}
             <form onSubmit={handleSearch} className="mt-4">
-              <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">
-                Пошук товарів
-              </h2>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">Пошук товарів</h2>
               <div className="relative">
                 <input
                   type="text"
@@ -630,7 +648,7 @@ const Header = () => {
                   className="w-full px-6 py-4 text-lg border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-green-100 focus:border-green-500 transition-all"
                   data-testid="search-input"
                 />
-                <button 
+                <button
                   type="submit"
                   className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-green-500 hover:bg-green-600 text-white p-3 rounded-xl transition-colors"
                   data-testid="search-btn"
@@ -638,8 +656,7 @@ const Header = () => {
                   <Search className="w-5 h-5" />
                 </button>
               </div>
-              
-              {/* Quick suggestions */}
+
               <div className="mt-6 flex flex-wrap gap-2 justify-center">
                 <span className="text-sm text-gray-500">Популярні:</span>
                 {['Туя', 'Бонсай', 'Нівакі', 'Самшит'].map((term) => (
@@ -665,3 +682,4 @@ const Header = () => {
 };
 
 export default Header;
+
