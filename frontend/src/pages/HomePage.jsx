@@ -7,11 +7,12 @@ import CatalogModal from "../components/CatalogModal";
 const HomePage = () => {
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
 
-  // Video performance (pause when not visible)
+  // Video optimization
   const videoRef = useRef(null);
   const sectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
+  // Observe visibility (pause when not visible)
   useEffect(() => {
     const el = sectionRef.current;
     if (!el) return;
@@ -25,32 +26,35 @@ const HomePage = () => {
     return () => obs.disconnect();
   }, []);
 
+  // Pause video if out of view
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
 
-    // If out of view -> pause (saves battery/CPU)
-    if (!isVisible) v.pause();
+    if (!isVisible && !v.paused) {
+      v.pause();
+    }
   }, [isVisible]);
 
+  // Pause when tab/app goes background (mobile friendly)
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
 
-    // Pause if tab goes background (mobile)
     const onVis = () => {
       if (document.hidden) v.pause();
     };
+
     document.addEventListener("visibilitychange", onVis);
     return () => document.removeEventListener("visibilitychange", onVis);
   }, []);
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Banner */}
+      {/* Hero */}
       <Hero />
 
-      {/* Catalog Button - Opens modal */}
+      {/* Catalog Button */}
       <div className="max-w-7xl mx-auto px-2 sm:px-4 pt-6 pb-4">
         <button
           onClick={() => setIsCatalogOpen(true)}
@@ -62,26 +66,24 @@ const HomePage = () => {
         </button>
       </div>
 
-      {/* Product Tabs Section (Хіти / Розпродаж / Новинки) */}
+      {/* Products */}
       <ProductSection />
 
-      {/* FULL-WIDTH VIDEO (UNDER PRODUCTS) */}
-      <section ref={sectionRef} className="w-full pt-5 sm:pt-7">
-        {/* edge-to-edge container */}
-        <div className="relative w-full overflow-hidden bg-black">
-          {/* compact height but wide */}
-          <div className="relative w-full h-[58vw] sm:h-[40vw] lg:h-[420px] max-h-[520px]">
+      {/* FULL-BLEED VIDEO (UNDER PRODUCTS) */}
+      <section ref={sectionRef} className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] mt-5 sm:mt-7">
+        {/* This wrapper forces true edge-to-edge even inside centered layouts */}
+        <div className="w-screen bg-black">
+          <div className="relative w-screen h-[62vw] sm:h-[42vw] lg:h-[520px] max-h-[560px] overflow-hidden">
             <video
               ref={videoRef}
               className="absolute inset-0 w-full h-full object-cover"
               src="/nursery.mp4"
               playsInline
-              // IMPORTANT: sound enabled (no muted)
               controls
               preload="metadata"
             />
-            {/* small minimal label */}
-            <div className="absolute bottom-3 left-3 sm:bottom-4 sm:left-4">
+            {/* minimal label on top of video */}
+            <div className="pointer-events-none absolute bottom-3 left-3 sm:bottom-4 sm:left-4">
               <div className="bg-black/55 backdrop-blur-md px-3 py-1.5 rounded-xl ring-1 ring-white/15">
                 <p className="text-[11px] sm:text-xs font-semibold text-white">
                   🌿 Відео з нашого розсадника PlatanSad
@@ -89,13 +91,13 @@ const HomePage = () => {
               </div>
             </div>
           </div>
-        </div>
 
-        {/* ultra small description */}
-        <div className="px-3 sm:px-4 pt-2">
-          <p className="text-[11px] sm:text-xs text-black/55">
-            Коротке відео з нашого розсадника — реальні рослини та якість пакування.
-          </p>
+          {/* tiny description under full-width video, also full-bleed */}
+          <div className="w-screen px-3 sm:px-4 py-2 bg-white">
+            <p className="text-[11px] sm:text-xs text-black/55">
+              Коротке відео з нашого розсадника — реальні рослини та якість пакування.
+            </p>
+          </div>
         </div>
       </section>
 
