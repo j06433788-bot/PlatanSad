@@ -64,10 +64,8 @@ const Footer = () => {
 
   const phone1 = settings?.phone1 || '+380 (63) 650-74-49';
   const phone2 = settings?.phone2 || '+380 (95) 251-03-47';
-
   const tel1 = useMemo(() => `tel:${(phone1 || '').replace(/\s/g, '')}`, [phone1]);
   const tel2 = useMemo(() => `tel:${(phone2 || '').replace(/\s/g, '')}`, [phone2]);
-
   const siteName = settings?.siteName || 'PlatanSad';
 
   // Newsletter demo state
@@ -78,10 +76,8 @@ const Footer = () => {
   const handleSubscribe = async (e) => {
     e.preventDefault();
     if (!email.trim()) return;
-
     setSubmitting(true);
     try {
-      // TODO: connect to backend
       await new Promise((r) => setTimeout(r, 450));
       setSubscribed(true);
       setEmail('');
@@ -91,8 +87,8 @@ const Footer = () => {
     }
   };
 
-  // Mobile accordion: ALL CLOSED by default (minimal height)
-  const [openKey, setOpenKey] = useState(''); // '' | 'contacts' | 'info' | 'premium'
+  // Mobile accordion: all closed by default
+  const [openKey, setOpenKey] = useState(''); // '' | 'info' | 'premium'
   const toggle = (key) => setOpenKey((prev) => (prev === key ? '' : key));
 
   // Messengers
@@ -165,9 +161,9 @@ const Footer = () => {
         />
 
         <div className="relative z-10 mx-auto max-w-7xl px-4">
-          {/* Top ribbon (tighter on mobile) */}
-          <div className="pt-6 sm:pt-8 md:pt-12">
-            <div className="flex flex-col gap-3 rounded-3xl bg-white/5 p-3 ring-1 ring-white/10 backdrop-blur-md sm:p-4 md:flex-row md:items-center md:justify-between md:p-6">
+          {/* Top ribbon: compact text only on mobile, full on desktop */}
+          <div className="pt-5 md:pt-12">
+            <div className="flex flex-col gap-3 rounded-3xl bg-white/5 p-3 ring-1 ring-white/10 backdrop-blur-md md:flex-row md:items-center md:justify-between md:p-6">
               <div className="flex items-start gap-3">
                 <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-green-500/15 ring-1 ring-green-400/20 md:h-10 md:w-10">
                   <Sparkles className="h-4 w-4 text-green-300 md:h-5 md:w-5" />
@@ -182,27 +178,20 @@ const Footer = () => {
                 </div>
               </div>
 
-              {/* Buttons: compact row on modern phones */}
-              <div className="grid w-full grid-cols-2 gap-2 md:w-auto">
+              {/* Desktop CTA only */}
+              <div className="hidden md:block">
                 <button
                   onClick={() => navigate('/catalog')}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-green-600 px-3 py-2.5 text-xs font-semibold text-white shadow-[0_16px_34px_rgba(34,197,94,0.16)] ring-1 ring-green-400/20 transition hover:bg-green-600/90 active:scale-[0.98] sm:text-sm sm:px-4 sm:py-3"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-green-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_40px_rgba(34,197,94,0.18)] ring-1 ring-green-400/20 transition hover:bg-green-600/90 active:scale-[0.98]"
                 >
                   <Send className="h-4 w-4" />
-                  Каталог
-                </button>
-                <button
-                  onClick={() => navigate('/contacts')}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-white/6 px-3 py-2.5 text-xs font-semibold text-white/90 ring-1 ring-white/12 transition hover:bg-white/10 active:scale-[0.98] sm:text-sm sm:px-4 sm:py-3"
-                >
-                  <MapPin className="h-4 w-4" />
-                  Контакти
+                  Перейти в каталог
                 </button>
               </div>
             </div>
           </div>
 
-          {/* DESKTOP: premium columns */}
+          {/* DESKTOP: premium columns (unchanged) */}
           <div className="hidden gap-8 py-10 md:grid md:grid-cols-12">
             {/* Brand */}
             <div className="md:col-span-4">
@@ -353,7 +342,7 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* MOBILE: ULTRA-MINIMAL height (all collapsed by default) */}
+          {/* MOBILE: ultra-compact footer */}
           <div className="py-3 md:hidden">
             {/* Quick icon row */}
             <div className="grid grid-cols-4 gap-2">
@@ -390,10 +379,9 @@ const Footer = () => {
               </button>
             </div>
 
-            {/* Accordion */}
-            <div className="mt-3 space-y-2">
+            {/* Accordion (only 2 sections to reduce height) */}
+            <div className="mt-2 space-y-2">
               {[
-                { key: 'contacts', title: 'Контакти' },
                 { key: 'info', title: 'Інформація' },
                 { key: 'premium', title: 'Преміум-оновлення' },
               ].map((sec) => (
@@ -412,31 +400,6 @@ const Footer = () => {
 
                   {openKey === sec.key && (
                     <div className="px-3 pb-3">
-                      {sec.key === 'contacts' && (
-                        <div className="space-y-2">
-                          <a
-                            href={tel1}
-                            className="flex items-center justify-between rounded-2xl bg-white/5 px-3 py-2.5 ring-1 ring-white/10"
-                          >
-                            <span className="text-xs text-white/70">Телефон 1</span>
-                            <span className="text-xs font-semibold text-white">{phone1}</span>
-                          </a>
-                          <a
-                            href={tel2}
-                            className="flex items-center justify-between rounded-2xl bg-white/5 px-3 py-2.5 ring-1 ring-white/10"
-                          >
-                            <span className="text-xs text-white/70">Телефон 2</span>
-                            <span className="text-xs font-semibold text-white">{phone2}</span>
-                          </a>
-                          <button
-                            onClick={() => navigate('/contacts')}
-                            className="w-full rounded-2xl bg-white/6 px-3 py-2.5 text-xs font-semibold text-white/90 ring-1 ring-white/10"
-                          >
-                            Відкрити контакти/графік
-                          </button>
-                        </div>
-                      )}
-
                       {sec.key === 'info' && (
                         <div className="space-y-2">
                           <button
@@ -504,10 +467,10 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Bottom bar */}
-          <div className="pb-24 sm:pb-10">
+          {/* Bottom bar (super tight) */}
+          <div className="pb-20 sm:pb-10">
             <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-            <div className="flex flex-col items-center justify-between gap-2 pt-4 text-center sm:flex-row sm:text-left">
+            <div className="flex flex-col items-center justify-between gap-2 pt-3 text-center sm:flex-row sm:text-left">
               <p className="text-[11px] text-white/55">© 2026 {siteName}. Всі права захищено.</p>
               <span className="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-[11px] font-semibold text-white/70 ring-1 ring-white/10">
                 <span className="h-1.5 w-1.5 rounded-full bg-green-400 shadow-[0_0_14px_rgba(34,197,94,0.55)]" />
@@ -518,9 +481,27 @@ const Footer = () => {
         </div>
       </footer>
 
+      {/* Sticky "Catalog" button (mobile only, safe-area aware) */}
+      <div
+        className="md:hidden fixed left-0 right-0 z-50"
+        style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 10px)' }}
+      >
+        <div className="mx-auto max-w-7xl px-4">
+          <button
+            onClick={() => navigate('/catalog')}
+            className="w-full rounded-2xl bg-green-600 px-5 py-4 text-sm font-semibold text-white shadow-[0_22px_60px_rgba(34,197,94,0.22)] ring-1 ring-green-400/25 transition hover:bg-green-600/90 active:scale-[0.99]"
+          >
+            <span className="inline-flex items-center justify-center gap-2">
+              <Send className="h-4 w-4" />
+              Перейти в каталог
+            </span>
+          </button>
+        </div>
+      </div>
+
       {/* Floating messengers (left) */}
       {messengerButtons.length > 0 && (
-        <div className="fixed bottom-5 left-4 z-50 flex flex-col gap-2 sm:bottom-6 sm:left-6">
+        <div className="fixed bottom-5 left-4 z-50 flex flex-col gap-2 sm:bottom-6 sm:left-6 md:bottom-6">
           {messengerButtons.map((b) => {
             const Icon = b.icon;
             return (
