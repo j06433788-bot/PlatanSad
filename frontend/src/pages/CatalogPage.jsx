@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { productsApi } from '../api/productsApi';
 import ProductCard from '../components/ProductCard';
-import { SlidersHorizontal, X } from 'lucide-react';
+import { SlidersHorizontal, X, Grid3X3, LayoutGrid } from 'lucide-react';
 
 const CatalogPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
+  const [compactView, setCompactView] = useState(true); // Compact by default on mobile
   
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
@@ -50,7 +51,6 @@ const CatalogPage = () => {
       [key]: value
     }));
     
-    // Update URL params
     const newParams = new URLSearchParams(searchParams);
     if (value) {
       newParams.set(key, value);
@@ -74,37 +74,81 @@ const CatalogPage = () => {
 
   const activeFiltersCount = Object.values(filters).filter(v => v && v !== 'name').length;
 
+  // Quick badge filters
+  const quickFilters = [
+    { key: 'hit', label: 'Хіти', color: 'from-amber-400 to-orange-500' },
+    { key: 'new', label: 'Новинки', color: 'from-green-500 to-emerald-500' },
+    { key: 'sale', label: 'Знижки', color: 'from-red-500 to-rose-500' },
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 py-4 sm:py-6 pb-20 sm:pb-8">
-      <div className="max-w-7xl mx-auto px-3 sm:px-4">
-        <div className="flex items-center justify-between mb-4 sm:mb-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-800" data-testid="catalog-title">
-            Каталог рослин
+    <div className="min-h-screen bg-gray-50 py-3 sm:py-6 pb-20 sm:pb-8" data-testid="catalog-page">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4">
+        {/* Header Section - Compact */}
+        <div className="flex items-center justify-between mb-3 sm:mb-6">
+          <h1 className="text-xl sm:text-3xl font-bold text-gray-800" data-testid="catalog-title">
+            Каталог
             {products.length > 0 && (
-              <span className="text-gray-500 font-normal ml-2 sm:ml-3 text-lg sm:text-xl">({products.length})</span>
+              <span className="text-gray-400 font-normal ml-1 sm:ml-3 text-sm sm:text-xl">({products.length})</span>
             )}
           </h1>
           
-          {/* Mobile filter button - Extra large */}
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="lg:hidden flex items-center gap-2 px-5 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-md active:scale-95"
-            aria-label="Відкрити фільтри"
-          >
-            <SlidersHorizontal className="w-6 h-6" />
-            <span className="font-medium text-base">Фільтри</span>
-            {activeFiltersCount > 0 && (
-              <span className="bg-white text-green-600 text-xs min-w-[22px] h-[22px] px-2 rounded-full flex items-center justify-center font-bold">
-                {activeFiltersCount}
-              </span>
-            )}
-          </button>
+          {/* Mobile Controls */}
+          <div className="flex items-center gap-2 lg:hidden">
+            {/* View toggle */}
+            <button
+              onClick={() => setCompactView(!compactView)}
+              className="p-2 bg-white rounded-lg shadow-sm border border-gray-200"
+              aria-label="Змінити вигляд"
+            >
+              {compactView ? (
+                <LayoutGrid className="w-5 h-5 text-gray-600" />
+              ) : (
+                <Grid3X3 className="w-5 h-5 text-gray-600" />
+              )}
+            </button>
+            
+            {/* Filter button */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center gap-1.5 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-md active:scale-95"
+              aria-label="Відкрити фільтри"
+              data-testid="filter-btn"
+            >
+              <SlidersHorizontal className="w-5 h-5" />
+              <span className="font-medium text-sm">Фільтри</span>
+              {activeFiltersCount > 0 && (
+                <span className="bg-white text-green-600 text-xs min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center font-bold">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Filters Sidebar - Mobile as overlay */}
+        {/* Quick Badge Filters - Mobile horizontal scroll */}
+        <div className="mb-3 sm:mb-4 overflow-x-auto scrollbar-hide -mx-2 px-2 sm:mx-0 sm:px-0">
+          <div className="flex gap-2 min-w-max sm:flex-wrap">
+            {quickFilters.map((qf) => (
+              <button
+                key={qf.key}
+                onClick={() => handleFilterChange('badge', filters.badge === qf.key ? '' : qf.key)}
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${
+                  filters.badge === qf.key
+                    ? `bg-gradient-to-r ${qf.color} text-white shadow-lg`
+                    : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-300'
+                }`}
+                data-testid={`quick-filter-${qf.key}`}
+              >
+                {qf.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-8">
+          {/* Filters Sidebar - Mobile as bottom sheet */}
           <div className={`lg:block ${showFilters ? 'block' : 'hidden'}`}>
-            {/* Mobile overlay backdrop */}
             {showFilters && (
               <div 
                 className="lg:hidden fixed inset-0 bg-black/50 z-40"
@@ -115,42 +159,42 @@ const CatalogPage = () => {
             <div className={`
               lg:static lg:bg-white lg:rounded-lg lg:shadow-md lg:p-6 lg:sticky lg:top-24
               fixed bottom-0 left-0 right-0 bg-white z-50 rounded-t-2xl shadow-2xl
-              max-h-[85vh] overflow-y-auto
+              max-h-[70vh] overflow-y-auto
               lg:max-h-none
               ${showFilters ? 'animate-slide-up' : ''}
             `}>
-              <div className="flex items-center justify-between mb-6 px-6 pt-6 lg:px-0 lg:pt-0">
-                <h2 className="text-2xl sm:text-lg font-bold text-gray-800">Фільтри</h2>
+              <div className="flex items-center justify-between mb-4 px-4 pt-4 lg:px-0 lg:pt-0">
+                <h2 className="text-lg font-bold text-gray-800">Фільтри</h2>
                 <button
                   onClick={() => setShowFilters(false)}
                   className="lg:hidden text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-100 rounded-full"
                   aria-label="Закрити"
                 >
-                  <X className="w-7 h-7" />
+                  <X className="w-6 h-6" />
                 </button>
               </div>
 
-              <div className="space-y-6 px-6 pb-6 lg:px-0 lg:pb-0">
-                {/* Search - Extra large mobile input */}
+              <div className="space-y-4 px-4 pb-4 lg:px-0 lg:pb-0">
+                {/* Search */}
                 <div>
-                  <label className="block text-base font-medium text-gray-700 mb-2">Пошук</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Пошук</label>
                   <input
                     type="text"
                     value={filters.search}
                     onChange={(e) => handleFilterChange('search', e.target.value)}
-                    className="w-full px-4 py-4 sm:py-2 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     placeholder="Назва товару..."
                     data-testid="filter-search"
                   />
                 </div>
 
-                {/* Category - Extra large mobile select */}
+                {/* Category */}
                 <div>
-                  <label className="block text-base font-medium text-gray-700 mb-2">Категорія</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Категорія</label>
                   <select
                     value={filters.category}
                     onChange={(e) => handleFilterChange('category', e.target.value)}
-                    className="w-full px-4 py-4 sm:py-2 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     data-testid="filter-category"
                   >
                     <option value="">Всі категорії</option>
@@ -159,16 +203,17 @@ const CatalogPage = () => {
                     <option value="Туя Смарагд">Туя Смарагд</option>
                     <option value="Хвойні рослини">Хвойні рослини</option>
                     <option value="Листопадні дерева">Листопадні дерева</option>
+                    <option value="Кімнатні рослини">Кімнатні рослини</option>
                   </select>
                 </div>
 
                 {/* Badge */}
                 <div>
-                  <label className="block text-base font-medium text-gray-700 mb-2">Тип</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Тип</label>
                   <select
                     value={filters.badge}
                     onChange={(e) => handleFilterChange('badge', e.target.value)}
-                    className="w-full px-4 py-4 sm:py-2 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     data-testid="filter-badge"
                   >
                     <option value="">Всі товари</option>
@@ -178,15 +223,15 @@ const CatalogPage = () => {
                   </select>
                 </div>
 
-                {/* Price Range - Extra large mobile inputs */}
+                {/* Price Range */}
                 <div>
-                  <label className="block text-base font-medium text-gray-700 mb-2">Ціна (грн)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Ціна (грн)</label>
                   <div className="flex gap-2">
                     <input
                       type="number"
                       value={filters.minPrice}
                       onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                      className="w-1/2 px-3 py-4 sm:py-2 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-1/2 px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       placeholder="Від"
                       min="0"
                       data-testid="filter-min-price"
@@ -195,7 +240,7 @@ const CatalogPage = () => {
                       type="number"
                       value={filters.maxPrice}
                       onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                      className="w-1/2 px-3 py-4 sm:py-2 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      className="w-1/2 px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                       placeholder="До"
                       min="0"
                       data-testid="filter-max-price"
@@ -203,13 +248,13 @@ const CatalogPage = () => {
                   </div>
                 </div>
 
-                {/* Sort - Extra large mobile select */}
+                {/* Sort */}
                 <div>
-                  <label className="block text-base font-medium text-gray-700 mb-2">Сортування</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Сортування</label>
                   <select
                     value={filters.sortBy}
                     onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                    className="w-full px-4 py-4 sm:py-2 text-base sm:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                     data-testid="filter-sort"
                   >
                     <option value="name">За назвою</option>
@@ -218,21 +263,22 @@ const CatalogPage = () => {
                   </select>
                 </div>
 
-                {/* Clear Filters - Extra large button for mobile */}
+                {/* Clear Filters */}
                 {activeFiltersCount > 0 && (
                   <button
                     onClick={clearFilters}
-                    className="w-full py-4 sm:py-2 border-2 border-gray-300 rounded-lg text-gray-700 font-medium text-base hover:bg-gray-50 transition-colors active:scale-95"
+                    className="w-full py-2.5 border-2 border-gray-300 rounded-lg text-gray-700 font-medium text-sm hover:bg-gray-50 transition-colors active:scale-95"
                     data-testid="clear-filters-btn"
                   >
                     Скинути фільтри
                   </button>
                 )}
 
-                {/* Apply button for mobile - Extra large */}
+                {/* Apply button for mobile */}
                 <button
                   onClick={() => setShowFilters(false)}
-                  className="lg:hidden w-full py-4 bg-green-600 text-white rounded-lg font-medium text-base hover:bg-green-700 transition-colors active:scale-95"
+                  className="lg:hidden w-full py-3 bg-green-600 text-white rounded-lg font-medium text-sm hover:bg-green-700 transition-colors active:scale-95"
+                  data-testid="apply-filters-btn"
                 >
                   Застосувати
                 </button>
@@ -240,22 +286,40 @@ const CatalogPage = () => {
             </div>
           </div>
 
-          {/* Products Grid - Better mobile spacing */}
+          {/* Products Grid */}
           <div className="lg:col-span-3">
             {loading ? (
-              <div className="text-center py-12 text-gray-500">Завантаження...</div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
+                {[...Array(6)].map((_, i) => (
+                  <div key={i} className="bg-white rounded-xl overflow-hidden animate-pulse">
+                    <div className="aspect-[4/3] sm:aspect-square bg-gray-200" />
+                    <div className="p-2 sm:p-4 space-y-2">
+                      <div className="h-3 bg-gray-200 rounded w-1/2" />
+                      <div className="h-4 bg-gray-200 rounded" />
+                      <div className="h-6 bg-gray-200 rounded w-2/3" />
+                    </div>
+                  </div>
+                ))}
+              </div>
             ) : products.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 lg:gap-6" data-testid="products-grid">
+              <div 
+                className={`grid gap-2 sm:gap-4 lg:gap-6 ${
+                  compactView 
+                    ? 'grid-cols-2 md:grid-cols-3' 
+                    : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'
+                }`} 
+                data-testid="products-grid"
+              >
                 {products.map((product) => (
                   <ProductCard key={product.id} product={product} />
                 ))}
               </div>
             ) : (
-              <div className="bg-white rounded-lg shadow-md p-8 sm:p-12 text-center">
-                <p className="text-gray-600 mb-4">Товарів не знайдено</p>
+              <div className="bg-white rounded-lg shadow-md p-6 sm:p-12 text-center">
+                <p className="text-gray-600 mb-3 text-sm sm:text-base">Товарів не знайдено</p>
                 <button
                   onClick={clearFilters}
-                  className="text-green-600 hover:text-green-700 font-medium"
+                  className="text-green-600 hover:text-green-700 font-medium text-sm sm:text-base"
                 >
                   Скинути фільтри
                 </button>
