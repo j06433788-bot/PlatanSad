@@ -74,7 +74,7 @@ const Footer = () => {
   const [subscribed, setSubscribed] = useState(false);
 
   const handleSubscribe = async (e) => {
-    e.preventDefault();
+    e?.preventDefault?.();
     if (!email.trim()) return;
     setSubmitting(true);
     try {
@@ -87,16 +87,17 @@ const Footer = () => {
     }
   };
 
-  // Mobile accordion: all closed by default
-  const [openKey, setOpenKey] = useState(''); // '' | 'info' | 'premium'
+  // Mobile accordion: only info (all collapsed by default)
+  const [openKey, setOpenKey] = useState(''); // '' | 'info'
   const toggle = (key) => setOpenKey((prev) => (prev === key ? '' : key));
 
-  // Messengers
+  // Social / messengers
   const telegramUrl = settings?.telegramUrl;
   const viberUrl = settings?.viberUrl;
   const instagramUrl = settings?.instagramUrl;
   const tiktokUrl = settings?.tiktokUrl;
 
+  // Floating buttons (left side)
   const messengerButtons = [
     {
       key: 'telegram',
@@ -140,6 +141,40 @@ const Footer = () => {
     },
   ].filter((b) => !!b.href);
 
+  // Social icons row under the mobile footer icons (IG/TT/Viber as requested)
+  const socialUnderFooter = [
+    {
+      key: 'instagram',
+      label: 'Instagram',
+      href: instagramUrl,
+      icon: InstagramIcon,
+      ring: 'ring-pink-400/20',
+      bg: 'bg-pink-500/15',
+      text: 'text-pink-200',
+      hover: 'hover:bg-pink-500/20',
+    },
+    {
+      key: 'tiktok',
+      label: 'TikTok',
+      href: tiktokUrl,
+      icon: TikTokIcon,
+      ring: 'ring-white/15',
+      bg: 'bg-white/10',
+      text: 'text-white',
+      hover: 'hover:bg-white/15',
+    },
+    {
+      key: 'viber',
+      label: 'Viber',
+      href: viberUrl,
+      icon: ViberIcon,
+      ring: 'ring-violet-400/20',
+      bg: 'bg-violet-500/15',
+      text: 'text-violet-200',
+      hover: 'hover:bg-violet-500/20',
+    },
+  ].filter((b) => !!b.href);
+
   return (
     <>
       <footer className="relative overflow-hidden bg-[#070b09] text-white">
@@ -161,7 +196,7 @@ const Footer = () => {
         />
 
         <div className="relative z-10 mx-auto max-w-7xl px-4">
-          {/* Top ribbon: compact text only on mobile, full on desktop */}
+          {/* Top ribbon: compact text on mobile, CTA on desktop */}
           <div className="pt-5 md:pt-12">
             <div className="flex flex-col gap-3 rounded-3xl bg-white/5 p-3 ring-1 ring-white/10 backdrop-blur-md md:flex-row md:items-center md:justify-between md:p-6">
               <div className="flex items-start gap-3">
@@ -178,7 +213,6 @@ const Footer = () => {
                 </div>
               </div>
 
-              {/* Desktop CTA only */}
               <div className="hidden md:block">
                 <button
                   onClick={() => navigate('/catalog')}
@@ -191,9 +225,8 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* DESKTOP: premium columns (unchanged) */}
+          {/* DESKTOP columns (unchanged) */}
           <div className="hidden gap-8 py-10 md:grid md:grid-cols-12">
-            {/* Brand */}
             <div className="md:col-span-4">
               <div className="inline-flex items-center gap-2 rounded-2xl bg-white/5 px-3 py-2 ring-1 ring-white/10">
                 <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_18px_rgba(34,197,94,0.45)]" />
@@ -221,7 +254,6 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* Contacts */}
             <div className="md:col-span-4">
               <p className="text-sm font-semibold text-white/90">Контакти</p>
 
@@ -277,7 +309,6 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* Premium */}
             <div className="md:col-span-4">
               <p className="text-sm font-semibold text-white/90">Преміум-оновлення</p>
 
@@ -342,7 +373,7 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* MOBILE: ultra-compact footer */}
+          {/* MOBILE: compact footer */}
           <div className="py-3 md:hidden">
             {/* Quick icon row */}
             <div className="grid grid-cols-4 gap-2">
@@ -370,105 +401,115 @@ const Footer = () => {
                 <Info className="h-5 w-5 text-green-300" />
               </button>
 
+              {/* quick subscribe (kept as icon only) */}
               <button
-                onClick={() => toggle('premium')}
+                onClick={() => toggle('info')}
                 className="flex items-center justify-center rounded-2xl bg-white/5 py-2.5 ring-1 ring-white/10"
-                aria-label="Підписка"
+                aria-label="Інформація"
               >
                 <Mail className="h-5 w-5 text-white/80" />
               </button>
             </div>
 
-            {/* Accordion (only 2 sections to reduce height) */}
-            <div className="mt-2 space-y-2">
-              {[
-                { key: 'info', title: 'Інформація' },
-                { key: 'premium', title: 'Преміум-оновлення' },
-              ].map((sec) => (
-                <div key={sec.key} className="rounded-2xl bg-white/5 ring-1 ring-white/10">
-                  <button
-                    onClick={() => toggle(sec.key)}
-                    className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left"
-                  >
-                    <span className="text-sm font-semibold text-white/90">{sec.title}</span>
-                    <ChevronDown
-                      className={`h-4 w-4 text-white/70 transition ${
-                        openKey === sec.key ? 'rotate-180' : ''
-                      }`}
-                    />
-                  </button>
+            {/* Social icons under the footer icons */}
+            {socialUnderFooter.length > 0 && (
+              <div className="mt-2 flex items-center justify-center gap-2">
+                {socialUnderFooter.map((b) => {
+                  const Icon = b.icon;
+                  return (
+                    <a
+                      key={b.key}
+                      href={b.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={`flex h-10 w-10 items-center justify-center rounded-2xl ${b.bg} ${b.text} ring-1 ${b.ring} backdrop-blur-md transition ${b.hover} active:scale-95`}
+                      aria-label={b.label}
+                      title={b.label}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </a>
+                  );
+                })}
+              </div>
+            )}
 
-                  {openKey === sec.key && (
-                    <div className="px-3 pb-3">
-                      {sec.key === 'info' && (
-                        <div className="space-y-2">
-                          <button
-                            onClick={() => setIsAboutModalOpen(true)}
-                            className="w-full rounded-2xl bg-white/6 px-3 py-2.5 text-xs font-semibold text-green-300 ring-1 ring-white/10"
-                          >
-                            Про розсадник
-                          </button>
+            {/* Accordion: only info */}
+            <div className="mt-2">
+              <div className="rounded-2xl bg-white/5 ring-1 ring-white/10">
+                <button
+                  onClick={() => toggle('info')}
+                  className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left"
+                >
+                  <span className="text-sm font-semibold text-white/90">Інформація</span>
+                  <ChevronDown
+                    className={`h-4 w-4 text-white/70 transition ${openKey === 'info' ? 'rotate-180' : ''}`}
+                  />
+                </button>
 
-                          <div className="flex items-center justify-between rounded-2xl bg-white/6 px-3 py-2.5 ring-1 ring-white/10">
-                            <span className="text-xs font-semibold text-white/85">Гарантія якості</span>
-                            <ShieldCheck className="h-4 w-4 text-green-300" />
-                          </div>
+                {openKey === 'info' && (
+                  <div className="px-3 pb-3">
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => setIsAboutModalOpen(true)}
+                        className="w-full rounded-2xl bg-white/6 px-3 py-2.5 text-xs font-semibold text-green-300 ring-1 ring-white/10"
+                      >
+                        Про розсадник
+                      </button>
 
-                          <div className="flex items-center justify-between rounded-2xl bg-white/6 px-3 py-2.5 ring-1 ring-white/10">
-                            <span className="text-xs text-white/70">Оплата</span>
-                            <div className="flex items-center gap-2">
-                              <CreditCard className="h-4 w-4 text-white/70" />
-                              <img
-                                src="/mastercard.webp"
-                                alt="Mastercard"
-                                className="h-6 w-auto object-contain opacity-90"
-                              />
-                            </div>
-                          </div>
+                      <div className="flex items-center justify-between rounded-2xl bg-white/6 px-3 py-2.5 ring-1 ring-white/10">
+                        <span className="text-xs font-semibold text-white/85">Гарантія якості</span>
+                        <ShieldCheck className="h-4 w-4 text-green-300" />
+                      </div>
+
+                      <div className="flex items-center justify-between rounded-2xl bg-white/6 px-3 py-2.5 ring-1 ring-white/10">
+                        <span className="text-xs text-white/70">Оплата</span>
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="h-4 w-4 text-white/70" />
+                          <img
+                            src="/mastercard.webp"
+                            alt="Mastercard"
+                            className="h-6 w-auto object-contain opacity-90"
+                          />
                         </div>
-                      )}
+                      </div>
 
-                      {sec.key === 'premium' && (
-                        <div className="space-y-2">
-                          <form onSubmit={handleSubscribe} className="space-y-2">
-                            <input
-                              value={email}
-                              onChange={(e) => setEmail(e.target.value)}
-                              type="email"
-                              placeholder="Email"
-                              className="w-full rounded-2xl bg-black/25 px-3 py-2.5 text-xs text-white placeholder:text-white/40 ring-1 ring-white/10 outline-none focus:ring-2 focus:ring-green-400/30"
-                            />
-                            <button
-                              type="submit"
-                              disabled={submitting}
-                              className="w-full rounded-2xl bg-green-600 px-3 py-2.5 text-xs font-semibold text-white ring-1 ring-green-400/20 disabled:opacity-60"
-                            >
-                              {submitting ? 'Надсилаю…' : 'Підписатися'}
-                            </button>
+                      <form onSubmit={handleSubscribe} className="space-y-2">
+                        <input
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          type="email"
+                          placeholder="Email для підписки"
+                          className="w-full rounded-2xl bg-black/25 px-3 py-2.5 text-xs text-white placeholder:text-white/40 ring-1 ring-white/10 outline-none focus:ring-2 focus:ring-green-400/30"
+                        />
+                        <button
+                          type="submit"
+                          disabled={submitting}
+                          className="w-full rounded-2xl bg-green-600 px-3 py-2.5 text-xs font-semibold text-white ring-1 ring-green-400/20 disabled:opacity-60"
+                        >
+                          {submitting ? 'Надсилаю…' : 'Підписатися'}
+                        </button>
 
-                            <div className="flex items-center justify-between text-[11px] text-white/55">
-                              <span className="inline-flex items-center gap-1.5">
-                                <CheckCircle2 className="h-3.5 w-3.5 text-green-300" />
-                                Без спаму
-                              </span>
-                              {subscribed && (
-                                <span className="rounded-full bg-green-500/10 px-2 py-0.5 font-semibold text-green-200 ring-1 ring-green-400/20">
-                                  ✅
-                                </span>
-                              )}
-                            </div>
-                          </form>
+                        <div className="flex items-center justify-between text-[11px] text-white/55">
+                          <span className="inline-flex items-center gap-1.5">
+                            <CheckCircle2 className="h-3.5 w-3.5 text-green-300" />
+                            Без спаму
+                          </span>
+                          {subscribed && (
+                            <span className="rounded-full bg-green-500/10 px-2 py-0.5 font-semibold text-green-200 ring-1 ring-green-400/20">
+                              ✅
+                            </span>
+                          )}
                         </div>
-                      )}
+                      </form>
                     </div>
-                  )}
-                </div>
-              ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
-          {/* Bottom bar (super tight) */}
-          <div className="pb-20 sm:pb-10">
+          {/* Bottom bar */}
+          <div className="pb-6 sm:pb-10">
             <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
             <div className="flex flex-col items-center justify-between gap-2 pt-3 text-center sm:flex-row sm:text-left">
               <p className="text-[11px] text-white/55">© 2026 {siteName}. Всі права захищено.</p>
@@ -481,27 +522,9 @@ const Footer = () => {
         </div>
       </footer>
 
-      {/* Sticky "Catalog" button (mobile only, safe-area aware) */}
-      <div
-        className="md:hidden fixed left-0 right-0 z-50"
-        style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 10px)' }}
-      >
-        <div className="mx-auto max-w-7xl px-4">
-          <button
-            onClick={() => navigate('/catalog')}
-            className="w-full rounded-2xl bg-green-600 px-5 py-4 text-sm font-semibold text-white shadow-[0_22px_60px_rgba(34,197,94,0.22)] ring-1 ring-green-400/25 transition hover:bg-green-600/90 active:scale-[0.99]"
-          >
-            <span className="inline-flex items-center justify-center gap-2">
-              <Send className="h-4 w-4" />
-              Перейти в каталог
-            </span>
-          </button>
-        </div>
-      </div>
-
-      {/* Floating messengers (left) */}
+      {/* Floating messengers (left) - smart offset to avoid overlapping with ScrollToTop */}
       {messengerButtons.length > 0 && (
-        <div className="fixed bottom-5 left-4 z-50 flex flex-col gap-2 sm:bottom-6 sm:left-6 md:bottom-6">
+        <div className="fixed bottom-20 left-4 z-50 flex flex-col gap-2 sm:bottom-24 sm:left-6">
           {messengerButtons.map((b) => {
             const Icon = b.icon;
             return (
@@ -537,3 +560,4 @@ const Footer = () => {
 };
 
 export default Footer;
+
