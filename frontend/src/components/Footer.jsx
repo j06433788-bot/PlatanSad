@@ -56,15 +56,26 @@ const InstagramIcon = (props) => (
   </svg>
 );
 
+/**
+ * SAFE settings getter: якщо SettingsProvider відсутній — не валимо сайт
+ */
+const useSafeSettings = () => {
+  try {
+    return useSettings?.() || { settings: null };
+  } catch {
+    return { settings: null };
+  }
+};
+
 const Footer = () => {
   const navigate = useNavigate();
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
-  const { settings } = useSettings();
+  const { settings } = useSafeSettings();
 
   const phone1 = settings?.phone1 || '+380 (63) 650-74-49';
   const phone2 = settings?.phone2 || '+380 (95) 251-03-47';
-  const tel1 = useMemo(() => `tel:${(phone1 || '').replace(/\s/g, '')}`, [phone1]);
-  const tel2 = useMemo(() => `tel:${(phone2 || '').replace(/\s/g, '')}`, [phone2]);
+  const tel1 = useMemo(() => `tel:${String(phone1).replace(/\s/g, '')}`, [phone1]);
+  const tel2 = useMemo(() => `tel:${String(phone2).replace(/\s/g, '')}`, [phone2]);
   const siteName = settings?.siteName || 'PlatanSad';
 
   // Newsletter demo state
@@ -86,7 +97,7 @@ const Footer = () => {
     }
   };
 
-  // Mobile accordion
+  // Mobile accordion: only info
   const [openKey, setOpenKey] = useState(''); // '' | 'info'
   const toggle = (key) => setOpenKey((prev) => (prev === key ? '' : key));
 
@@ -97,79 +108,16 @@ const Footer = () => {
   const tiktokUrl = settings?.tiktokUrl;
 
   const messengerButtons = [
-    {
-      key: 'telegram',
-      label: 'Telegram',
-      href: telegramUrl,
-      icon: TelegramIcon,
-      ring: 'ring-sky-400/20',
-      bg: 'bg-sky-500/15',
-      text: 'text-sky-200',
-      hover: 'hover:bg-sky-500/20',
-    },
-    {
-      key: 'viber',
-      label: 'Viber',
-      href: viberUrl,
-      icon: ViberIcon,
-      ring: 'ring-violet-400/20',
-      bg: 'bg-violet-500/15',
-      text: 'text-violet-200',
-      hover: 'hover:bg-violet-500/20',
-    },
-    {
-      key: 'tiktok',
-      label: 'TikTok',
-      href: tiktokUrl,
-      icon: TikTokIcon,
-      ring: 'ring-white/15',
-      bg: 'bg-white/10',
-      text: 'text-white',
-      hover: 'hover:bg-white/15',
-    },
-    {
-      key: 'instagram',
-      label: 'Instagram',
-      href: instagramUrl,
-      icon: InstagramIcon,
-      ring: 'ring-pink-400/20',
-      bg: 'bg-pink-500/15',
-      text: 'text-pink-200',
-      hover: 'hover:bg-pink-500/20',
-    },
+    { key: 'telegram', label: 'Telegram', href: telegramUrl, icon: TelegramIcon, ring: 'ring-sky-400/20', bg: 'bg-sky-500/15', text: 'text-sky-200', hover: 'hover:bg-sky-500/20' },
+    { key: 'viber', label: 'Viber', href: viberUrl, icon: ViberIcon, ring: 'ring-violet-400/20', bg: 'bg-violet-500/15', text: 'text-violet-200', hover: 'hover:bg-violet-500/20' },
+    { key: 'tiktok', label: 'TikTok', href: tiktokUrl, icon: TikTokIcon, ring: 'ring-white/15', bg: 'bg-white/10', text: 'text-white', hover: 'hover:bg-white/15' },
+    { key: 'instagram', label: 'Instagram', href: instagramUrl, icon: InstagramIcon, ring: 'ring-pink-400/20', bg: 'bg-pink-500/15', text: 'text-pink-200', hover: 'hover:bg-pink-500/20' },
   ].filter((b) => !!b.href);
 
   const socialUnderFooter = [
-    {
-      key: 'instagram',
-      label: 'Instagram',
-      href: instagramUrl,
-      icon: InstagramIcon,
-      ring: 'ring-pink-400/20',
-      bg: 'bg-pink-500/15',
-      text: 'text-pink-200',
-      hover: 'hover:bg-pink-500/20',
-    },
-    {
-      key: 'tiktok',
-      label: 'TikTok',
-      href: tiktokUrl,
-      icon: TikTokIcon,
-      ring: 'ring-white/15',
-      bg: 'bg-white/10',
-      text: 'text-white',
-      hover: 'hover:bg-white/15',
-    },
-    {
-      key: 'viber',
-      label: 'Viber',
-      href: viberUrl,
-      icon: ViberIcon,
-      ring: 'ring-violet-400/20',
-      bg: 'bg-violet-500/15',
-      text: 'text-violet-200',
-      hover: 'hover:bg-violet-500/20',
-    },
+    { key: 'instagram', label: 'Instagram', href: instagramUrl, icon: InstagramIcon, ring: 'ring-pink-400/20', bg: 'bg-pink-500/15', text: 'text-pink-200', hover: 'hover:bg-pink-500/20' },
+    { key: 'tiktok', label: 'TikTok', href: tiktokUrl, icon: TikTokIcon, ring: 'ring-white/15', bg: 'bg-white/10', text: 'text-white', hover: 'hover:bg-white/15' },
+    { key: 'viber', label: 'Viber', href: viberUrl, icon: ViberIcon, ring: 'ring-violet-400/20', bg: 'bg-violet-500/15', text: 'text-violet-200', hover: 'hover:bg-violet-500/20' },
   ].filter((b) => !!b.href);
 
   return (
@@ -193,7 +141,7 @@ const Footer = () => {
         />
 
         <div className="relative z-10 mx-auto max-w-7xl px-4">
-          {/* Top ribbon (NO catalog button now) */}
+          {/* Top ribbon */}
           <div className="pt-5 md:pt-12">
             <div className="flex flex-col gap-3 rounded-3xl bg-white/5 p-3 ring-1 ring-white/10 backdrop-blur-md md:flex-row md:items-center md:justify-between md:p-6">
               <div className="flex items-start gap-3">
@@ -202,7 +150,7 @@ const Footer = () => {
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-white/90 sm:text-base">
-                    {siteName} — приватний розсадник
+                    {siteName} — розсадник
                   </p>
                   <p className="mt-0.5 text-xs text-white/65 sm:text-sm">
                     Поради • Підбір • Підтримка
@@ -210,20 +158,21 @@ const Footer = () => {
                 </div>
               </div>
 
+              {/* Desktop CTA: contacts + about (no catalog) */}
               <div className="hidden md:flex items-center gap-2">
-                <a
-                  href={tel1}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white/6 px-5 py-3 text-sm font-semibold text-white ring-1 ring-white/10 transition hover:bg-white/10 active:scale-[0.98]"
-                >
-                  <Phone className="h-4 w-4 text-green-300" />
-                  Подзвонити
-                </a>
                 <button
                   onClick={() => setIsAboutModalOpen(true)}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-green-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_40px_rgba(34,197,94,0.18)] ring-1 ring-green-400/20 transition hover:bg-green-600/90 active:scale-[0.98]"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white/6 px-5 py-3 text-sm font-semibold text-green-200 ring-1 ring-white/10 transition hover:bg-white/10 active:scale-[0.98]"
                 >
                   <Info className="h-4 w-4" />
                   Про розсадник
+                </button>
+                <button
+                  onClick={() => navigate('/contacts')}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-green-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_40px_rgba(34,197,94,0.18)] ring-1 ring-green-400/20 transition hover:bg-green-600/90 active:scale-[0.98]"
+                >
+                  <MapPin className="h-4 w-4" />
+                  Контакти
                 </button>
               </div>
             </div>
@@ -238,8 +187,7 @@ const Footer = () => {
               </div>
 
               <p className="mt-4 text-sm leading-relaxed text-white/70">
-                Приватний розсадник декоративних рослин. Підкажемо найкращі варіанти під ваші
-                умови та бюджет.
+                Приватний розсадник декоративних рослин. Підкажемо найкращі варіанти під ваші умови та бюджет.
               </p>
 
               <div className="mt-5 flex flex-wrap items-center gap-2">
@@ -376,88 +324,68 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* PREMIUM MOBILE footer */}
-          <div className="py-4 md:hidden">
-            {/* Brand mini card */}
-            <div className="rounded-3xl bg-white/5 p-3 ring-1 ring-white/10 backdrop-blur-md">
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="h-10 w-10 rounded-2xl bg-green-500/15 ring-1 ring-green-400/20 flex items-center justify-center">
-                    <Sparkles className="h-5 w-5 text-green-300" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-white/90 truncate">{siteName}</p>
-                    <p className="text-xs text-white/60 truncate">Приватний розсадник • Підбір • Підтримка</p>
-                  </div>
-                </div>
+          {/* MOBILE: compact footer */}
+          <div className="py-3 md:hidden">
+            {/* Quick icon row */}
+            <div className="grid grid-cols-4 gap-2">
+              <a
+                href={tel1}
+                className="flex items-center justify-center rounded-2xl bg-white/5 py-2.5 ring-1 ring-white/10"
+                aria-label="Подзвонити"
+              >
+                <Phone className="h-5 w-5 text-green-300" />
+              </a>
 
-                <button
-                  onClick={() => setIsAboutModalOpen(true)}
-                  className="shrink-0 rounded-2xl bg-white/6 px-3 py-2 text-xs font-semibold text-green-200 ring-1 ring-white/10 active:scale-95"
-                >
-                  Про нас
-                </button>
+              <button
+                onClick={() => navigate('/contacts')}
+                className="flex items-center justify-center rounded-2xl bg-white/5 py-2.5 ring-1 ring-white/10"
+                aria-label="Контакти"
+              >
+                <MapPin className="h-5 w-5 text-white/80" />
+              </button>
+
+              <button
+                onClick={() => setIsAboutModalOpen(true)}
+                className="flex items-center justify-center rounded-2xl bg-white/5 py-2.5 ring-1 ring-white/10"
+                aria-label="Про розсадник"
+              >
+                <Info className="h-5 w-5 text-green-300" />
+              </button>
+
+              <button
+                onClick={() => toggle('info')}
+                className="flex items-center justify-center rounded-2xl bg-white/5 py-2.5 ring-1 ring-white/10"
+                aria-label="Інформація"
+              >
+                <Mail className="h-5 w-5 text-white/80" />
+              </button>
+            </div>
+
+            {/* Social icons under footer icons */}
+            {socialUnderFooter.length > 0 && (
+              <div className="mt-2 flex items-center justify-center gap-2">
+                {socialUnderFooter.map((b) => {
+                  const Icon = b.icon;
+                  return (
+                    <a
+                      key={b.key}
+                      href={b.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className={`flex h-10 w-10 items-center justify-center rounded-2xl ${b.bg} ${b.text} ring-1 ${b.ring} backdrop-blur-md transition ${b.hover} active:scale-95`}
+                      aria-label={b.label}
+                      title={b.label}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </a>
+                  );
+                })}
               </div>
+            )}
 
-              {/* Quick actions */}
-              <div className="mt-3 grid grid-cols-4 gap-2">
-                <a
-                  href={tel1}
-                  className="flex items-center justify-center rounded-2xl bg-white/6 py-2.5 ring-1 ring-white/10 active:scale-95"
-                  aria-label="Подзвонити"
-                >
-                  <Phone className="h-5 w-5 text-green-300" />
-                </a>
-
-                <button
-                  onClick={() => navigate('/contacts')}
-                  className="flex items-center justify-center rounded-2xl bg-white/6 py-2.5 ring-1 ring-white/10 active:scale-95"
-                  aria-label="Контакти"
-                >
-                  <MapPin className="h-5 w-5 text-white/80" />
-                </button>
-
-                <button
-                  onClick={() => toggle('info')}
-                  className="flex items-center justify-center rounded-2xl bg-white/6 py-2.5 ring-1 ring-white/10 active:scale-95"
-                  aria-label="Інформація"
-                >
-                  <Mail className="h-5 w-5 text-white/80" />
-                </button>
-
-                <button
-                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                  className="flex items-center justify-center rounded-2xl bg-white/6 py-2.5 ring-1 ring-white/10 active:scale-95"
-                  aria-label="Вгору"
-                >
-                  <ChevronUp className="h-5 w-5 text-white/80" />
-                </button>
-              </div>
-
-              {/* Social row */}
-              {socialUnderFooter.length > 0 && (
-                <div className="mt-3 flex items-center justify-center gap-2">
-                  {socialUnderFooter.map((b) => {
-                    const Icon = b.icon;
-                    return (
-                      <a
-                        key={b.key}
-                        href={b.href}
-                        target="_blank"
-                        rel="noreferrer"
-                        className={`flex h-11 w-11 items-center justify-center rounded-2xl ${b.bg} ${b.text} ring-1 ${b.ring} backdrop-blur-md transition ${b.hover} active:scale-95`}
-                        aria-label={b.label}
-                        title={b.label}
-                      >
-                        <Icon className="h-5 w-5" />
-                      </a>
-                    );
-                  })}
-                </div>
-              )}
-
-              {/* Accordion */}
-              <div className="mt-3 rounded-2xl bg-white/6 ring-1 ring-white/10">
+            {/* Accordion */}
+            <div className="mt-2">
+              <div className="rounded-2xl bg-white/5 ring-1 ring-white/10">
                 <button
                   onClick={() => toggle('info')}
                   className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left"
@@ -469,68 +397,95 @@ const Footer = () => {
                 </button>
 
                 {openKey === 'info' && (
-                  <div className="px-3 pb-3 space-y-2">
-                    <div className="flex items-center justify-between rounded-2xl bg-white/6 px-3 py-2.5 ring-1 ring-white/10">
-                      <span className="text-xs font-semibold text-white/85">Гарантія якості</span>
-                      <ShieldCheck className="h-4 w-4 text-green-300" />
-                    </div>
+                  <div className="px-3 pb-3">
+                    <div className="space-y-2">
+                      <button
+                        onClick={() => setIsAboutModalOpen(true)}
+                        className="w-full rounded-2xl bg-white/6 px-3 py-2.5 text-xs font-semibold text-green-300 ring-1 ring-white/10"
+                      >
+                        Про розсадник
+                      </button>
 
-                    <div className="flex items-center justify-between rounded-2xl bg-white/6 px-3 py-2.5 ring-1 ring-white/10">
-                      <span className="text-xs text-white/70">Оплата</span>
-                      <div className="flex items-center gap-2">
-                        <CreditCard className="h-4 w-4 text-white/70" />
-                        <img
-                          src="/mastercard.webp"
-                          alt="Mastercard"
-                          className="h-6 w-auto object-contain opacity-90"
+                      <div className="flex items-center justify-between rounded-2xl bg-white/6 px-3 py-2.5 ring-1 ring-white/10">
+                        <span className="text-xs font-semibold text-white/85">Гарантія якості</span>
+                        <ShieldCheck className="h-4 w-4 text-green-300" />
+                      </div>
+
+                      <div className="flex items-center justify-between rounded-2xl bg-white/6 px-3 py-2.5 ring-1 ring-white/10">
+                        <span className="text-xs text-white/70">Оплата</span>
+                        <div className="flex items-center gap-2">
+                          <CreditCard className="h-4 w-4 text-white/70" />
+                          <img
+                            src="/mastercard.webp"
+                            alt="Mastercard"
+                            className="h-6 w-auto object-contain opacity-90"
+                          />
+                        </div>
+                      </div>
+
+                      <form onSubmit={handleSubscribe} className="space-y-2">
+                        <input
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          type="email"
+                          placeholder="Email для підписки"
+                          className="w-full rounded-2xl bg-black/25 px-3 py-2.5 text-xs text-white placeholder:text-white/40 ring-1 ring-white/10 outline-none focus:ring-2 focus:ring-green-400/30"
                         />
-                      </div>
-                    </div>
+                        <button
+                          type="submit"
+                          disabled={submitting}
+                          className="w-full rounded-2xl bg-green-600 px-3 py-2.5 text-xs font-semibold text-white ring-1 ring-green-400/20 disabled:opacity-60"
+                        >
+                          {submitting ? 'Надсилаю…' : 'Підписатися'}
+                        </button>
 
-                    <form onSubmit={handleSubscribe} className="space-y-2">
-                      <input
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        type="email"
-                        placeholder="Email для підписки"
-                        className="w-full rounded-2xl bg-black/25 px-3 py-2.5 text-xs text-white placeholder:text-white/40 ring-1 ring-white/10 outline-none focus:ring-2 focus:ring-green-400/30"
-                      />
-                      <button
-                        type="submit"
-                        disabled={submitting}
-                        className="w-full rounded-2xl bg-green-600 px-3 py-2.5 text-xs font-semibold text-white ring-1 ring-green-400/20 disabled:opacity-60"
-                      >
-                        {submitting ? 'Надсилаю…' : 'Підписатися'}
-                      </button>
-
-                      <div className="flex items-center justify-between text-[11px] text-white/55">
-                        <span className="inline-flex items-center gap-1.5">
-                          <CheckCircle2 className="h-3.5 w-3.5 text-green-300" />
-                          Без спаму
-                        </span>
-                        {subscribed && (
-                          <span className="rounded-full bg-green-500/10 px-2 py-0.5 font-semibold text-green-200 ring-1 ring-green-400/20">
-                            ✅
+                        <div className="flex items-center justify-between text-[11px] text-white/55">
+                          <span className="inline-flex items-center gap-1.5">
+                            <CheckCircle2 className="h-3.5 w-3.5 text-green-300" />
+                            Без спаму
                           </span>
-                        )}
-                      </div>
-                    </form>
+                          {subscribed && (
+                            <span className="rounded-full bg-green-500/10 px-2 py-0.5 font-semibold text-green-200 ring-1 ring-green-400/20">
+                              ✅
+                            </span>
+                          )}
+                        </div>
+                      </form>
 
-                    <div className="grid grid-cols-2 gap-2 pt-1">
-                      <a
-                        href={tel1}
-                        className="flex items-center justify-center gap-2 rounded-2xl bg-white/6 px-3 py-2.5 text-xs font-semibold text-white/90 ring-1 ring-white/10"
-                      >
-                        <Phone className="h-4 w-4 text-green-300" />
-                        Дзвінок
-                      </a>
-                      <button
-                        onClick={() => navigate('/contacts')}
-                        className="flex items-center justify-center gap-2 rounded-2xl bg-white/6 px-3 py-2.5 text-xs font-semibold text-white/90 ring-1 ring-white/10"
-                      >
-                        <MapPin className="h-4 w-4 text-white/80" />
-                        Контакти
-                      </button>
+                      <div className="grid grid-cols-2 gap-2 pt-1">
+                        <a
+                          href={tel1}
+                          className="flex items-center justify-center gap-2 rounded-2xl bg-white/6 px-3 py-2.5 text-xs font-semibold text-white/90 ring-1 ring-white/10"
+                        >
+                          <Phone className="h-4 w-4 text-green-300" />
+                          Дзвінок
+                        </a>
+                        <button
+                          onClick={() => navigate('/contacts')}
+                          className="flex items-center justify-center gap-2 rounded-2xl bg-white/6 px-3 py-2.5 text-xs font-semibold text-white/90 ring-1 ring-white/10"
+                        >
+                          <MapPin className="h-4 w-4 text-white/80" />
+                          Контакти
+                        </button>
+                      </div>
+
+                      <div className="rounded-2xl bg-white/6 px-3 py-2.5 ring-1 ring-white/10">
+                        <p className="text-[11px] text-white/60">Швидкий перехід</p>
+                        <div className="mt-2 grid grid-cols-2 gap-2">
+                          <button
+                            onClick={() => navigate('/delivery')}
+                            className="rounded-xl bg-white/5 px-3 py-2 text-[11px] font-semibold text-white/80 ring-1 ring-white/10"
+                          >
+                            Доставка
+                          </button>
+                          <button
+                            onClick={() => navigate('/return')}
+                            className="rounded-xl bg-white/5 px-3 py-2 text-[11px] font-semibold text-white/80 ring-1 ring-white/10"
+                          >
+                            Повернення
+                          </button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 )}
@@ -552,7 +507,7 @@ const Footer = () => {
         </div>
       </footer>
 
-      {/* PREMIUM MOBILE STICKY CALL BAR */}
+      {/* PREMIUM MOBILE STICKY CALL BAR (NO CATALOG, NO CART) */}
       <div className="md:hidden fixed inset-x-0 bottom-0 z-[70] px-3 pb-[calc(env(safe-area-inset-bottom)+10px)] pt-2">
         <div className="relative overflow-hidden rounded-2xl bg-[#070b09]/86 ring-1 ring-white/10 shadow-2xl backdrop-blur-xl">
           <div className="pointer-events-none absolute inset-0">
@@ -581,17 +536,6 @@ const Footer = () => {
                 Дзвінок
               </span>
             </a>
-
-            {/* secondary small line (optional) */}
-            <div className="mt-2 flex items-center justify-between rounded-2xl bg-white/5 px-3 py-2 ring-1 ring-white/10">
-              <span className="text-[11px] text-white/60">Альтернативний номер</span>
-              <a
-                href={tel2}
-                className="text-[11px] font-semibold text-green-200 hover:text-green-100"
-              >
-                {phone2}
-              </a>
-            </div>
           </div>
         </div>
       </div>
@@ -634,3 +578,4 @@ const Footer = () => {
 };
 
 export default Footer;
+
