@@ -92,3 +92,9 @@ site_backup.zip
 # Environment files
 *.env
 *.env.*
+
+# local DB
+backend/platansad.db
+
+# local sqlite db
+backend/platansad.db
