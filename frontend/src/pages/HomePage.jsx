@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from "react";
 import { LayoutGrid } from "lucide-react";
 import Hero from "../components/Hero";
