@@ -14,7 +14,7 @@ import ProductDetailPage from "./pages/ProductDetailPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import CatalogPage from "./pages/CatalogPage";
-import OrderSuccessPage from "./pages/OrderSuccessPage";
+// import OrderSuccessPage from "./pages/OrderSuccessPage";
 import WishlistPage from "./pages/WishlistPage";
 import AboutPage from "./pages/AboutPage";
 import DeliveryPage from "./pages/DeliveryPage";
@@ -37,6 +37,22 @@ import AdminMedia from "./admin/pages/AdminMedia";
 import ProtectedRoute from "./admin/components/ProtectedRoute";
 
 import "./App.css";
+
+const OrderSuccessStub = () => (
+  <div className="p-6">
+    <h1 className="text-2xl font-bold">✅ Замовлення оформлено</h1>
+    <p className="mt-2 text-gray-600">
+      Дякуємо! Сторінка підтвердження тимчасово на техобслуговуванні.
+    </p>
+    <a
+      href="/"
+      className="inline-flex mt-4 items-center justify-center rounded-xl bg-green-600 px-4 py-2 text-white font-semibold"
+    >
+      На головну
+    </a>
+  </div>
+);
+
 
 function App() {
   return (
