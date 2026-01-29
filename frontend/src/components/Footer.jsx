@@ -1,9 +1,10 @@
+
 import React, { useEffect, useMemo, useState } from "react";
 import { MessageCircle } from "lucide-react";
 import { useSettings } from "../context/SettingsContext";
 
 /* Brand SVG icons (clean + modern) */
-const BrandIcon = ({ name, className = "w-6 h-6" }) => {
+const BrandIcon = ({ name, className = "w-5 h-5 sm:w-6 sm:h-6" }) => {
   switch (name) {
     case "instagram":
       return (
@@ -58,13 +59,6 @@ const BrandIcon = ({ name, className = "w-6 h-6" }) => {
             strokeLinecap="round"
             opacity=".85"
           />
-          <path
-            d="M13.2 2.8c3.6.5 6.4 3.4 6.9 6.9"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            opacity=".55"
-          />
         </svg>
       );
     default:
@@ -116,21 +110,13 @@ const Footer = () => {
       rel={external ? "noopener noreferrer" : undefined}
       aria-label={title}
       title={title}
-      className={[
-        "group flex items-center justify-center rounded-2xl p-3",
-        "bg-white/10 hover:bg-white/14 transition",
-        "ring-1 ring-white/10 hover:ring-white/20",
-      ].join(" ")}
+      className="group flex items-center justify-center rounded-2xl bg-white/10 hover:bg-white/14 transition p-2 ring-1 ring-white/10 hover:ring-white/20"
     >
       <div
-        className={[
-          "flex h-11 w-11 items-center justify-center rounded-2xl",
-          "ring-1 ring-white/10 group-hover:ring-white/25 transition",
-          "bg-gradient-to-b from-white/10 to-black/10",
-        ].join(" ")}
+        className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl ring-1 ring-white/10 group-hover:ring-white/25 transition"
         style={{
-          boxShadow: `0 18px 45px ${tint}33`,
-          backgroundImage: `radial-gradient(120% 120% at 30% 20%, ${tint}33 0%, rgba(255,255,255,0.08) 45%, rgba(0,0,0,0.12) 100%)`,
+          boxShadow: `0 16px 38px ${tint}26`,
+          backgroundImage: `radial-gradient(120% 120% at 30% 20%, ${tint}2b 0%, rgba(255,255,255,0.08) 45%, rgba(0,0,0,0.12) 100%)`,
         }}
       >
         <span className="text-white">{children}</span>
@@ -140,7 +126,7 @@ const Footer = () => {
 
   return (
     <>
-      {/* Minimal line footer */}
+      {/* Minimal footer line */}
       <footer className="bg-[#08110c] text-white/70">
         <div
           className="max-w-7xl mx-auto px-3 py-3 text-center text-[11px] sm:text-xs"
@@ -150,20 +136,19 @@ const Footer = () => {
         </div>
       </footer>
 
-      {/* Floating button + panel */}
+      {/* Floating button + compact panel */}
       <div
         className="fixed right-4 sm:right-6 z-50"
         style={{ bottom: "calc(18px + env(safe-area-inset-bottom))" }}
       >
-        {/* Panel with spring pop */}
+        {/* Panel with spring pop + grain */}
         <div
           id="ms-panel"
           className={[
-            "absolute bottom-16 right-0 w-[270px] overflow-hidden rounded-3xl",
-            "backdrop-blur-2xl",
-            "ring-1 ring-emerald-200/20",
-            "shadow-[0_24px_80px_rgba(0,0,0,0.45)]",
-            "transition-all duration-300",
+            "absolute bottom-16 right-0 w-[250px] sm:w-[270px] overflow-hidden rounded-3xl",
+            "backdrop-blur-2xl ring-1 ring-emerald-200/20",
+            "shadow-[0_24px_70px_rgba(0,0,0,0.42)]",
+            "transition-all duration-250",
             open
               ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
               : "opacity-0 translate-y-2 scale-[0.92] pointer-events-none",
@@ -175,34 +160,43 @@ const Footer = () => {
               "linear-gradient(180deg, rgba(16,185,129,0.22) 0%, rgba(5,46,22,0.45) 100%)",
           }}
         >
-          {/* readability overlay */}
-          <div className="relative p-4">
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/10 via-black/25 to-black/40" />
+          {/* Grain overlay (light) */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.08] mix-blend-overlay"
+            style={{
+              backgroundImage:
+                "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E\")",
+            }}
+          />
 
-            <div className="relative">
-              <p className="text-sm font-extrabold text-white">Написати нам</p>
-              <p className="mt-1 text-[12px] leading-snug text-white/85">
-                Оберіть месенджер — відповідаємо швидко
-              </p>
+          {/* Readability overlay */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/10 via-black/28 to-black/40" />
 
-              {/* Icons only (no names) */}
-              <div className="mt-4 grid grid-cols-4 gap-3">
-                <IconChip href={viberUrl} title="Viber" tint="#7C3AED" external={false}>
-                  <BrandIcon name="viber" />
-                </IconChip>
+          {/* Content (compact) */}
+          <div className="relative p-3 sm:p-4">
+            <p className="text-[13px] sm:text-sm font-extrabold text-white">
+              Написати нам
+            </p>
+            <p className="mt-1 text-[11px] sm:text-[12px] text-white/80">
+              Оберіть месенджер
+            </p>
 
-                <IconChip href={instagramUrl} title="Instagram" tint="#EC4899">
-                  <BrandIcon name="instagram" />
-                </IconChip>
+            <div className="mt-3 grid grid-cols-4 gap-2.5 sm:gap-3">
+              <IconChip href={viberUrl} title="Viber" tint="#7C3AED" external={false}>
+                <BrandIcon name="viber" />
+              </IconChip>
 
-                <IconChip href={facebookUrl} title="Facebook" tint="#3B82F6">
-                  <BrandIcon name="facebook" />
-                </IconChip>
+              <IconChip href={instagramUrl} title="Instagram" tint="#EC4899">
+                <BrandIcon name="instagram" />
+              </IconChip>
 
-                <IconChip href={tiktokUrl} title="TikTok" tint="#22C55E">
-                  <BrandIcon name="tiktok" />
-                </IconChip>
-              </div>
+              <IconChip href={facebookUrl} title="Facebook" tint="#3B82F6">
+                <BrandIcon name="facebook" />
+              </IconChip>
+
+              <IconChip href={tiktokUrl} title="TikTok" tint="#22C55E">
+                <BrandIcon name="tiktok" />
+              </IconChip>
             </div>
           </div>
         </div>
