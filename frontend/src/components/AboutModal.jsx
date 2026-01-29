@@ -1,8 +1,10 @@
 import React, { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { X, Sprout, Shield, Truck, Award, Users } from "lucide-react";
 
 const AboutModal = ({ isOpen, onClose }) => {
   const panelRef = useRef(null);
+  const navigate = useNavigate();
 
   // Lock body scroll + Esc close + focus first element
   useEffect(() => {
@@ -30,6 +32,11 @@ const AboutModal = ({ isOpen, onClose }) => {
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
+
+  const goToCatalog = () => {
+    onClose?.();
+    navigate("/catalog");
+  };
 
   return (
     <div
@@ -200,7 +207,7 @@ const AboutModal = ({ isOpen, onClose }) => {
               </p>
 
               <button
-                onClick={onClose}
+                onClick={goToCatalog}
                 className="w-full sm:w-auto bg-white text-green-700 px-6 py-2.5 rounded-xl font-extrabold hover:bg-green-50 active:scale-[0.99] transition"
               >
                 Перейти до каталогу
