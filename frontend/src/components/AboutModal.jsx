@@ -1,11 +1,43 @@
-import React from 'react';
-import { X, Sprout, Shield, Truck, Award, Users } from 'lucide-react';
+import React, { useEffect, useRef } from "react";
+import { X, Sprout, Shield, Truck, Award, Users } from "lucide-react";
 
 const AboutModal = ({ isOpen, onClose }) => {
+  const panelRef = useRef(null);
+
+  // Lock body scroll + Esc close + focus first element
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") onClose?.();
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+
+    // focus close button for mobile accessibility
+    setTimeout(() => {
+      const btn = panelRef.current?.querySelector("[data-close]");
+      btn?.focus?.();
+    }, 0);
+
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 animate-fadeIn">
+    <div
+      className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center p-0 sm:p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Про PlatanSad"
+    >
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
@@ -13,31 +45,47 @@ const AboutModal = ({ isOpen, onClose }) => {
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden animate-slideUp">
+      <div
+        ref={panelRef}
+        className={[
+          "relative w-full sm:max-w-3xl bg-white shadow-2xl overflow-hidden",
+          // Mobile: bottom sheet
+          "rounded-t-3xl sm:rounded-2xl",
+          // Safer heights on phones + iOS
+          "max-h-[92vh] sm:max-h-[90vh]",
+          // Smooth entrance
+          "animate-slideUp sm:animate-fadeIn",
+        ].join(" ")}
+        style={{
+          paddingBottom: "env(safe-area-inset-bottom, 0px)",
+        }}
+      >
         {/* Header */}
-        <div className="bg-gradient-to-r from-green-600 to-green-700 text-white p-6 relative">
-          <div className="relative z-10">
-            <h2 className="text-2xl md:text-3xl font-bold mb-2">
+        <div className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-4 sm:p-6 relative">
+          <div className="pr-12">
+            <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold leading-tight">
               PlatanSad – усе для вашого саду та городу
             </h2>
-            <p className="text-green-100 text-sm md:text-base">
+            <p className="text-green-100 text-xs sm:text-sm md:text-base mt-1">
               Розсадник декоративних і садових рослин
             </p>
           </div>
 
           <button
+            data-close
             onClick={onClose}
-            className="absolute top-4 right-4 p-2 hover:bg-white/20 rounded-full transition-colors z-20"
+            className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/15 transition-colors z-20 focus:outline-none focus-visible:ring-4 focus-visible:ring-white/30"
+            aria-label="Закрити"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="p-6 md:p-8 overflow-y-auto max-h-[calc(90vh-120px)]">
+        <div className="px-4 py-4 sm:p-8 overflow-y-auto max-h-[calc(92vh-86px)] sm:max-h-[calc(90vh-120px)]">
           {/* Intro */}
           <div className="mb-5">
-            <p className="text-gray-700 leading-relaxed text-base md:text-lg">
+            <p className="text-gray-700 leading-relaxed text-sm sm:text-base md:text-lg">
               <strong className="text-green-600">PlatanSad</strong> — це місце, де
               любов до рослин поєднується з досвідом та якістю. Ми допомагаємо
               створювати сади, які тішать роками — від першої посадки до
@@ -46,49 +94,49 @@ const AboutModal = ({ isOpen, onClose }) => {
           </div>
 
           {/* What we offer */}
-          <div className="mb-5">
-            <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">
+          <div className="mb-6">
+            <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold text-gray-800 mb-3 sm:mb-4">
               Що ви знайдете у нас?
             </h3>
 
             <div className="space-y-3">
               <div className="flex gap-3">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  <Sprout className="w-4 h-4 text-green-600" />
+                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-green-100 rounded-full flex items-center justify-center shrink-0">
+                  <Sprout className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
                 </div>
-                <div>
-                  <p className="font-medium text-gray-800">
+                <div className="min-w-0">
+                  <p className="font-semibold text-gray-800 text-sm sm:text-base">
                     Декоративні та хвойні рослини
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-xs sm:text-sm text-gray-600">
                     Туї, ялини, самшит, нівакі, формовані та класичні рослини
                   </p>
                 </div>
               </div>
 
               <div className="flex gap-3">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  <Sprout className="w-4 h-4 text-green-600" />
+                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-green-100 rounded-full flex items-center justify-center shrink-0">
+                  <Sprout className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
                 </div>
-                <div>
-                  <p className="font-medium text-gray-800">
+                <div className="min-w-0">
+                  <p className="font-semibold text-gray-800 text-sm sm:text-base">
                     Листопадні дерева та кущі
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-xs sm:text-sm text-gray-600">
                     Для саду, двору та ландшафтного дизайну
                   </p>
                 </div>
               </div>
 
               <div className="flex gap-3">
-                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                  <Shield className="w-4 h-4 text-green-600" />
+                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-green-100 rounded-full flex items-center justify-center shrink-0">
+                  <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
                 </div>
-                <div>
-                  <p className="font-medium text-gray-800">
+                <div className="min-w-0">
+                  <p className="font-semibold text-gray-800 text-sm sm:text-base">
                     Засоби догляду та захисту
                   </p>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-xs sm:text-sm text-gray-600">
                     Підживки, захист, рекомендації по догляду
                   </p>
                 </div>
@@ -97,37 +145,43 @@ const AboutModal = ({ isOpen, onClose }) => {
           </div>
 
           {/* Why choose us */}
-          <div className="mb-5">
-            <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-4">
+          <div className="mb-6">
+            <h3 className="text-lg sm:text-xl md:text-2xl font-extrabold text-gray-800 mb-3 sm:mb-4">
               Чому обирають нас?
             </h3>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="p-4 bg-green-50 rounded-xl flex gap-3">
-                <Award className="w-5 h-5 text-green-600" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+              <div className="p-4 bg-green-50 rounded-2xl flex gap-3">
+                <Award className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-semibold">Якість та досвід</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="font-bold text-gray-800 text-sm sm:text-base">
+                    Якість та досвід
+                  </p>
+                  <p className="text-xs sm:text-sm text-gray-600">
                     Перевірені рослини з правильним доглядом
                   </p>
                 </div>
               </div>
 
-              <div className="p-4 bg-green-50 rounded-xl flex gap-3">
-                <Users className="w-5 h-5 text-green-600" />
+              <div className="p-4 bg-green-50 rounded-2xl flex gap-3">
+                <Users className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-semibold">Живі консультації</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="font-bold text-gray-800 text-sm sm:text-base">
+                    Живі консультації
+                  </p>
+                  <p className="text-xs sm:text-sm text-gray-600">
                     Підкажемо, що саме підійде для вашої ділянки
                   </p>
                 </div>
               </div>
 
-              <div className="p-4 bg-green-50 rounded-xl flex gap-3">
-                <Truck className="w-5 h-5 text-green-600" />
+              <div className="p-4 bg-green-50 rounded-2xl flex gap-3 sm:col-span-2">
+                <Truck className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-semibold">Швидка доставка</p>
-                  <p className="text-sm text-gray-600">
+                  <p className="font-bold text-gray-800 text-sm sm:text-base">
+                    Швидка доставка
+                  </p>
+                  <p className="text-xs sm:text-sm text-gray-600">
                     Надійне пакування по всій Україні
                   </p>
                 </div>
@@ -136,20 +190,26 @@ const AboutModal = ({ isOpen, onClose }) => {
           </div>
 
           {/* CTA */}
-          <div className="bg-gradient-to-r from-green-600 to-green-700 rounded-xl p-4 text-center text-white">
-            <h3 className="text-lg font-bold mb-1">
-              Розвивайте свій сад разом із PlatanSad
-            </h3>
-            <p className="text-green-100 text-sm mb-3">
-              Якісні рослини та чесні поради
-            </p>
-            <button
-              onClick={onClose}
-              className="bg-white text-green-600 px-6 py-2 rounded-lg font-semibold hover:bg-green-50"
-            >
-              Перейти до каталогу
-            </button>
+          <div className="rounded-2xl overflow-hidden border border-green-700/10">
+            <div className="bg-gradient-to-r from-green-600 to-green-700 px-4 py-4 sm:p-5 text-center text-white">
+              <h3 className="text-base sm:text-lg font-extrabold mb-1">
+                Розвивайте свій сад разом із PlatanSad
+              </h3>
+              <p className="text-green-100 text-xs sm:text-sm mb-3">
+                Якісні рослини та чесні поради
+              </p>
+
+              <button
+                onClick={onClose}
+                className="w-full sm:w-auto bg-white text-green-700 px-6 py-2.5 rounded-xl font-extrabold hover:bg-green-50 active:scale-[0.99] transition"
+              >
+                Перейти до каталогу
+              </button>
+            </div>
           </div>
+
+          {/* Mobile hint spacing */}
+          <div className="h-2 sm:hidden" />
         </div>
       </div>
     </div>
