@@ -182,7 +182,7 @@ const HomePage = () => {
             <div className="pointer-events-none absolute bottom-2 left-2 sm:bottom-3 sm:left-3">
               <div className="bg-black/50 backdrop-blur-sm px-2 py-1 rounded-lg ring-1 ring-white/10">
                 <p className="text-[10px] sm:text-[11px] font-medium text-white leading-none">
-                  🌿 PlatanSad Nursery
+                  🌿 PlatanSad Відео з нашого розсадника
                 </p>
               </div>
             </div>
