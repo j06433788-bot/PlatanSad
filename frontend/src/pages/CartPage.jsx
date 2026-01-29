@@ -40,7 +40,7 @@ const CartPage = () => {
   const selectedTotal = cartItems
     .filter(item => selectedItems.has(item.id))
     .reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  
+
   const selectedCount = selectedItems.size;
 
   const handleCheckout = () => {
@@ -48,31 +48,44 @@ const CartPage = () => {
       toast.error('Виберіть хоча б один товар для замовлення');
       return;
     }
-    // In a real app, we would pass selected IDs to checkout. 
-    // For this MVP, we assume proceeding with cart means buying what's in it. 
-    // If we wanted to support partial checkout, we'd need more backend logic.
-    // For now, if user unselects items, we could warn them or just proceed with all (as the context is global).
-    // Let's just navigate for now.
     navigate('/checkout');
   };
 
+  // ✅ Empty cart — styled like other pages + emoji near title
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-sm p-8 sm:p-12 text-center max-w-md w-full">
-          <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
-            <ShoppingBag className="w-12 h-12 text-green-500" />
+      <div className="bg-gray-50 min-h-screen">
+        {/* Hero (same style as other pages) */}
+        <div className="bg-gradient-to-r from-green-500 to-green-600 text-white py-8 sm:py-10 md:py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center">
+              Кошик
+            </h1>
           </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Кошик порожній</h2>
-          <p className="text-gray-500 mb-8">
-            Ви ще нічого не додали до кошика. Перегляньте наш каталог, там багато цікавого!
-          </p>
-          <button
-            onClick={() => navigate('/catalog')}
-            className="w-full bg-green-600 hover:bg-green-700 text-white py-3.5 rounded-xl font-bold transition-all shadow-md hover:shadow-lg active:scale-[0.98]"
-          >
-            Перейти до каталогу
-          </button>
+        </div>
+
+        {/* Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12">
+          <div className="bg-white rounded-2xl shadow-sm md:shadow-lg p-6 sm:p-10 text-center max-w-xl mx-auto">
+            <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
+              <ShoppingBag className="w-12 h-12 text-green-500" />
+            </div>
+
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-800 mb-2">
+              Кошик порожній <span className="ml-1">🛒</span>
+            </h2>
+
+            <p className="text-gray-500 text-sm sm:text-base mb-8">
+              Ви ще нічого не додали до кошика. Перегляньте наш каталог — там багато цікавого! 🌿
+            </p>
+
+            <button
+              onClick={() => navigate('/catalog')}
+              className="w-full bg-green-600 hover:bg-green-700 text-white py-3.5 rounded-xl font-bold transition-all shadow-md hover:shadow-lg active:scale-[0.98]"
+            >
+              Перейти до каталогу
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -93,7 +106,7 @@ const CartPage = () => {
           <div className="flex-1 space-y-4">
             {/* Select All Header (Desktop) */}
             <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-3">
-              <button 
+              <button
                 onClick={toggleAll}
                 className="flex items-center gap-3 text-gray-600 font-medium hover:text-green-600 transition-colors"
               >
@@ -116,7 +129,7 @@ const CartPage = () => {
                 <div className="flex gap-4">
                   {/* Checkbox */}
                   <div className="flex items-center justify-center pt-8 sm:pt-0">
-                    <button 
+                    <button
                       onClick={() => toggleSelection(item.id)}
                       className="p-1 hover:bg-gray-100 rounded-lg transition-colors"
                     >
@@ -129,7 +142,7 @@ const CartPage = () => {
                   </div>
 
                   {/* Image */}
-                  <div 
+                  <div
                     className="w-24 h-24 sm:w-32 sm:h-32 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer"
                     onClick={() => navigate(`/products/${item.productId}`)}
                   >
@@ -144,7 +157,7 @@ const CartPage = () => {
                   <div className="flex-1 flex flex-col justify-between min-w-0 py-1">
                     <div>
                       <div className="flex justify-between items-start gap-2">
-                        <h3 
+                        <h3
                           className="font-medium text-gray-900 text-sm sm:text-base line-clamp-2 hover:text-green-600 cursor-pointer transition-colors"
                           onClick={() => navigate(`/products/${item.productId}`)}
                         >
@@ -158,7 +171,7 @@ const CartPage = () => {
                           <Trash2 className="w-5 h-5" />
                         </button>
                       </div>
-                      
+
                       <div className="mt-1 sm:mt-2 text-lg font-bold text-gray-900">
                         {item.price} ₴
                       </div>
@@ -200,7 +213,7 @@ const CartPage = () => {
           <div className="lg:w-96 flex-shrink-0">
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-24 hidden lg:block">
               <h2 className="text-xl font-bold text-gray-900 mb-6">Разом</h2>
-              
+
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between text-gray-600">
                   <span>Вибрано товарів</span>
@@ -224,7 +237,7 @@ const CartPage = () => {
                 <span>Оформити замовлення</span>
                 <ArrowRight className="w-5 h-5" />
               </button>
-              
+
               <div className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500">
                 <Check className="w-4 h-4 text-green-500" />
                 <span>Безпечна оплата</span>
@@ -258,3 +271,4 @@ const CartPage = () => {
 };
 
 export default CartPage;
+
