@@ -1,63 +1,148 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { MessageCircle } from "lucide-react";
 import AboutModal from "./AboutModal";
 import { useSettings } from "../context/SettingsContext";
+
+/* ---------- Helpers ---------- */
+
+const isMobile = () =>
+  typeof navigator !== "undefined" &&
+  /Android|iPhone|iPad|iPod/i.test(navigator.userAgent || "");
+
+const openNativeOrWeb = ({ appUrl, webUrl }) => {
+  if (!isMobile()) {
+    window.open(webUrl, "_blank", "noopener,noreferrer");
+    return;
+  }
+
+  const start = Date.now();
+  window.location.href = appUrl;
+
+  setTimeout(() => {
+    if (Date.now() - start < 1400) {
+      window.location.href = webUrl;
+    }
+  }, 900);
+};
+
+/* ---------- Component ---------- */
 
 const Footer = () => {
   const { settings } = useSettings();
 
   const [open, setOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [hideBubble, setHideBubble] = useState(false);
 
-  const instagramUrl = settings?.instagram || "https://instagram.com/";
-  const facebookUrl = settings?.facebook || "https://www.facebook.com/platansad/about?locale=uk_UA";
-  const tiktokUrl = settings?.tiktok || "https://tiktok.com/";
+  const lastScrollY = useRef(0);
+  const scrollTimeout = useRef(null);
+
+  const instagramWeb = settings?.instagram || "https://instagram.com/";
+  const facebookWeb =
+    settings?.facebook ||
+    "https://www.facebook.com/platansad/about?locale=uk_UA";
+  const tiktokWeb = settings?.tiktok || "https://tiktok.com/";
+
+  const instagramHandle = useMemo(() => {
+    try {
+      const u = new URL(instagramWeb);
+      return u.pathname.replace(/\//g, "") || null;
+    } catch {
+      return null;
+    }
+  }, [instagramWeb]);
+
+  const tiktokHandle = useMemo(() => {
+    try {
+      const u = new URL(tiktokWeb);
+      const m = u.pathname.match(/\/@([^/]+)/);
+      return m?.[1] ? `@${m[1]}` : null;
+    } catch {
+      return null;
+    }
+  }, [tiktokWeb]);
 
   const year = 2026;
   const siteName = settings?.siteName || "PlatanSad";
 
-  /* Close on ESC */
+  /* ---------- ESC close ---------- */
+
   useEffect(() => {
     const esc = (e) => e.key === "Escape" && setOpen(false);
     window.addEventListener("keydown", esc);
     return () => window.removeEventListener("keydown", esc);
   }, []);
 
-  /* Close on outside click */
+  /* ---------- Outside click ---------- */
+
   useEffect(() => {
     if (!open) return;
+
     const handler = (e) => {
       const panel = document.getElementById("social-panel");
       const btn = document.getElementById("social-btn");
+
       if (!panel || !btn) return;
+
       if (!panel.contains(e.target) && !btn.contains(e.target)) {
         setOpen(false);
       }
     };
+
     window.addEventListener("pointerdown", handler);
     return () => window.removeEventListener("pointerdown", handler);
   }, [open]);
 
-  const SocialIcon = ({ href, iconId, label }) => (
-    <a
-      href={href}
-      target="_blank"
-      rel="nofollow"
+  /* ---------- Auto hide bubble on scroll ---------- */
+
+  useEffect(() => {
+    const onScroll = () => {
+      const currentY = window.scrollY;
+
+      if (scrollTimeout.current) return;
+
+      scrollTimeout.current = setTimeout(() => {
+        const diff = currentY - lastScrollY.current;
+
+        if (!open) {
+          if (diff > 12) setHideBubble(true); // scroll down
+          if (diff < -12) setHideBubble(false); // scroll up
+        }
+
+        lastScrollY.current = currentY;
+        scrollTimeout.current = null;
+      }, 120);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [open]);
+
+  /* ---------- Social icon ---------- */
+
+  const SocialIcon = ({ label, iconId, glow, onClick }) => (
+    <button
+      onClick={onClick}
       aria-label={label}
       title={label}
       className="group flex items-center justify-center rounded-2xl bg-white/10 hover:bg-white/15 transition p-2 ring-1 ring-white/10"
     >
       <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-b from-white/10 to-black/10 ring-1 ring-white/15">
-        <svg className="w-6 h-6 text-white">
+        <span
+          className="absolute -inset-2 rounded-3xl opacity-0 blur-xl transition group-hover:opacity-100"
+          style={{ backgroundColor: glow }}
+        />
+        <svg className="relative w-6 h-6 text-white">
           <use xlinkHref={`/sprite.svg#${iconId}`} />
         </svg>
       </div>
-    </a>
+    </button>
   );
 
   return (
     <>
-      {/* ===== FOOTER ===== */}
+      {/* ---------- FOOTER ---------- */}
+
       <footer
         className="relative text-white overflow-hidden"
         style={{
@@ -111,25 +196,29 @@ const Footer = () => {
         </div>
       </footer>
 
-      {/* ===== FLOATING SOCIAL BUTTON ===== */}
+      {/* ---------- FLOATING SOCIAL ---------- */}
+
       <div
-        className="fixed right-4 sm:right-6 z-50"
+        className={`fixed right-4 sm:right-6 z-50 transition-transform duration-300 ${
+          hideBubble ? "translate-y-24 opacity-0" : "translate-y-0 opacity-100"
+        }`}
         style={{ bottom: "calc(18px + env(safe-area-inset-bottom))" }}
       >
         {/* Panel */}
         <div
           id="social-panel"
-          className={`absolute bottom-16 right-0 w-[240px] overflow-hidden rounded-3xl backdrop-blur-2xl ring-1 ring-emerald-200/20 shadow-[0_25px_70px_rgba(0,0,0,.45)] transition-all duration-300
+          className={`absolute bottom-16 right-0 w-[240px] rounded-3xl overflow-hidden backdrop-blur-2xl ring-1 ring-emerald-200/20 shadow-[0_25px_70px_rgba(0,0,0,.45)] transition-all duration-300
             ${
               open
-                ? "opacity-100 translate-y-0 scale-100 pointer-events-auto"
-                : "opacity-0 translate-y-2 scale-[0.92] pointer-events-none"
+                ? "opacity-100 scale-100 translate-y-0 pointer-events-auto"
+                : "opacity-0 scale-[0.92] translate-y-2 pointer-events-none"
             }
           `}
           style={{
             background:
-              "linear-gradient(180deg, rgba(16,185,129,0.28), rgba(5,46,22,0.6))",
+              "linear-gradient(180deg, rgba(16,185,129,.28), rgba(5,46,22,.6))",
             transformOrigin: "calc(100% - 26px) calc(100% - 20px)",
+            transitionTimingFunction: "cubic-bezier(.16,1,.3,1)",
           }}
         >
           {/* Grain */}
@@ -141,33 +230,78 @@ const Footer = () => {
             }}
           />
 
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/25 to-black/40 pointer-events-none" />
+
           <div className="relative p-4">
             <p className="text-sm font-extrabold text-white mb-3">
               Ми в соцмережах
             </p>
 
             <div className="grid grid-cols-3 gap-3">
-              <SocialIcon href={instagramUrl} iconId="icon-ig" label="Instagram" />
-              <SocialIcon href={facebookUrl} iconId="icon-fb" label="Facebook" />
-              <SocialIcon href={tiktokUrl} iconId="icon-tt" label="TikTok" />
+
+              {/* Instagram */}
+              <SocialIcon
+                label="Instagram"
+                iconId="icon-ig"
+                glow="#FF3EA5"
+                onClick={() =>
+                  openNativeOrWeb({
+                    appUrl: instagramHandle
+                      ? `instagram://user?username=${instagramHandle}`
+                      : "instagram://app",
+                    webUrl: instagramWeb,
+                  })
+                }
+              />
+
+              {/* Facebook */}
+              <SocialIcon
+                label="Facebook"
+                iconId="icon-fb"
+                glow="#3B82F6"
+                onClick={() =>
+                  openNativeOrWeb({
+                    appUrl:
+                      "fb://facewebmodal/f?href=" +
+                      encodeURIComponent(facebookWeb),
+                    webUrl: facebookWeb,
+                  })
+                }
+              />
+
+              {/* TikTok */}
+              <SocialIcon
+                label="TikTok"
+                iconId="icon-tt"
+                glow="#25F4EE"
+                onClick={() =>
+                  openNativeOrWeb({
+                    appUrl: tiktokHandle
+                      ? `snssdk1233://user/profile/${encodeURIComponent(
+                          tiktokHandle
+                        )}`
+                      : "snssdk1233://",
+                    webUrl: tiktokWeb,
+                  })
+                }
+              />
+
             </div>
           </div>
         </div>
 
-        {/* Floating button */}
+        {/* Bubble button */}
         <button
           id="social-btn"
           onClick={() => setOpen((v) => !v)}
-          className="relative w-14 h-14 rounded-[22px] bg-emerald-600 flex items-center justify-center ring-1 ring-white/20 shadow-[0_22px_60px_rgba(16,185,129,.55)] active:scale-[0.97]"
+          className="relative w-14 h-14 rounded-[22px] bg-emerald-600 hover:bg-emerald-600/90 flex items-center justify-center ring-1 ring-white/20 shadow-[0_22px_60px_rgba(16,185,129,.55)] active:scale-[0.97] transition"
         >
-          {/* Pulse layers */}
-          <span className="absolute -inset-3 rounded-[30px] bg-emerald-400/25 blur-md animate-pulse" />
+          <span className="absolute -inset-3 rounded-[30px] bg-emerald-400/28 blur-md animate-pulse" />
           <span
-            className="absolute -inset-6 rounded-[36px] bg-emerald-300/10 blur-xl animate-pulse"
-            style={{ animationDelay: "0.4s" }}
+            className="absolute -inset-6 rounded-[36px] bg-emerald-300/12 blur-xl animate-pulse"
+            style={{ animationDelay: "0.35s" }}
           />
           <span className="absolute inset-0 rounded-[22px] bg-gradient-to-b from-white/15 to-black/10" />
-
           <MessageCircle className="relative w-7 h-7 text-white" />
         </button>
       </div>
@@ -178,4 +312,3 @@ const Footer = () => {
 };
 
 export default Footer;
-
