@@ -14,7 +14,7 @@ import ProductDetailPage from "./pages/ProductDetailPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import CatalogPage from "./pages/CatalogPage";
-// import OrderSuccessPage from "./pages/OrderSuccessPage";
+import OrderSuccessPage from "./pages/OrderSuccessPage";
 import WishlistPage from "./pages/WishlistPage";
 import AboutPage from "./pages/AboutPage";
 import DeliveryPage from "./pages/DeliveryPage";
