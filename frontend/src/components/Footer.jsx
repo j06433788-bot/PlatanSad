@@ -10,7 +10,7 @@ const Footer = () => {
   const [isAboutOpen, setIsAboutOpen] = useState(false);
 
   const instagramUrl = settings?.instagram || "https://instagram.com/";
-  const facebookUrl = settings?.facebook || "https://facebook.com/";
+  const facebookUrl = settings?.facebook || "https://www.facebook.com/platansad/about?locale=uk_UA";
   const tiktokUrl = settings?.tiktok || "https://tiktok.com/";
 
   const year = 2026;
