@@ -163,7 +163,7 @@ const HomePage = () => {
               : "opacity-0 scale-[1.02] translate-y-3",
           ].join(" ")}
         >
-          <div className="relative w-screen h-[64vw] sm:h-[38vw] lg:h-[420px] max-h-[520px] overflow-hidden">
+          <div className="relative w-screen h-[68vw] sm:h-[40vw] lg:h-[420px] max-h-[520px] overflow-hidden">
             <video
               ref={videoRef}
               className="absolute inset-0 w-full h-full object-cover"
@@ -182,7 +182,7 @@ const HomePage = () => {
             <div className="pointer-events-none absolute bottom-2 left-2 sm:bottom-3 sm:left-3">
               <div className="bg-black/50 backdrop-blur-sm px-2 py-1 rounded-lg ring-1 ring-white/10">
                 <p className="text-[10px] sm:text-[11px] font-medium text-white leading-none">
-                  🌿 PlatanSad Відео з нашого розсадника
+                  🌿Відео з нашого розсадника
                 </p>
               </div>
             </div>
