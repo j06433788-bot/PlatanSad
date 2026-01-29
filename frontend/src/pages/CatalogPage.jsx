@@ -11,94 +11,21 @@ const CatalogPage = () => {
   const [loading, setLoading] = useState(true);
 
   const [showFilters, setShowFilters] = useState(false);
-  const [compactView, setCompactView] = useState(true);
+  const [compactView, setCompactView] = useState(true); // mobile default
 
-  // local draft for debounce
+  // local "draft" search to avoid fetch on every keystroke
   const [searchDraft, setSearchDraft] = useState(searchParams.get('search') || '');
 
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
     category: searchParams.get('category') || '',
-    badge: searchParams.get('badge') || '', // optional filter
+    badge: searchParams.get('badge') || '',
     minPrice: searchParams.get('minPrice') || '',
     maxPrice: searchParams.get('maxPrice') || '',
     sortBy: searchParams.get('sortBy') || 'name',
   });
 
-  // --- helpers: badges detection (supports different backend fields)
-  const normalize = (v) => String(v ?? '').toLowerCase().trim();
-  const getBadges = (p) => {
-    const out = new Set();
-
-    // common shapes:
-    // p.badge: "hit" | "new" | "sale"
-    // p.badges: ["hit","sale"]
-    // p.isHit / p.isNew / p.isSale
-    // p.labels: ["Хіт","Знижка"] etc
-    const badge = normalize(p?.badge);
-    if (badge) out.add(badge);
-
-    const badgesArr = Array.isArray(p?.badges) ? p.badges : [];
-    badgesArr.forEach((b) => out.add(normalize(b)));
-
-    if (p?.isHit) out.add('hit');
-    if (p?.isNew) out.add('new');
-    if (p?.isSale) out.add('sale');
-
-    const labelsArr = Array.isArray(p?.labels) ? p.labels : [];
-    labelsArr.forEach((l) => {
-      const s = normalize(l);
-      if (s.includes('хіт')) out.add('hit');
-      if (s.includes('нов')) out.add('new');
-      if (s.includes('зниж') || s.includes('sale') || s.includes('розпрод')) out.add('sale');
-    });
-
-    // sometimes discount implies sale
-    const discount = Number(p?.discountPercent ?? p?.discount ?? p?.salePercent);
-    if (!Number.isNaN(discount) && discount > 0) out.add('sale');
-
-    return out;
-  };
-
-  const hasBadge = (p, key) => getBadges(p).has(key);
-
-  // add overlay badges for whole catalog without changing ProductCard
-  const ProductWithBadges = ({ product }) => {
-    const badges = getBadges(product);
-    const showHit = badges.has('hit');
-    const showNew = badges.has('new');
-    const showSale = badges.has('sale');
-
-    const Badge = ({ children, className }) => (
-      <span
-        className={`inline-flex items-center px-2 py-1 rounded-full text-[11px] sm:text-xs font-semibold shadow-sm border border-white/30 ${className}`}
-      >
-        {children}
-      </span>
-    );
-
-    return (
-      <div className="relative">
-        {(showHit || showNew || showSale) && (
-          <div className="absolute top-2 left-2 z-10 flex flex-wrap gap-1.5 pointer-events-none">
-            {showHit && (
-              <Badge className="bg-gradient-to-r from-amber-400 to-orange-500 text-white">Хіт</Badge>
-            )}
-            {showNew && (
-              <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">Новинка</Badge>
-            )}
-            {showSale && (
-              <Badge className="bg-gradient-to-r from-red-500 to-rose-500 text-white">Знижка</Badge>
-            )}
-          </div>
-        )}
-
-        <ProductCard product={product} />
-      </div>
-    );
-  };
-
-  // sync URL -> state
+  // keep URL -> state in sync when user navigates back/forward or opens links with params
   useEffect(() => {
     const next = {
       search: searchParams.get('search') || '',
@@ -124,13 +51,24 @@ const CatalogPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
-  // mobile default compact
+  // mobile view auto: compact on small screens
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 640px)');
+    const apply = () => setCompactView(mq.matches ? true : compactView);
+    // set only on first mount if small
     if (mq.matches) setCompactView(true);
+
+    if (mq.addEventListener) mq.addEventListener('change', apply);
+    else mq.addListener(apply);
+
+    return () => {
+      if (mq.removeEventListener) mq.removeEventListener('change', apply);
+      else mq.removeListener(apply);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // lock scroll for sheet
+  // lock body scroll when bottom sheet is open (mobile)
   useEffect(() => {
     if (!showFilters) return;
     const prev = document.body.style.overflow;
@@ -140,12 +78,13 @@ const CatalogPage = () => {
     };
   }, [showFilters]);
 
-  // debounce searchDraft -> filters.search
+  // debounce search input -> filters.search
   useEffect(() => {
     const t = setTimeout(() => {
       setFilters((prev) => {
         if (prev.search === searchDraft) return prev;
         const next = { ...prev, search: searchDraft };
+        // sync URL (but don't blow away other params)
         const newParams = new URLSearchParams(searchParams);
         if (searchDraft) newParams.set('search', searchDraft);
         else newParams.delete('search');
@@ -157,6 +96,23 @@ const CatalogPage = () => {
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchDraft]);
+
+  const activeFiltersCount = useMemo(() => {
+    return Object.entries(filters).filter(([k, v]) => {
+      if (!v) return false;
+      if (k === 'sortBy' && v === 'name') return false;
+      return true;
+    }).length;
+  }, [filters]);
+
+  const quickFilters = useMemo(
+    () => [
+      { key: 'hit', label: 'Хіти', color: 'from-amber-400 to-orange-500' },
+      { key: 'new', label: 'Новинки', color: 'from-green-500 to-emerald-500' },
+      { key: 'sale', label: 'Знижки', color: 'from-red-500 to-rose-500' },
+    ],
+    []
+  );
 
   const updateParam = (key, value) => {
     const newParams = new URLSearchParams(searchParams);
@@ -184,23 +140,6 @@ const CatalogPage = () => {
     setSearchParams({}, { replace: true });
   };
 
-  const quickFilters = useMemo(
-    () => [
-      { key: 'hit', label: 'Хіти', color: 'from-amber-400 to-orange-500' },
-      { key: 'new', label: 'Новинки', color: 'from-green-500 to-emerald-500' },
-      { key: 'sale', label: 'Знижки', color: 'from-red-500 to-rose-500' },
-    ],
-    []
-  );
-
-  const activeFiltersCount = useMemo(() => {
-    return Object.entries(filters).filter(([k, v]) => {
-      if (!v) return false;
-      if (k === 'sortBy' && v === 'name') return false;
-      return true;
-    }).length;
-  }, [filters]);
-
   const abortRef = useRef(null);
 
   useEffect(() => {
@@ -208,6 +147,7 @@ const CatalogPage = () => {
       try {
         setLoading(true);
 
+        // cancel previous request (prevents race conditions)
         if (abortRef.current) abortRef.current.abort();
         const controller = new AbortController();
         abortRef.current = controller;
@@ -215,9 +155,6 @@ const CatalogPage = () => {
         const params = {};
         if (filters.search) params.search = filters.search;
         if (filters.category) params.category = filters.category;
-
-        // NOTE: we still can pass badge to backend if it supports it.
-        // even if backend doesn't support, we also filter client-side below (safe).
         if (filters.badge) params.badge = filters.badge;
 
         if (filters.minPrice !== '') {
@@ -228,6 +165,8 @@ const CatalogPage = () => {
           const v = Number(filters.maxPrice);
           if (!Number.isNaN(v)) params.maxPrice = v;
         }
+
+        // normalize range if user swapped values
         if (params.minPrice != null && params.maxPrice != null && params.minPrice > params.maxPrice) {
           const tmp = params.minPrice;
           params.minPrice = params.maxPrice;
@@ -236,6 +175,8 @@ const CatalogPage = () => {
 
         params.sortBy = filters.sortBy || 'name';
 
+        // IMPORTANT: if your productsApi supports abort, pass signal.
+        // If it doesn't, this still protects from race via local controller variable.
         const data = await productsApi.getProducts(params, { signal: controller.signal });
         setProducts(Array.isArray(data) ? data : []);
       } catch (error) {
@@ -253,37 +194,37 @@ const CatalogPage = () => {
     };
   }, [filters]);
 
-  // client-side badge filtering as fallback (ensures "hits/new/sale" work for all products)
-  const visibleProducts = useMemo(() => {
-    if (!filters.badge) return products;
-    return products.filter((p) => hasBadge(p, filters.badge));
-  }, [products, filters.badge]);
-
   return (
     <div className="min-h-screen bg-gray-50 py-3 sm:py-6 pb-20 sm:pb-10" data-testid="catalog-page">
+      {/* animation + scrollbar utility (local) */}
       <style>{`
-        @keyframes slideUp { from { transform: translateY(14px); opacity: .6; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes slideUp {
+          from { transform: translateY(14px); opacity: .6; }
+          to { transform: translateY(0); opacity: 1; }
+        }
         .animate-slide-up { animation: slideUp .18s ease-out; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
 
       <div className="max-w-7xl mx-auto px-2 sm:px-4">
+        {/* Header */}
         <div className="flex items-center justify-between mb-3 sm:mb-6">
           <div className="min-w-0">
             <h1 className="text-xl sm:text-3xl font-bold text-gray-800" data-testid="catalog-title">
               Каталог
-              {(visibleProducts?.length ?? 0) > 0 && (
+              {products?.length > 0 && (
                 <span className="text-gray-400 font-normal ml-1 sm:ml-3 text-sm sm:text-xl">
-                  ({visibleProducts.length})
+                  ({products.length})
                 </span>
               )}
             </h1>
             <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
-              Хіти • Новинки • Знижки — показуються на кожній картці товару
+              Знайдіть рослини для вашого саду та розсадника PlatanSad
             </p>
           </div>
 
+          {/* Mobile controls */}
           <div className="flex items-center gap-2 lg:hidden shrink-0">
             <button
               onClick={() => setCompactView((v) => !v)}
@@ -310,7 +251,7 @@ const CatalogPage = () => {
           </div>
         </div>
 
-        {/* Mobile search */}
+        {/* Mobile search bar (always visible) */}
         <div className="lg:hidden mb-3">
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm px-3 py-2 flex items-center gap-2">
             <Search className="w-4 h-4 text-gray-400" />
@@ -333,7 +274,7 @@ const CatalogPage = () => {
           </div>
         </div>
 
-        {/* Quick filters */}
+        {/* Quick badge filters */}
         <div className="mb-3 sm:mb-4 overflow-x-auto scrollbar-hide -mx-2 px-2 sm:mx-0 sm:px-0">
           <div className="flex gap-2 min-w-max sm:flex-wrap">
             {quickFilters.map((qf) => (
@@ -345,6 +286,7 @@ const CatalogPage = () => {
                     ? `bg-gradient-to-r ${qf.color} text-white shadow-lg`
                     : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-300'
                 }`}
+                data-testid={`quick-filter-${qf.key}`}
               >
                 {qf.label}
               </button>
@@ -353,229 +295,277 @@ const CatalogPage = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-8">
-          {/* Filters (desktop) */}
-          <div className="hidden lg:block bg-white rounded-lg shadow-md p-6 sticky top-24">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-gray-800">Фільтри</h2>
-              {activeFiltersCount > 0 && (
-                <button onClick={clearFilters} className="text-sm font-medium text-gray-500 hover:text-gray-700">
-                  Скинути
-                </button>
-              )}
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Пошук</label>
-                <input
-                  type="text"
-                  value={filters.search}
-                  onChange={(e) => {
-                    handleFilterChange('search', e.target.value);
-                    setSearchDraft(e.target.value);
-                  }}
-                  className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="Назва товару..."
-                />
+          {/* Filters Sidebar / Bottom sheet */}
+          <div className="lg:block">
+            {/* Desktop card */}
+            <div className="hidden lg:block bg-white rounded-lg shadow-md p-6 sticky top-24">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-bold text-gray-800">Фільтри</h2>
+                {activeFiltersCount > 0 && (
+                  <button
+                    onClick={clearFilters}
+                    className="text-sm font-medium text-gray-500 hover:text-gray-700"
+                  >
+                    Скинути
+                  </button>
+                )}
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Категорія</label>
-                <select
-                  value={filters.category}
-                  onChange={(e) => handleFilterChange('category', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                  <option value="">Всі категорії</option>
-                  <option value="Бонсай Нівакі">Бонсай Нівакі</option>
-                  <option value="Туя Колумна">Туя Колумна</option>
-                  <option value="Туя Смарагд">Туя Смарагд</option>
-                  <option value="Хвойні рослини">Хвойні рослини</option>
-                  <option value="Листопадні дерева">Листопадні дерева</option>
-                  <option value="Кімнатні рослини">Кімнатні рослини</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Тип</label>
-                <select
-                  value={filters.badge}
-                  onChange={(e) => handleFilterChange('badge', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                  <option value="">Всі товари</option>
-                  <option value="hit">Хіти продажу</option>
-                  <option value="sale">Розпродаж</option>
-                  <option value="new">Новинки</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Ціна (грн)</label>
-                <div className="flex gap-2">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Пошук</label>
                   <input
-                    type="number"
-                    value={filters.minPrice}
-                    onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                    className="w-1/2 px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Від"
-                    min="0"
-                  />
-                  <input
-                    type="number"
-                    value={filters.maxPrice}
-                    onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                    className="w-1/2 px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="До"
-                    min="0"
+                    type="text"
+                    value={filters.search}
+                    onChange={(e) => {
+                      // keep desktop input immediate, and keep mobile draft in sync
+                      handleFilterChange('search', e.target.value);
+                      setSearchDraft(e.target.value);
+                    }}
+                    className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="Назва товару..."
+                    data-testid="filter-search"
                   />
                 </div>
-              </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Сортування</label>
-                <select
-                  value={filters.sortBy}
-                  onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                  className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                  <option value="name">За назвою</option>
-                  <option value="price">Ціна: за зростанням</option>
-                  <option value="-price">Ціна: за спаданням</option>
-                </select>
-              </div>
-
-              {activeFiltersCount > 0 && (
-                <button
-                  onClick={clearFilters}
-                  className="w-full py-2.5 border-2 border-gray-300 rounded-lg text-gray-700 font-medium text-sm hover:bg-gray-50 transition-colors active:scale-95"
-                >
-                  Скинути фільтри
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Mobile bottom sheet */}
-          {showFilters && (
-            <>
-              <div className="lg:hidden fixed inset-0 bg-black/50 z-40" onClick={() => setShowFilters(false)} />
-              <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white z-50 rounded-t-2xl shadow-2xl max-h-[75vh] overflow-y-auto animate-slide-up">
-                <div className="px-4 pt-3 pb-2 sticky top-0 bg-white rounded-t-2xl border-b border-gray-100">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-bold text-gray-800">Фільтри</h2>
-                    <button
-                      onClick={() => setShowFilters(false)}
-                      className="text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-100 rounded-full"
-                      aria-label="Закрити"
-                    >
-                      <X className="w-6 h-6" />
-                    </button>
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Категорія</label>
+                  <select
+                    value={filters.category}
+                    onChange={(e) => handleFilterChange('category', e.target.value)}
+                    className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    data-testid="filter-category"
+                  >
+                    <option value="">Всі категорії</option>
+                    <option value="Бонсай Нівакі">Бонсай Нівакі</option>
+                    <option value="Туя Колумна">Туя Колумна</option>
+                    <option value="Туя Смарагд">Туя Смарагд</option>
+                    <option value="Хвойні рослини">Хвойні рослини</option>
+                    <option value="Листопадні дерева">Листопадні дерева</option>
+                    <option value="Кімнатні рослини">Кімнатні рослини</option>
+                  </select>
                 </div>
 
-                <div className="space-y-4 px-4 py-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Пошук</label>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Тип</label>
+                  <select
+                    value={filters.badge}
+                    onChange={(e) => handleFilterChange('badge', e.target.value)}
+                    className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    data-testid="filter-badge"
+                  >
+                    <option value="">Всі товари</option>
+                    <option value="hit">Хіти продажу</option>
+                    <option value="sale">Розпродаж</option>
+                    <option value="new">Новинки</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Ціна (грн)</label>
+                  <div className="flex gap-2">
                     <input
-                      type="text"
-                      value={searchDraft}
-                      onChange={(e) => setSearchDraft(e.target.value)}
-                      className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                      placeholder="Назва товару..."
+                      type="number"
+                      value={filters.minPrice}
+                      onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                      className="w-1/2 px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      placeholder="Від"
+                      min="0"
+                      data-testid="filter-min-price"
+                    />
+                    <input
+                      type="number"
+                      value={filters.maxPrice}
+                      onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                      className="w-1/2 px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                      placeholder="До"
+                      min="0"
+                      data-testid="filter-max-price"
                     />
                   </div>
+                </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Категорія</label>
-                    <select
-                      value={filters.category}
-                      onChange={(e) => handleFilterChange('category', e.target.value)}
-                      className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    >
-                      <option value="">Всі категорії</option>
-                      <option value="Бонсай Нівакі">Бонсай Нівакі</option>
-                      <option value="Туя Колумна">Туя Колумна</option>
-                      <option value="Туя Смарагд">Туя Смарагд</option>
-                      <option value="Хвойні рослини">Хвойні рослини</option>
-                      <option value="Листопадні дерева">Листопадні дерева</option>
-                      <option value="Кімнатні рослини">Кімнатні рослини</option>
-                    </select>
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Сортування</label>
+                  <select
+                    value={filters.sortBy}
+                    onChange={(e) => handleFilterChange('sortBy', e.target.value)}
+                    className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    data-testid="filter-sort"
+                  >
+                    <option value="name">За назвою</option>
+                    <option value="price">Ціна: за зростанням</option>
+                    <option value="-price">Ціна: за спаданням</option>
+                  </select>
+                </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Тип</label>
-                    <select
-                      value={filters.badge}
-                      onChange={(e) => handleFilterChange('badge', e.target.value)}
-                      className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    >
-                      <option value="">Всі товари</option>
-                      <option value="hit">Хіти продажу</option>
-                      <option value="sale">Розпродаж</option>
-                      <option value="new">Новинки</option>
-                    </select>
-                  </div>
+                {activeFiltersCount > 0 && (
+                  <button
+                    onClick={clearFilters}
+                    className="w-full py-2.5 border-2 border-gray-300 rounded-lg text-gray-700 font-medium text-sm hover:bg-gray-50 transition-colors active:scale-95"
+                    data-testid="clear-filters-btn"
+                  >
+                    Скинути фільтри
+                  </button>
+                )}
+              </div>
+            </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Ціна (грн)</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="number"
-                        value={filters.minPrice}
-                        onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                        className="w-1/2 px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="Від"
-                        min="0"
-                      />
-                      <input
-                        type="number"
-                        value={filters.maxPrice}
-                        onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                        className="w-1/2 px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="До"
-                        min="0"
-                      />
+            {/* Mobile bottom sheet */}
+            {showFilters && (
+              <>
+                <div
+                  className="lg:hidden fixed inset-0 bg-black/50 z-40"
+                  onClick={() => setShowFilters(false)}
+                />
+
+                <div
+                  className="lg:hidden fixed bottom-0 left-0 right-0 bg-white z-50 rounded-t-2xl shadow-2xl max-h-[75vh] overflow-y-auto animate-slide-up"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="Фільтри"
+                >
+                  <div className="px-4 pt-3 pb-2 sticky top-0 bg-white rounded-t-2xl border-b border-gray-100">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="h-1.5 w-10 rounded-full bg-gray-200 mx-auto" />
+                        <h2 className="text-lg font-bold text-gray-800">Фільтри</h2>
+                      </div>
+                      <button
+                        onClick={() => setShowFilters(false)}
+                        className="text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-100 rounded-full"
+                        aria-label="Закрити"
+                      >
+                        <X className="w-6 h-6" />
+                      </button>
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Сортування</label>
-                    <select
-                      value={filters.sortBy}
-                      onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                      className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    >
-                      <option value="name">За назвою</option>
-                      <option value="price">Ціна: за зростанням</option>
-                      <option value="-price">Ціна: за спаданням</option>
-                    </select>
-                  </div>
+                  <div className="space-y-4 px-4 py-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Пошук</label>
+                      <input
+                        type="text"
+                        value={searchDraft}
+                        onChange={(e) => setSearchDraft(e.target.value)}
+                        className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="Назва товару..."
+                        data-testid="filter-search"
+                      />
+                    </div>
 
-                  {activeFiltersCount > 0 && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Категорія</label>
+                      <select
+                        value={filters.category}
+                        onChange={(e) => handleFilterChange('category', e.target.value)}
+                        className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        data-testid="filter-category"
+                      >
+                        <option value="">Всі категорії</option>
+                        <option value="Бонсай Нівакі">Бонсай Нівакі</option>
+                        <option value="Туя Колумна">Туя Колумна</option>
+                        <option value="Туя Смарагд">Туя Смарагд</option>
+                        <option value="Хвойні рослини">Хвойні рослини</option>
+                        <option value="Листопадні дерева">Листопадні дерева</option>
+                        <option value="Кімнатні рослини">Кімнатні рослини</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Тип</label>
+                      <select
+                        value={filters.badge}
+                        onChange={(e) => handleFilterChange('badge', e.target.value)}
+                        className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        data-testid="filter-badge"
+                      >
+                        <option value="">Всі товари</option>
+                        <option value="hit">Хіти продажу</option>
+                        <option value="sale">Розпродаж</option>
+                        <option value="new">Новинки</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Ціна (грн)</label>
+                      <div className="flex gap-2">
+                        <input
+                          type="number"
+                          value={filters.minPrice}
+                          onChange={(e) => handleFilterChange('minPrice', e.target.value)}
+                          className="w-1/2 px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                          placeholder="Від"
+                          min="0"
+                          data-testid="filter-min-price"
+                        />
+                        <input
+                          type="number"
+                          value={filters.maxPrice}
+                          onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
+                          className="w-1/2 px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                          placeholder="До"
+                          min="0"
+                          data-testid="filter-max-price"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Сортування</label>
+                      <select
+                        value={filters.sortBy}
+                        onChange={(e) => handleFilterChange('sortBy', e.target.value)}
+                        className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                        data-testid="filter-sort"
+                      >
+                        <option value="name">За назвою</option>
+                        <option value="price">Ціна: за зростанням</option>
+                        <option value="-price">Ціна: за спаданням</option>
+                      </select>
+                    </div>
+
+                    {activeFiltersCount > 0 && (
+                      <button
+                        onClick={clearFilters}
+                        className="w-full py-2.5 border-2 border-gray-300 rounded-lg text-gray-700 font-medium text-sm hover:bg-gray-50 transition-colors active:scale-95"
+                        data-testid="clear-filters-btn"
+                      >
+                        Скинути фільтри
+                      </button>
+                    )}
+
                     <button
-                      onClick={clearFilters}
-                      className="w-full py-2.5 border-2 border-gray-300 rounded-lg text-gray-700 font-medium text-sm hover:bg-gray-50 transition-colors active:scale-95"
+                      onClick={() => setShowFilters(false)}
+                      className="w-full py-3 bg-green-600 text-white rounded-lg font-medium text-sm hover:bg-green-700 transition-colors active:scale-95"
+                      data-testid="apply-filters-btn"
                     >
-                      Скинути фільтри
+                      Застосувати
                     </button>
-                  )}
 
-                  <button
-                    onClick={() => setShowFilters(false)}
-                    className="w-full py-3 bg-green-600 text-white rounded-lg font-medium text-sm hover:bg-green-700 transition-colors active:scale-95"
-                  >
-                    Застосувати
-                  </button>
-
-                  <div className="pb-2" />
+                    <div className="pb-2" />
+                  </div>
                 </div>
-              </div>
-            </>
-          )}
+              </>
+            )}
+          </div>
 
-          {/* Products grid */}
+          {/* Products */}
           <div className="lg:col-span-3">
+            {/* Desktop toolbar */}
+            <div className="hidden lg:flex items-center justify-between mb-4">
+              <div className="text-sm text-gray-600">
+                {loading ? 'Завантаження…' : products.length ? `Знайдено: ${products.length}` : 'Нічого не знайдено'}
+              </div>
+              <button
+                onClick={() => setCompactView((v) => !v)}
+                className="inline-flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50"
+              >
+                {compactView ? <LayoutGrid className="w-4 h-4" /> : <Grid3X3 className="w-4 h-4" />}
+                <span className="text-sm font-medium">{compactView ? 'Компактно' : 'Звичайно'}</span>
+              </button>
+            </div>
+
             {loading ? (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
                 {[...Array(6)].map((_, i) => (
@@ -589,26 +579,25 @@ const CatalogPage = () => {
                   </div>
                 ))}
               </div>
-            ) : visibleProducts.length > 0 ? (
+            ) : products.length > 0 ? (
               <div
                 className={`grid gap-2 sm:gap-4 lg:gap-6 ${
                   compactView ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'
                 }`}
+                data-testid="products-grid"
               >
-                {visibleProducts.map((product) => (
-                  <ProductWithBadges
-                    key={product?.id ?? product?.slug ?? `${product?.name ?? 'p'}-${Math.random()}`}
-                    product={product}
-                  />
+                {products.map((product) => (
+                  <ProductCard key={product?.id ?? `${product?.slug ?? 'p'}-${Math.random()}`} product={product} />
                 ))}
               </div>
             ) : (
               <div className="bg-white rounded-lg shadow-md p-6 sm:p-12 text-center">
                 <p className="text-gray-700 font-medium mb-1">Товарів не знайдено</p>
-                <p className="text-gray-500 text-sm mb-4">
-                  Якщо у товарів немає позначок (хіт/новинка/знижка) — вони не відобразяться у відповідному фільтрі.
-                </p>
-                <button onClick={clearFilters} className="text-green-600 hover:text-green-700 font-medium text-sm sm:text-base">
+                <p className="text-gray-500 text-sm mb-4">Спробуйте змінити фільтри або очистити пошук.</p>
+                <button
+                  onClick={clearFilters}
+                  className="text-green-600 hover:text-green-700 font-medium text-sm sm:text-base"
+                >
                   Скинути фільтри
                 </button>
               </div>
