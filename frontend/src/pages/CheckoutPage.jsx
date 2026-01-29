@@ -711,4 +711,5 @@ const CheckoutPage = () => {
                       }`}
                     >
                       <Banknote className="w-7 h-7" />
-                    </div>
+                      
+                      </div>
