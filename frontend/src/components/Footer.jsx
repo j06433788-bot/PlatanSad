@@ -1,581 +1,275 @@
-import React, { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-  ChevronUp,
-  Phone,
-  CreditCard,
-  Info,
-  MapPin,
-  ShieldCheck,
-  Sparkles,
-  Mail,
-  CheckCircle2,
-  ChevronDown,
-} from 'lucide-react';
-import AboutModal from './AboutModal';
-import { useSettings } from '../context/SettingsContext';
-
-/** Inline icons (no extra deps) */
-const TelegramIcon = (props) => (
-  <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
-    <path
-      fill="currentColor"
-      d="M21.8 4.2c.3-1.2-.9-2.1-2-1.7L3.1 9.2c-1.3.5-1.2 2.4.2 2.8l4.5 1.4 1.7 5.3c.4 1.2 2 1.5 2.8.6l2.6-2.9 4.6 3.4c1 .7 2.4.2 2.7-1l2.6-14.2Zm-4.4 3.7-7.9 7.2c-.2.2-.4.6-.3.9l.6 2.3c.1.5-.6.8-.9.3l-1.3-2.4a1 1 0 0 0-.5-.5L4 12l13.7-5.1c.5-.2.9.4.7.7Z"
-    />
-  </svg>
-);
-
-const ViberIcon = (props) => (
-  <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
-    <path
-      fill="currentColor"
-      d="M16.3 2.5H7.7C5 2.5 2.8 4.7 2.8 7.4v6.4c0 2.7 2.2 4.9 4.9 4.9h1.1l2.3 2.3c.5.5 1.4.2 1.4-.6v-1.7h3.8c2.7 0 4.9-2.2 4.9-4.9V7.4c0-2.7-2.2-4.9-4.9-4.9Z"
-    />
-    <path
-      fill="currentColor"
-      d="M18.5 13.8c0 1.2-1 2.2-2.2 2.2H11.6v.9c0 .8-1 1.2-1.6.6l-1.5-1.5H7.7c-1.2 0-2.2-1-2.2-2.2V7.4c0-1.2 1-2.2 2.2-2.2h8.6c1.2 0 2.2 1 2.2 2.2v6.4Z"
-    />
-  </svg>
-);
-
-const TikTokIcon = (props) => (
-  <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
-    <path
-      fill="currentColor"
-      d="M16.7 2h-2.3v13.1a3.3 3.3 0 1 1-2.3-3.1V9.7a5.6 5.6 0 1 0 4.6 5.5V8.1c1.2.9 2.7 1.5 4.3 1.6V7.4c-1.2-.1-2.3-.6-3-1.3-.8-.8-1.3-1.9-1.3-3.1Z"
-    />
-  </svg>
-);
-
-const InstagramIcon = (props) => (
-  <svg viewBox="0 0 24 24" aria-hidden="true" {...props}>
-    <path
-      fill="currentColor"
-      d="M7.5 2h9A5.5 5.5 0 0 1 22 7.5v9A5.5 5.5 0 0 1 16.5 22h-9A5.5 5.5 0 0 1 2 16.5v-9A5.5 5.5 0 0 1 7.5 2Zm0 2A3.5 3.5 0 0 0 4 7.5v9A3.5 3.5 0 0 0 7.5 20h9A3.5 3.5 0 0 0 20 16.5v-9A3.5 3.5 0 0 0 16.5 4h-9Zm4.5 4a4 4 0 1 1 0 8 4 4 0 0 1 0-8Zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm5.2-.9a1 1 0 1 1 0 2 1 1 0 0 1 0-2Z"
-    />
-  </svg>
-);
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Instagram, Send, MessageCircle, Music2, ChevronUp } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useSettings } from "../context/SettingsContext";
 
 /**
- * SAFE settings getter: якщо SettingsProvider відсутній — не валимо сайт
+ * Premium mobile-first footer:
+ * - Glass / blur background (Telegram mini-app vibe)
+ * - iOS safe-area padding
+ * - Auto-hide on scroll down, show on scroll up
+ * - Floating messenger bubble (expandable)
  */
-const useSafeSettings = () => {
-  try {
-    return useSettings?.() || { settings: null };
-  } catch {
-    return { settings: null };
-  }
-};
-
 const Footer = () => {
   const navigate = useNavigate();
-  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
-  const { settings } = useSafeSettings();
+  const { settings } = useSettings();
 
-  const phone1 = settings?.phone1 || '+380 (63) 650-74-49';
-  const phone2 = settings?.phone2 || '+380 (95) 251-03-47';
-  const tel1 = useMemo(() => `tel:${String(phone1).replace(/\s/g, '')}`, [phone1]);
-  const tel2 = useMemo(() => `tel:${String(phone2).replace(/\s/g, '')}`, [phone2]);
-  const siteName = settings?.siteName || 'PlatanSad';
+  const [hidden, setHidden] = useState(false);
+  const [bubbleOpen, setBubbleOpen] = useState(false);
 
-  // Newsletter demo state
-  const [email, setEmail] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [subscribed, setSubscribed] = useState(false);
+  const lastYRef = useRef(0);
+  const tickingRef = useRef(false);
 
-  const handleSubscribe = async (e) => {
-    e?.preventDefault?.();
-    if (!email.trim()) return;
-    setSubmitting(true);
-    try {
-      await new Promise((r) => setTimeout(r, 450));
-      setSubscribed(true);
-      setEmail('');
-      setTimeout(() => setSubscribed(false), 2800);
-    } finally {
-      setSubmitting(false);
-    }
-  };
+  const siteName = settings?.siteName || "PlatanSad";
 
-  // Mobile accordion: only info
-  const [openKey, setOpenKey] = useState(''); // '' | 'info'
-  const toggle = (key) => setOpenKey((prev) => (prev === key ? '' : key));
+  const phoneDigits = useMemo(() => {
+    const raw = settings?.phone1 || "";
+    const digits = raw.replace(/\D/g, "");
+    // if user enters 380..., keep it; else try to keep as is
+    return digits;
+  }, [settings?.phone1]);
 
-  // Social / messengers
-  const telegramUrl = settings?.telegramUrl;
-  const viberUrl = settings?.viberUrl;
-  const instagramUrl = settings?.instagramUrl;
-  const tiktokUrl = settings?.tiktokUrl;
+  // Social links (set your real ones in settings)
+  const instagramUrl = settings?.instagram || "https://instagram.com";
+  const tiktokUrl = settings?.tiktok || "https://tiktok.com";
+  // Telegram: use your username like https://t.me/yourname
+  const telegramUrl = settings?.telegram || "https://t.me/";
+  // Viber deep-link
+  const viberUrl = phoneDigits ? `viber://chat?number=${phoneDigits}` : "viber://chats";
 
-  const messengerButtons = [
-    { key: 'telegram', label: 'Telegram', href: telegramUrl, icon: TelegramIcon, ring: 'ring-sky-400/20', bg: 'bg-sky-500/15', text: 'text-sky-200', hover: 'hover:bg-sky-500/20' },
-    { key: 'viber', label: 'Viber', href: viberUrl, icon: ViberIcon, ring: 'ring-violet-400/20', bg: 'bg-violet-500/15', text: 'text-violet-200', hover: 'hover:bg-violet-500/20' },
-    { key: 'tiktok', label: 'TikTok', href: tiktokUrl, icon: TikTokIcon, ring: 'ring-white/15', bg: 'bg-white/10', text: 'text-white', hover: 'hover:bg-white/15' },
-    { key: 'instagram', label: 'Instagram', href: instagramUrl, icon: InstagramIcon, ring: 'ring-pink-400/20', bg: 'bg-pink-500/15', text: 'text-pink-200', hover: 'hover:bg-pink-500/20' },
-  ].filter((b) => !!b.href);
+  // Auto-hide footer on scroll down; show on scroll up
+  useEffect(() => {
+    lastYRef.current = window.scrollY || 0;
 
-  const socialUnderFooter = [
-    { key: 'instagram', label: 'Instagram', href: instagramUrl, icon: InstagramIcon, ring: 'ring-pink-400/20', bg: 'bg-pink-500/15', text: 'text-pink-200', hover: 'hover:bg-pink-500/20' },
-    { key: 'tiktok', label: 'TikTok', href: tiktokUrl, icon: TikTokIcon, ring: 'ring-white/15', bg: 'bg-white/10', text: 'text-white', hover: 'hover:bg-white/15' },
-    { key: 'viber', label: 'Viber', href: viberUrl, icon: ViberIcon, ring: 'ring-violet-400/20', bg: 'bg-violet-500/15', text: 'text-violet-200', hover: 'hover:bg-violet-500/20' },
-  ].filter((b) => !!b.href);
+    const onScroll = () => {
+      if (tickingRef.current) return;
+      tickingRef.current = true;
+
+      window.requestAnimationFrame(() => {
+        const y = window.scrollY || 0;
+        const last = lastYRef.current;
+
+        // Don't hide near top; don't jitter for small movements
+        const delta = y - last;
+        const nearTop = y < 40;
+
+        if (!nearTop) {
+          if (delta > 12) setHidden(true);   // scrolling down
+          if (delta < -12) setHidden(false); // scrolling up
+        } else {
+          setHidden(false);
+        }
+
+        lastYRef.current = y;
+        tickingRef.current = false;
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Close bubble when route changes (or when user taps outside via Escape)
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") setBubbleOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, []);
+
+  const year = new Date().getFullYear();
+
+  const scrollTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
 
   return (
     <>
-      <footer className="relative overflow-hidden bg-[#070b09] text-white">
-        {/* Premium background */}
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -top-40 left-1/2 h-80 w-[44rem] -translate-x-1/2 rounded-full bg-green-500/18 blur-3xl" />
-          <div className="absolute -bottom-44 right-[-8rem] h-96 w-96 rounded-full bg-emerald-400/10 blur-3xl" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.08),transparent_55%)]" />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/[0.06] via-transparent to-black/40" />
-        </div>
-
-        <div
-          className="pointer-events-none absolute inset-0 opacity-[0.08]"
-          style={{
-            backgroundImage:
-              'linear-gradient(to right, rgba(255,255,255,0.16) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.16) 1px, transparent 1px)',
-            backgroundSize: '38px 38px',
-          }}
-        />
-
-        <div className="relative z-10 mx-auto max-w-7xl px-4">
-          {/* Top ribbon */}
-          <div className="pt-5 md:pt-12">
-            <div className="flex flex-col gap-3 rounded-3xl bg-white/5 p-3 ring-1 ring-white/10 backdrop-blur-md md:flex-row md:items-center md:justify-between md:p-6">
-              <div className="flex items-start gap-3">
-                <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-green-500/15 ring-1 ring-green-400/20 md:h-10 md:w-10">
-                  <Sparkles className="h-4 w-4 text-green-300 md:h-5 md:w-5" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-white/90 sm:text-base">
-                    {siteName} — розсадник
-                  </p>
-                  <p className="mt-0.5 text-xs text-white/65 sm:text-sm">
-                    Поради • Підбір • Підтримка
-                  </p>
-                </div>
-              </div>
-
-              {/* Desktop CTA: contacts + about (no catalog) */}
-              <div className="hidden md:flex items-center gap-2">
-                <button
-                  onClick={() => setIsAboutModalOpen(true)}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white/6 px-5 py-3 text-sm font-semibold text-green-200 ring-1 ring-white/10 transition hover:bg-white/10 active:scale-[0.98]"
-                >
-                  <Info className="h-4 w-4" />
-                  Про розсадник
-                </button>
-                <button
-                  onClick={() => navigate('/contacts')}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-green-600 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_40px_rgba(34,197,94,0.18)] ring-1 ring-green-400/20 transition hover:bg-green-600/90 active:scale-[0.98]"
-                >
-                  <MapPin className="h-4 w-4" />
-                  Контакти
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* DESKTOP columns */}
-          <div className="hidden gap-8 py-10 md:grid md:grid-cols-12">
-            <div className="md:col-span-4">
-              <div className="inline-flex items-center gap-2 rounded-2xl bg-white/5 px-3 py-2 ring-1 ring-white/10">
-                <span className="h-2 w-2 rounded-full bg-green-400 shadow-[0_0_18px_rgba(34,197,94,0.45)]" />
-                <p className="text-sm font-semibold tracking-wide">{siteName}</p>
-              </div>
-
-              <p className="mt-4 text-sm leading-relaxed text-white/70">
-                Приватний розсадник декоративних рослин. Підкажемо найкращі варіанти під ваші умови та бюджет.
+      {/* Floating Messenger Bubble */}
+      <div
+        className="fixed right-3 sm:right-5 z-50"
+        style={{
+          bottom: "calc(76px + env(safe-area-inset-bottom))",
+        }}
+      >
+        <div className="relative">
+          {/* Expanded panel */}
+          <div
+            className={[
+              "absolute bottom-14 right-0 w-[220px] sm:w-[240px] overflow-hidden rounded-2xl",
+              "ring-1 ring-white/15 shadow-2xl",
+              "bg-white/10 backdrop-blur-xl",
+              "transition-all duration-200",
+              bubbleOpen ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-2 pointer-events-none",
+            ].join(" ")}
+          >
+            <div className="p-3">
+              <p className="text-xs font-semibold text-white/90">Написати нам</p>
+              <p className="mt-0.5 text-[11px] text-white/60">
+                Оберіть месенджер — відповідаємо швидко
               </p>
 
-              <div className="mt-5 flex flex-wrap items-center gap-2">
-                <button
-                  onClick={() => setIsAboutModalOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-xl bg-white/6 px-3 py-2 text-sm font-semibold text-green-300 ring-1 ring-white/10 transition hover:bg-white/10 hover:text-green-200"
-                >
-                  <Info className="h-4 w-4" />
-                  Про розсадник
-                </button>
-
-                <span className="inline-flex items-center gap-2 rounded-xl bg-white/6 px-3 py-2 text-sm font-semibold text-white/80 ring-1 ring-white/10">
-                  <ShieldCheck className="h-4 w-4 text-green-300" />
-                  Гарантія якості
-                </span>
-              </div>
-            </div>
-
-            <div className="md:col-span-4">
-              <p className="text-sm font-semibold text-white/90">Контакти</p>
-
-              <div className="mt-4 space-y-3">
+              <div className="mt-3 grid grid-cols-3 gap-2">
                 <a
-                  href={tel1}
-                  className="group flex items-center justify-between gap-3 rounded-2xl bg-white/5 p-4 ring-1 ring-white/10 transition hover:bg-white/10"
+                  href={telegramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex flex-col items-center justify-center gap-1 rounded-xl bg-white/10 hover:bg-white/15 transition p-2"
+                  aria-label="Telegram"
+                  title="Telegram"
                 >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-green-500/15 ring-1 ring-green-400/20">
-                      <Phone className="h-4 w-4 text-green-300" />
-                    </span>
-                    <div className="min-w-0">
-                      <p className="text-xs text-white/60">Телефон</p>
-                      <p className="truncate font-semibold tracking-wide text-white">{phone1}</p>
-                    </div>
-                  </div>
-                  <span className="shrink-0 text-xs text-white/60 transition group-hover:text-white/80">
-                    Дзвінок
-                  </span>
+                  <Send className="w-4 h-4 text-white" />
+                  <span className="text-[10px] text-white/80">TG</span>
                 </a>
 
                 <a
-                  href={tel2}
-                  className="group flex items-center justify-between gap-3 rounded-2xl bg-white/5 p-4 ring-1 ring-white/10 transition hover:bg-white/10"
+                  href={viberUrl}
+                  className="flex flex-col items-center justify-center gap-1 rounded-xl bg-white/10 hover:bg-white/15 transition p-2"
+                  aria-label="Viber"
+                  title="Viber"
                 >
-                  <div className="flex min-w-0 items-center gap-3">
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-green-500/15 ring-1 ring-green-400/20">
-                      <Phone className="h-4 w-4 text-green-300" />
-                    </span>
-                    <div className="min-w-0">
-                      <p className="text-xs text-white/60">Телефон</p>
-                      <p className="truncate font-semibold tracking-wide text-white">{phone2}</p>
-                    </div>
-                  </div>
-                  <span className="shrink-0 text-xs text-white/60 transition group-hover:text-white/80">
-                    Дзвінок
-                  </span>
+                  <MessageCircle className="w-4 h-4 text-white" />
+                  <span className="text-[10px] text-white/80">Viber</span>
                 </a>
 
-                <button
-                  onClick={() => navigate('/contacts')}
-                  className="flex w-full items-center gap-3 rounded-2xl bg-white/5 p-4 text-left ring-1 ring-white/10 transition hover:bg-white/10"
+                <a
+                  href={instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex flex-col items-center justify-center gap-1 rounded-xl bg-white/10 hover:bg-white/15 transition p-2"
+                  aria-label="Instagram"
+                  title="Instagram"
                 >
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/6 ring-1 ring-white/10">
-                    <MapPin className="h-4 w-4 text-white/70" />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-xs text-white/60">Адреса, графік, месенджери</p>
-                    <p className="truncate font-semibold text-white/90">Відкрити “Контакти”</p>
-                  </div>
-                </button>
-              </div>
-            </div>
-
-            <div className="md:col-span-4">
-              <p className="text-sm font-semibold text-white/90">Преміум-оновлення</p>
-
-              <div className="mt-4 rounded-2xl bg-white/5 p-5 ring-1 ring-white/10">
-                <div className="flex items-start gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-green-500/15 ring-1 ring-green-400/20">
-                    <Mail className="h-4 w-4 text-green-300" />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-white/90">Добірки та акції</p>
-                    <p className="mt-1 text-sm text-white/65">1–2 листи/місяць. Без спаму.</p>
-                  </div>
-                </div>
-
-                <form onSubmit={handleSubscribe} className="mt-4 space-y-3">
-                  <div className="flex flex-col gap-2 sm:flex-row">
-                    <input
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      type="email"
-                      placeholder="Email для підписки"
-                      className="w-full flex-1 rounded-2xl bg-black/25 px-4 py-3 text-sm text-white placeholder:text-white/40 ring-1 ring-white/10 outline-none transition focus:ring-2 focus:ring-green-400/30"
-                    />
-                    <button
-                      type="submit"
-                      disabled={submitting}
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-green-600 px-4 py-3 text-sm font-semibold text-white shadow-[0_18px_40px_rgba(34,197,94,0.18)] ring-1 ring-green-400/20 transition hover:bg-green-600/90 disabled:opacity-60 active:scale-[0.98] sm:w-auto"
-                    >
-                      {submitting ? 'Надсилаю…' : 'Підписатися'}
-                    </button>
-                  </div>
-
-                  <div className="flex items-center justify-between gap-3 text-xs text-white/55">
-                    <span className="inline-flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4 text-green-300" />
-                      Відписка будь-коли
-                    </span>
-                    {subscribed && (
-                      <span className="inline-flex items-center gap-2 rounded-full bg-green-500/10 px-3 py-1 text-xs font-semibold text-green-200 ring-1 ring-green-400/20">
-                        Готово ✅
-                      </span>
-                    )}
-                  </div>
-                </form>
+                  <Instagram className="w-4 h-4 text-white" />
+                  <span className="text-[10px] text-white/80">IG</span>
+                </a>
               </div>
 
-              <div className="mt-3 rounded-2xl bg-white/5 p-5 ring-1 ring-white/10">
-                <div className="flex items-center gap-2 text-white/80">
-                  <CreditCard className="h-4 w-4" />
-                  <p className="text-sm font-semibold">Оплата</p>
-                </div>
-                <p className="mt-2 text-sm text-white/65">Приймаємо до оплати:</p>
-                <div className="mt-3 flex flex-wrap items-center gap-3">
-                  <img
-                    src="/mastercard.webp"
-                    alt="Mastercard"
-                    className="h-8 w-auto object-contain opacity-90 transition hover:opacity-100"
-                  />
-                </div>
+              <div className="mt-2">
+                <a
+                  href={tiktokUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between rounded-xl bg-white/10 hover:bg-white/15 transition px-3 py-2"
+                  aria-label="TikTok"
+                  title="TikTok"
+                >
+                  <div className="flex items-center gap-2">
+                    <Music2 className="w-4 h-4 text-white" />
+                    <span className="text-xs text-white/85 font-semibold">TikTok</span>
+                  </div>
+                  <span className="text-[11px] text-white/55">відкрити</span>
+                </a>
               </div>
             </div>
           </div>
 
-          {/* MOBILE: compact footer */}
-          <div className="py-3 md:hidden">
-            {/* Quick icon row */}
-            <div className="grid grid-cols-4 gap-2">
-              <a
-                href={tel1}
-                className="flex items-center justify-center rounded-2xl bg-white/5 py-2.5 ring-1 ring-white/10"
-                aria-label="Подзвонити"
-              >
-                <Phone className="h-5 w-5 text-green-300" />
-              </a>
+          {/* Bubble button */}
+          <button
+            onClick={() => setBubbleOpen((v) => !v)}
+            className={[
+              "w-12 h-12 rounded-2xl",
+              "bg-white/10 backdrop-blur-xl ring-1 ring-white/15 shadow-2xl",
+              "flex items-center justify-center transition active:scale-[0.98] hover:bg-white/15",
+            ].join(" ")}
+            aria-label="Месенджери"
+            title="Месенджери"
+          >
+            <MessageCircle className="w-6 h-6 text-white" />
+          </button>
+        </div>
+      </div>
 
+      {/* Compact Glass Footer Bar (auto-hide) */}
+      <footer
+        className={[
+          "fixed left-0 right-0 z-40",
+          "transition-transform duration-200",
+          hidden ? "translate-y-full" : "translate-y-0",
+        ].join(" ")}
+        style={{
+          bottom: "env(safe-area-inset-bottom)",
+        }}
+      >
+        {/* Glass background */}
+        <div className="mx-auto max-w-7xl px-3 sm:px-4">
+          <div
+            className={[
+              "mb-2",
+              "rounded-2xl",
+              "bg-white/8 backdrop-blur-xl",
+              "ring-1 ring-white/12 shadow-[0_18px_60px_rgba(0,0,0,0.25)]",
+            ].join(" ")}
+            style={{
+              paddingBottom: "calc(10px + env(safe-area-inset-bottom))",
+            }}
+          >
+            <div className="flex items-center justify-between gap-3 px-3 py-2 sm:px-4 sm:py-3">
+              {/* Left: mini brand */}
               <button
-                onClick={() => navigate('/contacts')}
-                className="flex items-center justify-center rounded-2xl bg-white/5 py-2.5 ring-1 ring-white/10"
-                aria-label="Контакти"
+                onClick={() => navigate("/")}
+                className="text-left"
+                aria-label="На головну"
+                title="На головну"
               >
-                <MapPin className="h-5 w-5 text-white/80" />
+                <div className="text-xs sm:text-sm font-bold text-white/90 leading-none">
+                  {siteName}
+                </div>
+                <div className="text-[10px] sm:text-[11px] text-white/55 leading-none mt-1">
+                  © {year}
+                </div>
               </button>
 
-              <button
-                onClick={() => setIsAboutModalOpen(true)}
-                className="flex items-center justify-center rounded-2xl bg-white/5 py-2.5 ring-1 ring-white/10"
-                aria-label="Про розсадник"
-              >
-                <Info className="h-5 w-5 text-green-300" />
-              </button>
-
-              <button
-                onClick={() => toggle('info')}
-                className="flex items-center justify-center rounded-2xl bg-white/5 py-2.5 ring-1 ring-white/10"
-                aria-label="Інформація"
-              >
-                <Mail className="h-5 w-5 text-white/80" />
-              </button>
-            </div>
-
-            {/* Social icons under footer icons */}
-            {socialUnderFooter.length > 0 && (
-              <div className="mt-2 flex items-center justify-center gap-2">
-                {socialUnderFooter.map((b) => {
-                  const Icon = b.icon;
-                  return (
-                    <a
-                      key={b.key}
-                      href={b.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={`flex h-10 w-10 items-center justify-center rounded-2xl ${b.bg} ${b.text} ring-1 ${b.ring} backdrop-blur-md transition ${b.hover} active:scale-95`}
-                      aria-label={b.label}
-                      title={b.label}
-                    >
-                      <Icon className="h-5 w-5" />
-                    </a>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Accordion */}
-            <div className="mt-2">
-              <div className="rounded-2xl bg-white/5 ring-1 ring-white/10">
-                <button
-                  onClick={() => toggle('info')}
-                  className="flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left"
+              {/* Center: small social row */}
+              <div className="flex items-center gap-2">
+                <a
+                  href={instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-xl bg-white/10 hover:bg-white/15 transition"
+                  aria-label="Instagram"
+                  title="Instagram"
                 >
-                  <span className="text-sm font-semibold text-white/90">Інформація</span>
-                  <ChevronDown
-                    className={`h-4 w-4 text-white/70 transition ${openKey === 'info' ? 'rotate-180' : ''}`}
-                  />
-                </button>
+                  <Instagram className="w-4 h-4 text-white" />
+                </a>
 
-                {openKey === 'info' && (
-                  <div className="px-3 pb-3">
-                    <div className="space-y-2">
-                      <button
-                        onClick={() => setIsAboutModalOpen(true)}
-                        className="w-full rounded-2xl bg-white/6 px-3 py-2.5 text-xs font-semibold text-green-300 ring-1 ring-white/10"
-                      >
-                        Про розсадник
-                      </button>
+                <a
+                  href={tiktokUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-xl bg-white/10 hover:bg-white/15 transition"
+                  aria-label="TikTok"
+                  title="TikTok"
+                >
+                  <Music2 className="w-4 h-4 text-white" />
+                </a>
 
-                      <div className="flex items-center justify-between rounded-2xl bg-white/6 px-3 py-2.5 ring-1 ring-white/10">
-                        <span className="text-xs font-semibold text-white/85">Гарантія якості</span>
-                        <ShieldCheck className="h-4 w-4 text-green-300" />
-                      </div>
-
-                      <div className="flex items-center justify-between rounded-2xl bg-white/6 px-3 py-2.5 ring-1 ring-white/10">
-                        <span className="text-xs text-white/70">Оплата</span>
-                        <div className="flex items-center gap-2">
-                          <CreditCard className="h-4 w-4 text-white/70" />
-                          <img
-                            src="/mastercard.webp"
-                            alt="Mastercard"
-                            className="h-6 w-auto object-contain opacity-90"
-                          />
-                        </div>
-                      </div>
-
-                      <form onSubmit={handleSubscribe} className="space-y-2">
-                        <input
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          type="email"
-                          placeholder="Email для підписки"
-                          className="w-full rounded-2xl bg-black/25 px-3 py-2.5 text-xs text-white placeholder:text-white/40 ring-1 ring-white/10 outline-none focus:ring-2 focus:ring-green-400/30"
-                        />
-                        <button
-                          type="submit"
-                          disabled={submitting}
-                          className="w-full rounded-2xl bg-green-600 px-3 py-2.5 text-xs font-semibold text-white ring-1 ring-green-400/20 disabled:opacity-60"
-                        >
-                          {submitting ? 'Надсилаю…' : 'Підписатися'}
-                        </button>
-
-                        <div className="flex items-center justify-between text-[11px] text-white/55">
-                          <span className="inline-flex items-center gap-1.5">
-                            <CheckCircle2 className="h-3.5 w-3.5 text-green-300" />
-                            Без спаму
-                          </span>
-                          {subscribed && (
-                            <span className="rounded-full bg-green-500/10 px-2 py-0.5 font-semibold text-green-200 ring-1 ring-green-400/20">
-                              ✅
-                            </span>
-                          )}
-                        </div>
-                      </form>
-
-                      <div className="grid grid-cols-2 gap-2 pt-1">
-                        <a
-                          href={tel1}
-                          className="flex items-center justify-center gap-2 rounded-2xl bg-white/6 px-3 py-2.5 text-xs font-semibold text-white/90 ring-1 ring-white/10"
-                        >
-                          <Phone className="h-4 w-4 text-green-300" />
-                          Дзвінок
-                        </a>
-                        <button
-                          onClick={() => navigate('/contacts')}
-                          className="flex items-center justify-center gap-2 rounded-2xl bg-white/6 px-3 py-2.5 text-xs font-semibold text-white/90 ring-1 ring-white/10"
-                        >
-                          <MapPin className="h-4 w-4 text-white/80" />
-                          Контакти
-                        </button>
-                      </div>
-
-                      <div className="rounded-2xl bg-white/6 px-3 py-2.5 ring-1 ring-white/10">
-                        <p className="text-[11px] text-white/60">Швидкий перехід</p>
-                        <div className="mt-2 grid grid-cols-2 gap-2">
-                          <button
-                            onClick={() => navigate('/delivery')}
-                            className="rounded-xl bg-white/5 px-3 py-2 text-[11px] font-semibold text-white/80 ring-1 ring-white/10"
-                          >
-                            Доставка
-                          </button>
-                          <button
-                            onClick={() => navigate('/return')}
-                            className="rounded-xl bg-white/5 px-3 py-2 text-[11px] font-semibold text-white/80 ring-1 ring-white/10"
-                          >
-                            Повернення
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                <a
+                  href={telegramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-xl bg-white/10 hover:bg-white/15 transition"
+                  aria-label="Telegram"
+                  title="Telegram"
+                >
+                  <Send className="w-4 h-4 text-white" />
+                </a>
               </div>
-            </div>
-          </div>
 
-          {/* Bottom bar */}
-          <div className="pb-6 sm:pb-10">
-            <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-            <div className="flex flex-col items-center justify-between gap-2 pt-3 text-center sm:flex-row sm:text-left">
-              <p className="text-[11px] text-white/55">© 2026 {siteName}. Всі права захищено.</p>
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 text-[11px] font-semibold text-white/70 ring-1 ring-white/10">
-                <span className="h-1.5 w-1.5 rounded-full bg-green-400 shadow-[0_0_14px_rgba(34,197,94,0.55)]" />
-                Онлайн
-              </span>
+              {/* Right: scroll top */}
+              <button
+                onClick={scrollTop}
+                className="p-2 rounded-xl bg-white/10 hover:bg-white/15 transition"
+                aria-label="Вгору"
+                title="Вгору"
+              >
+                <ChevronUp className="w-4 h-4 text-white" />
+              </button>
             </div>
           </div>
         </div>
       </footer>
-
-      {/* PREMIUM MOBILE STICKY CALL BAR (NO CATALOG, NO CART) */}
-      <div className="md:hidden fixed inset-x-0 bottom-0 z-[70] px-3 pb-[calc(env(safe-area-inset-bottom)+10px)] pt-2">
-        <div className="relative overflow-hidden rounded-2xl bg-[#070b09]/86 ring-1 ring-white/10 shadow-2xl backdrop-blur-xl">
-          <div className="pointer-events-none absolute inset-0">
-            <div className="absolute -top-10 left-1/2 h-24 w-80 -translate-x-1/2 rounded-full bg-green-500/18 blur-2xl" />
-            <div className="absolute -bottom-10 right-[-40px] h-28 w-28 rounded-full bg-emerald-400/10 blur-2xl" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.10),transparent_55%)]" />
-          </div>
-
-          <div className="relative px-3 py-2.5">
-            <a
-              href={tel1}
-              className="group flex w-full items-center justify-between gap-3 rounded-2xl bg-white/6 px-4 py-3 ring-1 ring-white/10 transition active:scale-[0.99]"
-              aria-label="Подзвонити"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-green-500/18 ring-1 ring-green-400/20">
-                  <Phone className="h-5 w-5 text-green-200" />
-                </span>
-                <div className="min-w-0">
-                  <p className="text-[11px] text-white/60">Зателефонуйте нам</p>
-                  <p className="truncate text-sm font-semibold text-white/90">{phone1}</p>
-                </div>
-              </div>
-
-              <span className="shrink-0 rounded-xl bg-green-600 px-3 py-2 text-xs font-semibold text-white shadow-[0_14px_30px_rgba(34,197,94,0.20)] ring-1 ring-green-400/20 transition group-hover:bg-green-600/90">
-                Дзвінок
-              </span>
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* Floating messengers (left) */}
-      {messengerButtons.length > 0 && (
-        <div className="fixed bottom-20 left-4 z-50 flex flex-col gap-2 sm:bottom-24 sm:left-6">
-          {messengerButtons.map((b) => {
-            const Icon = b.icon;
-            return (
-              <a
-                key={b.key}
-                href={b.href}
-                target="_blank"
-                rel="noreferrer"
-                className={`group flex h-11 w-11 items-center justify-center rounded-2xl ${b.bg} ${b.text} shadow-2xl ring-1 ${b.ring} backdrop-blur-md transition ${b.hover} active:scale-95 sm:h-12 sm:w-12`}
-                aria-label={b.label}
-                title={b.label}
-              >
-                <Icon className="h-5 w-5" />
-              </a>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Scroll to top (right) */}
-      <button
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="fixed bottom-5 right-4 z-50 flex h-11 w-11 items-center justify-center rounded-2xl bg-white/10 text-white shadow-2xl ring-1 ring-white/15 backdrop-blur-md transition hover:bg-white/15 active:scale-95 sm:bottom-6 sm:right-6 sm:h-12 sm:w-12"
-        aria-label="Вгору"
-        data-testid="scroll-to-top"
-      >
-        <ChevronUp className="h-6 w-6" />
-      </button>
-
-      <AboutModal isOpen={isAboutModalOpen} onClose={() => setIsAboutModalOpen(false)} />
     </>
   );
 };
 
 export default Footer;
-
