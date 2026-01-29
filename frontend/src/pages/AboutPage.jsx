@@ -1,5 +1,8 @@
-import React from 'react';
-import { TreePine, Award, Users, Target, Instagram, Star } from 'lucide-react';
+import React from "react";
+import { Instagram, Star } from "lucide-react";
+
+const IG_URL =
+  "https://www.instagram.com/platansad.uaa?igsh=cmhhbG4zbjNkMTBr";
 
 const AboutPage = () => {
   return (
@@ -7,7 +10,10 @@ const AboutPage = () => {
       {/* Hero Section */}
       <div className="bg-gradient-to-r from-green-500 to-green-600 text-white py-8 sm:py-10 md:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center" data-testid="about-title">
+          <h1
+            className="text-3xl sm:text-4xl md:text-5xl font-bold text-center"
+            data-testid="about-title"
+          >
             Про нас
           </h1>
         </div>
@@ -15,101 +21,64 @@ const AboutPage = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12">
-        {/* Values */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 md:gap-6 mb-6 md:mb-8">
-          <div className="bg-white rounded-xl shadow-sm md:shadow-md p-4 sm:p-5 md:p-6" data-testid="value-card">
-            <div className="bg-green-100 w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4">
-              <TreePine className="w-6 h-6 md:w-7 md:h-7 text-green-600" />
-            </div>
-            <p className="text-sm sm:text-base md:text-xl font-bold text-gray-800 text-center leading-tight">
-              Якість
-            </p>
-          </div>
+        {/* Instagram + QR block */}
+        <div className="bg-white rounded-2xl shadow-sm md:shadow-lg p-5 sm:p-7 md:p-10 mb-6 md:mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+            {/* Text */}
+            <div className="md:col-span-7">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-2">
+                Наш Instagram
+              </h2>
+              <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed mb-4">
+                Скануйте QR-код або переходьте за посиланням — там реальні фото,
+                новинки та відгуки клієнтів.
+              </p>
 
-          <div className="bg-white rounded-xl shadow-sm md:shadow-md p-4 sm:p-5 md:p-6" data-testid="value-card">
-            <div className="bg-green-100 w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4">
-              <Award className="w-6 h-6 md:w-7 md:h-7 text-green-600" />
+              <a
+                href={IG_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-5 py-3 sm:px-6 sm:py-3.5 rounded-full text-sm sm:text-base font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95 w-full sm:w-auto"
+              >
+                <Instagram className="w-5 h-5" />
+                Підписуйтесь на @platansad.uaa
+              </a>
             </div>
-            <p className="text-sm sm:text-base md:text-xl font-bold text-gray-800 text-center leading-tight">
-              Досвід
-            </p>
-          </div>
 
-          <div className="bg-white rounded-xl shadow-sm md:shadow-md p-4 sm:p-5 md:p-6" data-testid="value-card">
-            <div className="bg-green-100 w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4">
-              <Users className="w-6 h-6 md:w-7 md:h-7 text-green-600" />
+            {/* QR (clickable) */}
+            <div className="md:col-span-5">
+              <div className="mx-auto w-full max-w-[260px] sm:max-w-[300px]">
+                <a
+                  href={IG_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block rounded-2xl bg-gray-50 border border-gray-100 p-3 sm:p-4 shadow-sm hover:shadow-md transition-shadow focus:outline-none focus-visible:ring-4 focus-visible:ring-green-200"
+                  aria-label="Відкрити Instagram PlatanSad"
+                >
+                  <img
+                    src="/qr-platansad.png"
+                    alt="QR код Instagram PlatanSad"
+                    className="w-full h-auto rounded-xl"
+                    loading="lazy"
+                  />
+                  <p className="mt-3 text-center text-xs sm:text-sm text-gray-500">
+                    Натисніть або наведіть камеру
+                  </p>
+                </a>
+              </div>
             </div>
-            <p className="text-sm sm:text-base md:text-xl font-bold text-gray-800 text-center leading-tight">
-              Команда
-            </p>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm md:shadow-md p-4 sm:p-5 md:p-6" data-testid="value-card">
-            <div className="bg-green-100 w-11 h-11 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full flex items-center justify-center mx-auto mb-2 sm:mb-3 md:mb-4">
-              <Target className="w-6 h-6 md:w-7 md:h-7 text-green-600" />
-            </div>
-            <p className="text-sm sm:text-base md:text-xl font-bold text-gray-800 text-center leading-tight">
-              Підхід
-            </p>
           </div>
         </div>
 
-        {/* About block */}
-        <div className="bg-white rounded-2xl shadow-sm md:shadow-lg p-5 sm:p-7 md:p-12">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-3 md:mb-6">
-            Про компанію
-          </h2>
-          <p className="text-sm sm:text-base md:text-lg text-gray-600 leading-relaxed mb-5 md:mb-6">
-            Ми спеціалізуємося на вирощуванні декоративних рослин найвищої якості.
-            Наша місія - допомогти створити унікальний сад мрії.
-          </p>
-
-          <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-3 md:mb-4">
-            Наші переваги:
-          </h3>
-          <ul className="space-y-2.5 md:space-y-3 text-gray-600">
-            <li className="flex items-start gap-2.5 md:gap-3">
-              <span className="text-green-500 text-lg md:text-xl leading-none mt-0.5">✓</span>
-              <span className="text-sm sm:text-base md:text-lg">Широкий асортимент</span>
-            </li>
-            <li className="flex items-start gap-2.5 md:gap-3">
-              <span className="text-green-500 text-lg md:text-xl leading-none mt-0.5">✓</span>
-              <span className="text-sm sm:text-base md:text-lg">Гарантія якості</span>
-            </li>
-            <li className="flex items-start gap-2.5 md:gap-3">
-              <span className="text-green-500 text-lg md:text-xl leading-none mt-0.5">✓</span>
-              <span className="text-sm sm:text-base md:text-lg">Консультація експертів</span>
-            </li>
-            <li className="flex items-start gap-2.5 md:gap-3">
-              <span className="text-green-500 text-lg md:text-xl leading-none mt-0.5">✓</span>
-              <span className="text-sm sm:text-base md:text-lg">Швидка доставка</span>
-            </li>
-            <li className="flex items-start gap-2.5 md:gap-3">
-              <span className="text-green-500 text-lg md:text-xl leading-none mt-0.5">✓</span>
-              <span className="text-sm sm:text-base md:text-lg">Індивідуальний підхід</span>
-            </li>
-          </ul>
-        </div>
-
-        {/* Instagram Reviews Section */}
-        <div className="mt-8 md:mt-12">
+        {/* Reviews Section */}
+        <div className="mt-2 md:mt-6">
           <div className="text-center mb-6 md:mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-3 md:mb-4">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
               Відгуки наших клієнтів
             </h2>
-            <p className="text-sm sm:text-base md:text-lg text-gray-600 mb-5 md:mb-6">
-              Дивіться реальні відгуки та результати в нашому Instagram
+            <p className="text-sm sm:text-base md:text-lg text-gray-600">
+              Реальні враження від покупців PlatanSad
             </p>
-
-            <a
-              href="https://www.instagram.com/platansad.uaa?igsh=cmhhbG4zbjNkMTBr"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-5 py-3 sm:px-6 sm:py-3.5 rounded-full text-sm sm:text-base font-semibold hover:from-purple-600 hover:to-pink-600 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95 w-full sm:w-auto"
-            >
-              <Instagram className="w-5 h-5" />
-              Підписуйтесь на @platansad.uaa
-            </a>
           </div>
 
           {/* Reviews Grid */}
@@ -121,10 +90,15 @@ const AboutPage = () => {
                   <Instagram className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-800 text-sm sm:text-base">@kateryna_garden</p>
+                  <p className="font-semibold text-gray-800 text-sm sm:text-base">
+                    @kateryna_garden
+                  </p>
                   <div className="flex gap-0.5">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 md:w-4 md:h-4 fill-yellow-400 text-yellow-400" />
+                      <Star
+                        key={i}
+                        className="w-3.5 h-3.5 md:w-4 md:h-4 fill-yellow-400 text-yellow-400"
+                      />
                     ))}
                   </div>
                 </div>
@@ -145,10 +119,15 @@ const AboutPage = () => {
                   <Instagram className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-800 text-sm sm:text-base">@oleg_landshaft</p>
+                  <p className="font-semibold text-gray-800 text-sm sm:text-base">
+                    @oleg_landshaft
+                  </p>
                   <div className="flex gap-0.5">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 md:w-4 md:h-4 fill-yellow-400 text-yellow-400" />
+                      <Star
+                        key={i}
+                        className="w-3.5 h-3.5 md:w-4 md:h-4 fill-yellow-400 text-yellow-400"
+                      />
                     ))}
                   </div>
                 </div>
@@ -169,10 +148,15 @@ const AboutPage = () => {
                   <Instagram className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-800 text-sm sm:text-base">@natalia_plants</p>
+                  <p className="font-semibold text-gray-800 text-sm sm:text-base">
+                    @natalia_plants
+                  </p>
                   <div className="flex gap-0.5">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 md:w-4 md:h-4 fill-yellow-400 text-yellow-400" />
+                      <Star
+                        key={i}
+                        className="w-3.5 h-3.5 md:w-4 md:h-4 fill-yellow-400 text-yellow-400"
+                      />
                     ))}
                   </div>
                 </div>
@@ -193,10 +177,15 @@ const AboutPage = () => {
                   <Instagram className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-800 text-sm sm:text-base">@ihor_sad</p>
+                  <p className="font-semibold text-gray-800 text-sm sm:text-base">
+                    @ihor_sad
+                  </p>
                   <div className="flex gap-0.5">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 md:w-4 md:h-4 fill-yellow-400 text-yellow-400" />
+                      <Star
+                        key={i}
+                        className="w-3.5 h-3.5 md:w-4 md:h-4 fill-yellow-400 text-yellow-400"
+                      />
                     ))}
                   </div>
                 </div>
@@ -217,10 +206,15 @@ const AboutPage = () => {
                   <Instagram className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-800 text-sm sm:text-base">@marina_green</p>
+                  <p className="font-semibold text-gray-800 text-sm sm:text-base">
+                    @marina_green
+                  </p>
                   <div className="flex gap-0.5">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 md:w-4 md:h-4 fill-yellow-400 text-yellow-400" />
+                      <Star
+                        key={i}
+                        className="w-3.5 h-3.5 md:w-4 md:h-4 fill-yellow-400 text-yellow-400"
+                      />
                     ))}
                   </div>
                 </div>
@@ -241,10 +235,15 @@ const AboutPage = () => {
                   <Instagram className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-800 text-sm sm:text-base">@andriy_garden_design</p>
+                  <p className="font-semibold text-gray-800 text-sm sm:text-base">
+                    @andriy_garden_design
+                  </p>
                   <div className="flex gap-0.5">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 md:w-4 md:h-4 fill-yellow-400 text-yellow-400" />
+                      <Star
+                        key={i}
+                        className="w-3.5 h-3.5 md:w-4 md:h-4 fill-yellow-400 text-yellow-400"
+                      />
                     ))}
                   </div>
                 </div>
@@ -259,17 +258,17 @@ const AboutPage = () => {
             </div>
           </div>
 
-          {/* CTA Section */}
+          {/* Bottom CTA */}
           <div className="mt-8 md:mt-12 bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-6 sm:p-7 md:p-8 text-center text-white">
             <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4">
               Приєднуйтесь до нашої спільноти!
             </h3>
             <p className="text-sm sm:text-base md:text-lg mb-5 md:mb-6 opacity-90">
-              Слідкуйте за нами в Instagram, щоб бачити нові надходження, корисні поради
-              та реальні фото від наших клієнтів
+              Слідкуйте за нами в Instagram, щоб бачити нові надходження, корисні
+              поради та реальні фото від наших клієнтів
             </p>
             <a
-              href="https://www.instagram.com/platansad.uaa?igsh=cmhhbG4zbjNkMTBr"
+              href={IG_URL}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 bg-white text-green-600 px-5 py-3 sm:px-7 sm:py-3.5 md:px-8 md:py-4 rounded-full text-sm sm:text-base md:text-lg font-bold hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl active:scale-95 w-full sm:w-auto"
@@ -285,4 +284,3 @@ const AboutPage = () => {
 };
 
 export default AboutPage;
-
