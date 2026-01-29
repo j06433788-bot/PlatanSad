@@ -12,13 +12,15 @@ const HomePage = () => {
   const videoSectionRef = useRef(null);
   const [isVisible, setIsVisible] = useState(false);
 
+  // Animate once when first visible
+  const [hasAnimatedIn, setHasAnimatedIn] = useState(false);
+
   // Mobile UX controls
   const [isPlaying, setIsPlaying] = useState(false);
   const [isDesktopControls, setIsDesktopControls] = useState(false);
 
   // Decide when to show native controls (sm+)
   useEffect(() => {
-    // Tailwind sm breakpoint is 640px
     const mq = window.matchMedia("(min-width: 640px)");
     const apply = () => setIsDesktopControls(mq.matches);
 
@@ -45,6 +47,11 @@ const HomePage = () => {
     observer.observe(el);
     return () => observer.disconnect();
   }, []);
+
+  // Mark that we should animate in (only once)
+  useEffect(() => {
+    if (isVisible) setHasAnimatedIn(true);
+  }, [isVisible]);
 
   // Autoplay when visible, pause when not
   useEffect(() => {
@@ -141,13 +148,21 @@ const HomePage = () => {
       {/* Products */}
       <ProductSection />
 
-      {/* FULL WIDTH VIDEO (optimized for phones, single <video>) */}
+      {/* FULL WIDTH VIDEO (fade-in + subtle zoom 1.02 -> 1.00) */}
       <section
         ref={videoSectionRef}
         className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] mt-5 sm:mt-7"
       >
-        <div className="w-screen bg-black">
-          {/* phone-friendly height; desktop stays as you had */}
+        {/* Fade/zoom wrapper: animates once when first visible */}
+        <div
+          className={[
+            "w-screen bg-black transform-gpu will-change-transform",
+            "transition-[opacity,transform] duration-700 ease-out",
+            hasAnimatedIn
+              ? "opacity-100 scale-100 translate-y-0"
+              : "opacity-0 scale-[1.02] translate-y-3",
+          ].join(" ")}
+        >
           <div className="relative w-screen h-[64vw] sm:h-[38vw] lg:h-[420px] max-h-[520px] overflow-hidden">
             <video
               ref={videoRef}
@@ -163,11 +178,11 @@ const HomePage = () => {
             {/* readability gradient */}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
 
-            {/* Minimal label */}
-            <div className="pointer-events-none absolute bottom-3 left-3 sm:bottom-4 sm:left-4">
-              <div className="bg-black/55 backdrop-blur-md px-3 py-1.5 rounded-xl ring-1 ring-white/15">
-                <p className="text-[11px] sm:text-xs font-semibold text-white">
-                  🌿 Відео з нашого розсадника PlatanSad
+            {/* Minimal label (smaller + closer to left edge) */}
+            <div className="pointer-events-none absolute bottom-2 left-2 sm:bottom-3 sm:left-3">
+              <div className="bg-black/50 backdrop-blur-sm px-2 py-1 rounded-lg ring-1 ring-white/10">
+                <p className="text-[10px] sm:text-[11px] font-medium text-white leading-none">
+                  🌿 PlatanSad Nursery
                 </p>
               </div>
             </div>
@@ -205,4 +220,3 @@ const HomePage = () => {
 };
 
 export default HomePage;
-
