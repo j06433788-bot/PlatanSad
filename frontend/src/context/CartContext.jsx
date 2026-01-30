@@ -1,3 +1,5 @@
+// CartContext.jsx (ГОТОВИЙ, заміни повністю)
+// ✅ Додав параметр `options?.silent` для add/remove, щоб НЕ було дубля тостів
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { cartApi } from '../api/cartApi';
 import { toast } from 'sonner';
@@ -15,9 +17,8 @@ export const useCart = () => {
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(false);
-  const userId = 'guest'; // For now, using guest user
+  const userId = 'guest';
 
-  // Fetch cart on mount
   const fetchCart = useCallback(async () => {
     try {
       setLoading(true);
@@ -25,7 +26,6 @@ export const CartProvider = ({ children }) => {
       setCartItems(items || []);
     } catch (error) {
       console.error('Error fetching cart:', error);
-      // Don't show error toast on initial load, just set empty cart
       setCartItems([]);
     } finally {
       setLoading(false);
@@ -36,25 +36,29 @@ export const CartProvider = ({ children }) => {
     fetchCart();
   }, [fetchCart]);
 
-  // Add to cart
-  const addToCart = async (product, quantity = 1) => {
+  // ✅ Add to cart (options.silent щоб не дублювати toast у UI)
+  const addToCart = async (product, quantity = 1, options = {}) => {
     try {
       setLoading(true);
       await cartApi.addToCart(product.id, quantity, userId);
-      await fetchCart(); // Refresh cart
-      toast.success(`${product.name} додано до кошика!`);
+      await fetchCart();
+
+      if (!options?.silent) {
+        toast.success(`${product.name} додано до кошика!`);
+      }
     } catch (error) {
       console.error('Error adding to cart:', error);
-      toast.error('Помилка додавання до кошика');
+      if (!options?.silent) {
+        toast.error('Помилка додавання до кошика');
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  // Update quantity
   const updateQuantity = async (itemId, newQuantity) => {
     if (newQuantity < 1) return;
-    
+
     try {
       setLoading(true);
       await cartApi.updateCartItem(itemId, newQuantity);
@@ -67,28 +71,31 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // Remove from cart
-  const removeFromCart = async (itemId, productName) => {
+  // ✅ Remove from cart (options.silent щоб сторінка могла показати свій custom toast + Undo)
+  const removeFromCart = async (itemId, productName, options = {}) => {
     try {
       setLoading(true);
       await cartApi.removeFromCart(itemId);
       await fetchCart();
-      toast.success(`${productName} видалено з кошика`);
+
+      if (!options?.silent) {
+        toast.success(`${productName} видалено з кошика`);
+      }
     } catch (error) {
       console.error('Error removing from cart:', error);
-      toast.error('Помилка видалення з кошика');
+      if (!options?.silent) {
+        toast.error('Помилка видалення з кошика');
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  // Clear cart
   const clearCart = async () => {
     try {
       setLoading(true);
       await cartApi.clearCart(userId);
       setCartItems([]);
-      // Removed toast - cart is cleared silently after order
     } catch (error) {
       console.error('Error clearing cart:', error);
     } finally {
@@ -96,7 +103,6 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // Calculate totals
   const cartTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
