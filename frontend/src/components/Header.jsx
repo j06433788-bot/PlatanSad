@@ -1,606 +1,685 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
-import { productsApi } from '../api/productsApi';
-import ProductCard from '../components/ProductCard';
-import { SlidersHorizontal, X, Grid3X3, LayoutGrid, Instagram } from 'lucide-react';
 
-const CatalogPage = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+import React, { useState, useEffect } from 'react';
+import {
+  Search,
+  Heart,
+  ShoppingBag,
+  X,
+  Menu,
+  Info,
+  Truck,
+  RefreshCw,
+  MapPin,
+  BookOpen,
+  Clock,
+  Trees,
+  TreePine,
+  Leaf,
+  Flower,
+  Sprout,
+  ChevronRight,
+} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { useWishlist } from '../context/WishlistContext';
+import { categoriesApi } from '../api/categoriesApi';
 
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+const Header = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
+  const [expandedCategories, setExpandedCategories] = useState({});
 
-  const [showFilters, setShowFilters] = useState(false);
-  const [compactView, setCompactView] = useState(true); // mobile default
+  const navigate = useNavigate();
+  const { cartItems, removeFromCart, updateQuantity, cartCount, cartTotal } = useCart();
+  const { wishlistCount } = useWishlist();
 
-  const [filters, setFilters] = useState({
-    category: searchParams.get('category') || '',
-    badge: searchParams.get('badge') || '', // hit | new | sale
-    minPrice: searchParams.get('minPrice') || '',
-    maxPrice: searchParams.get('maxPrice') || '',
-    sortBy: searchParams.get('sortBy') || 'name',
-  });
+  // Structured categories with subcategories based on platansad.prom.ua
+  const categoriesStructure = [
+    {
+      id: 'cat-001',
+      name: 'Бонсай Нівакі',
+      icon: 'bonsai',
+      subcategories: [
+        { id: 'sub-001-1', name: 'Pinus sylvestris (Сосна звичайна)', count: 101 },
+        { id: 'sub-001-2', name: 'Нівакі на штамбі', count: 15 },
+        { id: 'sub-001-3', name: 'Топіари формовані', count: 25 },
+      ],
+    },
+    {
+      id: 'cat-002',
+      name: 'Туя',
+      icon: 'thuja',
+      subcategories: [
+        { id: 'sub-002-1', name: 'Туя Колумна (Columna)', count: 13 },
+        { id: 'sub-002-2', name: 'Туя Смарагд (Smaragd)', count: 23 },
+        { id: 'sub-002-3', name: 'Куляста Туя Глобоса (Globosa)', count: 6 },
+        { id: 'sub-002-4', name: 'Туя карликова', count: 8 },
+        { id: 'sub-002-5', name: 'Топіари з туї', count: 12 },
+      ],
+    },
+    {
+      id: 'cat-003',
+      name: 'Самшит',
+      icon: 'boxwood',
+      subcategories: [
+        { id: 'sub-003-1', name: 'Самшит Арборесценс', count: 33 },
+        { id: 'sub-003-2', name: 'Топіари з самшиту', count: 15 },
+        { id: 'sub-003-3', name: 'Самшит формований', count: 10 },
+      ],
+    },
+    {
+      id: 'cat-004',
+      name: 'Хвойні рослини',
+      icon: 'conifer',
+      subcategories: [
+        { id: 'sub-004-1', name: 'Ялина', count: 20 },
+        { id: 'sub-004-2', name: 'Ялиця біла', count: 8 },
+        { id: 'sub-004-3', name: 'Зебріна голд', count: 5 },
+        { id: 'sub-004-4', name: 'Ельвангера', count: 7 },
+        { id: 'sub-004-5', name: 'Інші хвойні', count: 7 },
+      ],
+    },
+    {
+      id: 'cat-005',
+      name: 'Листопадні дерева та кущі',
+      icon: 'deciduous',
+      subcategories: [
+        { id: 'sub-005-1', name: 'Катальпа (Catalpa)', count: 4 },
+        { id: 'sub-005-2', name: 'Верба Хакуро Нішікі', count: 12 },
+        { id: 'sub-005-3', name: 'Спіралі формовані', count: 15 },
+        { id: 'sub-005-4', name: 'Інші листопадні', count: 16 },
+      ],
+    },
+    {
+      id: 'cat-006',
+      name: 'Кімнатні рослини',
+      icon: 'indoor',
+      subcategories: [{ id: 'sub-006-1', name: 'Декоративні рослини', count: 21 }],
+    },
+  ];
 
-  // keep URL -> state in sync when user navigates back/forward or opens links with params
+  // Fetch categories for burger menu
   useEffect(() => {
-    const next = {
-      category: searchParams.get('category') || '',
-      badge: searchParams.get('badge') || '',
-      minPrice: searchParams.get('minPrice') || '',
-      maxPrice: searchParams.get('maxPrice') || '',
-      sortBy: searchParams.get('sortBy') || 'name',
-    };
-
-    setFilters((prev) => {
-      const same =
-        prev.category === next.category &&
-        prev.badge === next.badge &&
-        prev.minPrice === next.minPrice &&
-        prev.maxPrice === next.maxPrice &&
-        prev.sortBy === next.sortBy;
-      return same ? prev : next;
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams]);
-
-  // mobile view auto: compact on small screens
-  useEffect(() => {
-    const mq = window.matchMedia('(max-width: 640px)');
-    if (mq.matches) setCompactView(true);
-
-    const apply = () => setCompactView((prev) => (mq.matches ? true : prev));
-    if (mq.addEventListener) mq.addEventListener('change', apply);
-    else mq.addListener(apply);
-
-    return () => {
-      if (mq.removeEventListener) mq.removeEventListener('change', apply);
-      else mq.removeListener(apply);
-    };
-  }, []);
-
-  // lock body scroll when bottom sheet is open (mobile)
-  useEffect(() => {
-    if (!showFilters) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [showFilters]);
-
-  const quickFilters = useMemo(
-    () => [
-      { key: 'hit', label: 'Хіти', color: 'from-amber-400 to-orange-500' },
-      { key: 'new', label: 'Новинки', color: 'from-green-500 to-emerald-500' },
-      { key: 'sale', label: 'Знижки', color: 'from-red-500 to-rose-500' },
-    ],
-    []
-  );
-
-  const updateParam = (key, value) => {
-    const newParams = new URLSearchParams(searchParams);
-    if (value) newParams.set(key, value);
-    else newParams.delete(key);
-    setSearchParams(newParams, { replace: true });
-  };
-
-  const handleFilterChange = (key, value) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-    updateParam(key, value);
-  };
-
-  const clearFilters = () => {
-    const reset = {
-      category: '',
-      badge: '',
-      minPrice: '',
-      maxPrice: '',
-      sortBy: 'name',
-    };
-    setFilters(reset);
-    setSearchParams({}, { replace: true });
-  };
-
-  const activeFiltersCount = useMemo(() => {
-    return Object.entries(filters).filter(([k, v]) => {
-      if (!v) return false;
-      if (k === 'sortBy' && v === 'name') return false;
-      return true;
-    }).length;
-  }, [filters]);
-
-  const abortRef = useRef(null);
-
-  // ✅ Load ALL products once (backend doesn't support badge param)
-  useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchCategories = async () => {
       try {
-        setLoading(true);
-
-        if (abortRef.current) abortRef.current.abort();
-        const controller = new AbortController();
-        abortRef.current = controller;
-
-        const data = await productsApi.getProducts({}, { signal: controller.signal });
-        setProducts(Array.isArray(data) ? data : []);
+        const data = await categoriesApi.getCategories();
+        setCategories(data);
       } catch (error) {
-        if (error?.name === 'AbortError') return;
-        console.error('Error fetching products:', error);
-        setProducts([]);
-      } finally {
-        setLoading(false);
+        console.error('Error fetching categories:', error);
       }
     };
-
-    fetchProducts();
-    return () => {
-      if (abortRef.current) abortRef.current.abort();
-    };
+    fetchCategories();
   }, []);
 
-  // ✅ Filter/sort on frontend (hit/new/sale works instantly)
-  const visibleProducts = useMemo(() => {
-    let list = Array.isArray(products) ? [...products] : [];
+  // Toggle category expansion (не використовується нижче, але залишаю як було)
+  const toggleCategory = (categoryId) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [categoryId]: !prev[categoryId],
+    }));
+  };
 
-    // category
-    if (filters.category) {
-      list = list.filter((p) => String(p.category || '') === String(filters.category));
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/catalog?search=${encodeURIComponent(searchQuery)}`);
+      setIsSearchOpen(false);
+      setSearchQuery('');
     }
+  };
 
-    // badge: hit/new/sale
-    if (filters.badge) {
-      list = list.filter((p) => Array.isArray(p.badges) && p.badges.includes(filters.badge));
+  // Get icon for category based on type (не використовується нижче, але залишаю як було)
+  const getCategoryIcon = (iconType) => {
+    switch (iconType) {
+      case 'bonsai':
+        return <Trees className="w-5 h-5" />;
+      case 'thuja':
+        return <TreePine className="w-5 h-5" />;
+      case 'boxwood':
+        return <Leaf className="w-5 h-5" />;
+      case 'conifer':
+        return <TreePine className="w-5 h-5" />;
+      case 'deciduous':
+        return <Trees className="w-5 h-5" />;
+      case 'indoor':
+        return <Flower className="w-5 h-5" />;
+      default:
+        return <Sprout className="w-5 h-5" />;
     }
+  };
 
-    // price range
-    const min = filters.minPrice !== '' ? Number(filters.minPrice) : null;
-    const max = filters.maxPrice !== '' ? Number(filters.maxPrice) : null;
-
-    if (min != null && !Number.isNaN(min)) {
-      list = list.filter((p) => Number(p.price) >= min);
-    }
-    if (max != null && !Number.isNaN(max)) {
-      list = list.filter((p) => Number(p.price) <= max);
-    }
-
-    // sort
-    const sortBy = filters.sortBy || 'name';
-    if (sortBy === 'price') {
-      list.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
-    } else if (sortBy === '-price') {
-      list.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
-    } else {
-      list.sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'uk'));
-    }
-
-    return list;
-  }, [products, filters]);
-
-  const isIndoor = filters.category === 'Кімнатні рослини';
-  const showInstagramCTA = isIndoor && !filters.badge; // ✅ only when category = indoor AND badge not selected
+  const handleCheckout = () => {
+    setIsCartOpen(false);
+    navigate('/checkout');
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-3 sm:py-6 pb-20 sm:pb-10" data-testid="catalog-page">
-      {/* local css */}
-      <style>{`
-        @keyframes slideUp {
-          from { transform: translateY(14px); opacity: .6; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-        .animate-slide-up { animation: slideUp .18s ease-out; }
-        .scrollbar-hide::-webkit-scrollbar { display: none; }
-        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
-
-        /* Premium Instagram button */
-        .ig-btn { position: relative; isolation: isolate; }
-        .ig-btn::before {
-          content: "";
-          position: absolute;
-          inset: -1px;
-          border-radius: 9999px;
-          background: linear-gradient(135deg, #f9ce34, #ee2a7b, #6228d7);
-          opacity: 1;
-          z-index: -2;
-        }
-        .ig-btn::after {
-          content: "";
-          position: absolute;
-          inset: 2px;
-          border-radius: 9999px;
-          background: white;
-          z-index: -1;
-        }
-        .ig-glow { box-shadow: 0 10px 24px rgba(238, 42, 123, 0.22); }
-        @keyframes igPop {
-          0% { transform: translateY(0) scale(1); }
-          100% { transform: translateY(-1px) scale(1.02); }
-        }
-        .ig-btn:hover { animation: igPop 160ms ease-out forwards; }
-        @keyframes igPulse {
-          0%, 100% { transform: scale(1); opacity: .85; }
-          50% { transform: scale(1.06); opacity: 1; }
-        }
-        .ig-badge { animation: igPulse 1.6s ease-in-out infinite; }
-      `}</style>
-
-      <div className="max-w-7xl mx-auto px-2 sm:px-4">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-3 sm:mb-5">
-          <div className="min-w-0">
-            <h1 className="text-xl sm:text-3xl font-bold text-gray-800" data-testid="catalog-title">
-              Каталог
-              {visibleProducts?.length > 0 && (
-                <span className="text-gray-400 font-normal ml-1 sm:ml-3 text-sm sm:text-xl">
-                  ({visibleProducts.length})
-                </span>
-              )}
-            </h1>
-          </div>
-
-          {/* Mobile controls */}
-          <div className="flex items-center gap-2 lg:hidden shrink-0">
-            <button
-              onClick={() => setCompactView((v) => !v)}
-              className="p-2 bg-white rounded-lg shadow-sm border border-gray-200 active:scale-95"
-              aria-label="Змінити вигляд"
-            >
-              {compactView ? <LayoutGrid className="w-5 h-5 text-gray-600" /> : <Grid3X3 className="w-5 h-5 text-gray-600" />}
-            </button>
-
-            <button
-              onClick={() => setShowFilters(true)}
-              className="flex items-center gap-1.5 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors shadow-md active:scale-95"
-              aria-label="Відкрити фільтри"
-              data-testid="filter-btn"
-            >
-              <SlidersHorizontal className="w-5 h-5" />
-              <span className="font-medium text-sm">Фільтри</span>
-              {activeFiltersCount > 0 && (
-                <span className="bg-white text-green-600 text-xs min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center font-bold">
-                  {activeFiltersCount}
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Quick badge filters */}
-        <div className="mb-3 sm:mb-4 overflow-x-auto scrollbar-hide -mx-2 px-2 sm:mx-0 sm:px-0">
-          <div className="flex gap-2 min-w-max sm:flex-wrap">
-            {quickFilters.map((qf) => (
-              <button
-                key={qf.key}
-                onClick={() => handleFilterChange('badge', filters.badge === qf.key ? '' : qf.key)}
-                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all active:scale-95 ${
-                  filters.badge === qf.key
-                    ? `bg-gradient-to-r ${qf.color} text-white shadow-lg`
-                    : 'bg-white text-gray-600 border border-gray-200 hover:border-gray-300'
-                }`}
-                data-testid={`quick-filter-${qf.key}`}
-              >
-                {qf.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* ✅ Premium Instagram button under quick filters (only Indoor + no badge) */}
-        {showInstagramCTA && (
-          <div className="mb-4 flex items-center justify-center sm:justify-start">
-            <a
-              href="https://www.instagram.com/maisternia.roslyn/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ig-btn ig-glow inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-extrabold text-sm text-gray-900 transition active:scale-95"
-              aria-label="Instagram Maisternia Roslyn"
-            >
-              <Instagram className="w-5 h-5 text-pink-600" />
-              <span>Instagram</span>
-              <span className="ig-badge ml-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-pink-500 to-violet-600 text-white">
-                Дивитись рослини
-              </span>
-            </a>
-          </div>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-8">
-          {/* Filters Sidebar / Bottom sheet */}
-          <div className="lg:block">
-            {/* Desktop card */}
-            <div className="hidden lg:block bg-white rounded-lg shadow-md p-6 sticky top-24">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-gray-800">Фільтри</h2>
-                {activeFiltersCount > 0 && (
-                  <button onClick={clearFilters} className="text-sm font-medium text-gray-500 hover:text-gray-700">
-                    Скинути
-                  </button>
-                )}
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Категорія</label>
-                  <select
-                    value={filters.category}
-                    onChange={(e) => handleFilterChange('category', e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    data-testid="filter-category"
-                  >
-                    <option value="">Всі категорії</option>
-                    <option value="Бонсай Нівакі">Бонсай Нівакі</option>
-                    <option value="Туя Колумна">Туя Колумна</option>
-                    <option value="Туя Смарагд">Туя Смарагд</option>
-                    <option value="Хвойні рослини">Хвойні рослини</option>
-                    <option value="Листопадні дерева">Листопадні дерева</option>
-                    <option value="Кімнатні рослини">Кімнатні рослини</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Тип</label>
-                  <select
-                    value={filters.badge}
-                    onChange={(e) => handleFilterChange('badge', e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    data-testid="filter-badge"
-                  >
-                    <option value="">Всі товари</option>
-                    <option value="hit">Хіти продажу</option>
-                    <option value="sale">Знижки</option>
-                    <option value="new">Новинки</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Ціна (грн)</label>
-                  <div className="flex gap-2">
-                    <input
-                      type="number"
-                      value={filters.minPrice}
-                      onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                      className="w-1/2 px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                      placeholder="Від"
-                      min="0"
-                      data-testid="filter-min-price"
-                    />
-                    <input
-                      type="number"
-                      value={filters.maxPrice}
-                      onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                      className="w-1/2 px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                      placeholder="До"
-                      min="0"
-                      data-testid="filter-max-price"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Сортування</label>
-                  <select
-                    value={filters.sortBy}
-                    onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                    className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    data-testid="filter-sort"
-                  >
-                    <option value="name">За назвою</option>
-                    <option value="price">Ціна: за зростанням</option>
-                    <option value="-price">Ціна: за спаданням</option>
-                  </select>
-                </div>
-
-                {activeFiltersCount > 0 && (
-                  <button
-                    onClick={clearFilters}
-                    className="w-full py-2.5 border-2 border-gray-300 rounded-lg text-gray-700 font-medium text-sm hover:bg-gray-50 transition-colors active:scale-95"
-                    data-testid="clear-filters-btn"
-                  >
-                    Скинути фільтри
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {/* Mobile bottom sheet */}
-            {showFilters && (
-              <>
-                <div className="lg:hidden fixed inset-0 bg-black/50 z-40" onClick={() => setShowFilters(false)} />
-
-                <div
-                  className="lg:hidden fixed bottom-0 left-0 right-0 bg-white z-50 rounded-t-2xl shadow-2xl max-h-[75vh] overflow-y-auto animate-slide-up"
-                  role="dialog"
-                  aria-modal="true"
-                  aria-label="Фільтри"
+    <>
+      <header className="w-full sticky top-0 z-50 bg-white shadow-sm">
+        {/* Main header */}
+        <div className="bg-white">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-5 md:py-6 lg:py-8">
+            <div className="flex items-center justify-between w-full gap-2 sm:gap-4">
+              {/* Left - Menu & Search (mobile) / Search only (desktop) */}
+              <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2 flex-shrink-0">
+                {/* Burger menu - mobile only */}
+                <button
+                  onClick={() => setIsMenuOpen(true)}
+                  className="p-2 sm:p-3 md:p-2 text-gray-600 hover:text-green-500 transition-colors hover:bg-gray-100 rounded-full md:hidden active:scale-95"
+                  data-testid="menu-toggle"
+                  aria-label="Відкрити меню"
                 >
-                  <div className="px-4 pt-3 pb-2 sticky top-0 bg-white rounded-t-2xl border-b border-gray-100">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="h-1.5 w-10 rounded-full bg-gray-200 mx-auto" />
-                        <h2 className="text-lg font-bold text-gray-800">Фільтри</h2>
-                      </div>
-                      <button
-                        onClick={() => setShowFilters(false)}
-                        className="text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-100 rounded-full"
-                        aria-label="Закрити"
-                      >
-                        <X className="w-6 h-6" />
-                      </button>
-                    </div>
-                  </div>
+                  <Menu className="w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6" />
+                </button>
 
-                  <div className="space-y-4 px-4 py-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Категорія</label>
-                      <select
-                        value={filters.category}
-                        onChange={(e) => handleFilterChange('category', e.target.value)}
-                        className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                        data-testid="filter-category"
-                      >
-                        <option value="">Всі категорії</option>
-                        <option value="Бонсай Нівакі">Бонсай Нівакі</option>
-                        <option value="Туя Колумна">Туя Колумна</option>
-                        <option value="Туя Смарагд">Туя Смарагд</option>
-                        <option value="Хвойні рослини">Хвойні рослини</option>
-                        <option value="Листопадні дерева">Листопадні дерева</option>
-                        <option value="Кімнатні рослини">Кімнатні рослини</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Тип</label>
-                      <select
-                        value={filters.badge}
-                        onChange={(e) => handleFilterChange('badge', e.target.value)}
-                        className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                        data-testid="filter-badge"
-                      >
-                        <option value="">Всі товари</option>
-                        <option value="hit">Хіти продажу</option>
-                        <option value="sale">Знижки</option>
-                        <option value="new">Новинки</option>
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Ціна (грн)</label>
-                      <div className="flex gap-2">
-                        <input
-                          type="number"
-                          value={filters.minPrice}
-                          onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-                          className="w-1/2 px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                          placeholder="Від"
-                          min="0"
-                          data-testid="filter-min-price"
-                        />
-                        <input
-                          type="number"
-                          value={filters.maxPrice}
-                          onChange={(e) => handleFilterChange('maxPrice', e.target.value)}
-                          className="w-1/2 px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                          placeholder="До"
-                          min="0"
-                          data-testid="filter-max-price"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Сортування</label>
-                      <select
-                        value={filters.sortBy}
-                        onChange={(e) => handleFilterChange('sortBy', e.target.value)}
-                        className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                        data-testid="filter-sort"
-                      >
-                        <option value="name">За назвою</option>
-                        <option value="price">Ціна: за зростанням</option>
-                        <option value="-price">Ціна: за спаданням</option>
-                      </select>
-                    </div>
-
-                    {activeFiltersCount > 0 && (
-                      <button
-                        onClick={clearFilters}
-                        className="w-full py-2.5 border-2 border-gray-300 rounded-lg text-gray-700 font-medium text-sm hover:bg-gray-50 transition-colors active:scale-95"
-                        data-testid="clear-filters-btn"
-                      >
-                        Скинути фільтри
-                      </button>
-                    )}
-
-                    <button
-                      onClick={() => setShowFilters(false)}
-                      className="w-full py-3 bg-green-600 text-white rounded-lg font-medium text-sm hover:bg-green-700 transition-colors active:scale-95"
-                      data-testid="apply-filters-btn"
-                    >
-                      Застосувати
-                    </button>
-
-                    <div className="pb-2" />
-                  </div>
-                </div>
-              </>
-            )}
-          </div>
-
-          {/* Products */}
-          <div className="lg:col-span-3">
-            {/* Desktop toolbar */}
-            <div className="hidden lg:flex items-center justify-between mb-4">
-              <div className="text-sm text-gray-600">
-                {loading ? 'Завантаження…' : visibleProducts.length ? `Знайдено: ${visibleProducts.length}` : 'Нічого не знайдено'}
-              </div>
-              <button
-                onClick={() => setCompactView((v) => !v)}
-                className="inline-flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-gray-50"
-              >
-                {compactView ? <LayoutGrid className="w-4 h-4" /> : <Grid3X3 className="w-4 h-4" />}
-                <span className="text-sm font-medium">{compactView ? 'Компактно' : 'Звичайно'}</span>
-              </button>
-            </div>
-
-            {loading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="bg-white rounded-xl overflow-hidden animate-pulse">
-                    <div className="aspect-[4/3] sm:aspect-square bg-gray-200" />
-                    <div className="p-2 sm:p-4 space-y-2">
-                      <div className="h-3 bg-gray-200 rounded w-1/2" />
-                      <div className="h-4 bg-gray-200 rounded" />
-                      <div className="h-6 bg-gray-200 rounded w-2/3" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : visibleProducts.length > 0 ? (
-              <div
-                className={`grid gap-2 sm:gap-4 lg:gap-6 ${
-                  compactView ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'
-                }`}
-                data-testid="products-grid"
-              >
-                {visibleProducts.map((product) => (
-                  <ProductCard
-                    key={product?.id ?? `${product?.slug ?? 'p'}-${Math.random()}`}
-                    product={product}
-                    variant="catalog"
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="bg-white rounded-lg shadow-md p-6 sm:p-12 text-center">
-                <p className="text-gray-700 font-medium mb-1">Товарів не знайдено</p>
-                <p className="text-gray-500 text-sm mb-4">Спробуйте змінити фільтри або очистити їх.</p>
-                <button onClick={clearFilters} className="text-green-600 hover:text-green-700 font-medium text-sm sm:text-base">
-                  Скинути фільтри
+                {/* Search icon */}
+                <button
+                  onClick={() => setIsSearchOpen(true)}
+                  className="p-2 sm:p-3 md:p-2 text-gray-600 hover:text-green-500 transition-colors hover:bg-gray-100 rounded-full active:scale-95"
+                  data-testid="search-toggle"
+                  aria-label="Пошук"
+                >
+                  <Search className="w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6" />
                 </button>
               </div>
-            )}
+
+              {/* Center - Logo */}
+              <div
+                className="flex items-center gap-0.5 sm:gap-1 md:gap-2 cursor-pointer active:scale-95 transition-transform min-w-0 justify-center"
+                onClick={() => navigate('/')}
+              >
+                <img
+                  src="/logo.webp"
+                  alt="PlatanSad Logo"
+                  className="w-8 h-8 sm:w-12 sm:h-12 md:w-32 md:h-32 lg:w-40 lg:h-40 object-contain mix-blend-multiply flex-shrink-0"
+                  style={{ filter: 'drop-shadow(0 0 0 transparent)' }}
+                />
+                <span className="text-base sm:text-xl md:text-5xl lg:text-6xl font-bold text-gray-800 whitespace-nowrap">
+                  Platan<span className="text-green-500">Sad</span>
+                </span>
+              </div>
+
+              {/* Right - Wishlist & Cart */}
+              <div className="flex items-center gap-0.5 sm:gap-1 md:gap-3 flex-shrink-0">
+                {/* Wishlist */}
+                <button
+                  onClick={() => navigate('/wishlist')}
+                  className={`p-2 sm:p-3 md:p-2 transition-all duration-300 rounded-full relative active:scale-95 ${
+                    wishlistCount > 0
+                      ? 'text-red-500 hover:text-red-600 hover:bg-red-50'
+                      : 'text-gray-400 hover:text-gray-500 hover:bg-gray-100'
+                  }`}
+                  data-testid="wishlist-icon"
+                  aria-label="Список бажань"
+                >
+                  <Heart
+                    className={`w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6 transition-all duration-300 ${
+                      wishlistCount > 0 ? 'fill-red-500' : ''
+                    }`}
+                  />
+                  {wishlistCount > 0 && (
+                    <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-red-500 text-white text-[10px] sm:text-xs min-w-[18px] sm:min-w-[22px] h-[18px] sm:h-[22px] px-0.5 sm:px-1 rounded-full flex items-center justify-center font-bold animate-pulse shadow-md">
+                      {wishlistCount}
+                    </span>
+                  )}
+                </button>
+
+                {/* Cart - Opens side panel */}
+                <button
+                  onClick={() => setIsCartOpen(true)}
+                  className="p-2 sm:p-3 md:p-2 text-gray-600 hover:text-green-500 transition-colors hover:bg-gray-100 rounded-full relative active:scale-95"
+                  data-testid="cart-icon"
+                  aria-label="Кошик"
+                >
+                  <div className="relative">
+                    <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6" />
+                    {cartCount > 0 && (
+                      <span
+                        className="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 bg-green-500 text-white text-[10px] sm:text-xs min-w-[18px] sm:min-w-[22px] h-[18px] sm:h-[22px] px-0.5 sm:px-1 rounded-full flex items-center justify-center font-bold shadow-md"
+                        data-testid="cart-count"
+                      >
+                        {cartCount}
+                      </span>
+                    )}
+                  </div>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* ✅ Sticky Instagram CTA on mobile (Indoor + no badge only) */}
-        {showInstagramCTA && (
-          <div className="sm:hidden fixed bottom-16 left-0 right-0 z-40 px-3">
-            <a
-              href="https://www.instagram.com/maisternia.roslyn/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ig-btn ig-glow w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full font-extrabold text-base text-gray-900 active:scale-[0.99]"
-            >
-              <Instagram className="w-5 h-5 text-pink-600" />
-              Дивитись Instagram
-              <span className="ig-badge ml-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-pink-500 to-violet-600 text-white">
-                Кімнатні
-              </span>
-            </a>
+        {/* Navigation - desktop only */}
+        <nav className="bg-[#2d2d39] text-white hidden md:block">
+          <div className="max-w-7xl mx-auto px-4">
+            <div className="flex items-center justify-between py-2 md:py-3">
+              <div className="flex items-center gap-4 md:gap-6 text-xs md:text-sm">
+                <button
+                  onClick={() => navigate('/about')}
+                  className="hover:text-green-400 transition-colors whitespace-nowrap"
+                >
+                  Про нас
+                </button>
+                <button
+                  onClick={() => navigate('/delivery')}
+                  className="hover:text-green-400 transition-colors whitespace-nowrap"
+                >
+                  Оплата і доставка
+                </button>
+                <button
+                  onClick={() => navigate('/return')}
+                  className="hover:text-green-400 transition-colors whitespace-nowrap"
+                >
+                  Обмін та повернення
+                </button>
+                <button
+                  onClick={() => navigate('/contacts')}
+                  className="hover:text-green-400 transition-colors whitespace-nowrap"
+                >
+                  Контакти
+                </button>
+                <button
+                  onClick={() => navigate('/blog')}
+                  className="hover:text-green-400 transition-colors whitespace-nowrap"
+                >
+                  Блог
+                </button>
+              </div>
+            </div>
           </div>
-        )}
+        </nav>
+      </header>
+
+      {/* Slide-out Menu */}
+      <div
+        className={`fixed inset-0 z-[100] transition-all duration-300 ${
+          isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
+        }`}
+      >
+        {/* Backdrop */}
+        <div
+          className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${
+            isMenuOpen ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={() => setIsMenuOpen(false)}
+        />
+
+        {/* Menu Panel */}
+        <div
+          className={`absolute top-0 left-0 h-full w-[92vw] max-w-[400px] bg-white shadow-2xl transition-transform duration-300 ease-out flex flex-col ${
+            isMenuOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          {/* Menu Header */}
+          <div className="bg-green-500 text-white p-4 flex items-center justify-between flex-shrink-0">
+            <div className="flex items-center gap-2">
+              <img src="/logo.webp" alt="PlatanSad" className="w-9 h-9 bg-white rounded-full p-0.5" />
+              <span className="font-bold text-lg">PlatanSad</span>
+            </div>
+            <button
+              onClick={() => setIsMenuOpen(false)}
+              className="p-2 hover:bg-white/20 rounded-full transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Menu Items - Scrollable */}
+          <div className="flex-1 overflow-y-auto py-1">
+            {/* Categories Section */}
+            <div className="px-4 py-3 bg-green-50 border-b border-green-100">
+              <h3 className="text-sm font-bold text-green-800 uppercase tracking-wide">Категорії рослин</h3>
+            </div>
+
+            {/* Categories from API */}
+            {categories.map((category) => (
+              <div key={category.id} className="border-b border-gray-100">
+                <button
+                  onClick={() => {
+                    navigate(`/catalog?category=${encodeURIComponent(category.name)}`);
+                    setIsMenuOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors group"
+                  data-testid={`category-${category.id}`}
+                >
+                  <div className="text-green-500 group-hover:text-green-600 transition-colors">
+                    <Sprout className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <span className="font-medium text-sm">{category.name}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {category.count > 0 && (
+                      <span className="text-xs text-gray-400 bg-white px-2 py-0.5 rounded-full border border-gray-200">
+                        {category.count}
+                      </span>
+                    )}
+                    <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-green-600 transition-all" />
+                  </div>
+                </button>
+              </div>
+            ))}
+
+            {/* Divider */}
+            <div className="border-t-4 border-gray-200 my-3" />
+
+            {/* Про нас */}
+            <button
+              onClick={() => {
+                navigate('/about');
+                setIsMenuOpen(false);
+              }}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-green-50 hover:text-green-500 transition-colors"
+            >
+              <Info className="w-5 h-5" />
+              <span className="font-medium text-sm">Про нас</span>
+            </button>
+
+            {/* Оплата і доставка */}
+            <button
+              onClick={() => {
+                navigate('/delivery');
+                setIsMenuOpen(false);
+              }}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-green-50 hover:text-green-500 transition-colors"
+            >
+              <Truck className="w-5 h-5" />
+              <span className="font-medium text-sm">Оплата і доставка</span>
+            </button>
+
+            {/* Обмін та повернення */}
+            <button
+              onClick={() => {
+                navigate('/return');
+                setIsMenuOpen(false);
+              }}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-green-50 hover:text-green-500 transition-colors"
+            >
+              <RefreshCw className="w-5 h-5" />
+              <span className="font-medium text-sm">Обмін та повернення</span>
+            </button>
+
+            {/* Контактна інформація */}
+            <button
+              onClick={() => {
+                navigate('/contacts');
+                setIsMenuOpen(false);
+              }}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-green-50 hover:text-green-500 transition-colors"
+            >
+              <MapPin className="w-5 h-5" />
+              <span className="font-medium text-sm">Контакти</span>
+            </button>
+
+            {/* Блог */}
+            <button
+              onClick={() => {
+                navigate('/blog');
+                setIsMenuOpen(false);
+              }}
+              className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-green-50 hover:text-green-500 transition-colors"
+            >
+              <BookOpen className="w-5 h-5" />
+              <span className="font-medium text-sm">Блог</span>
+            </button>
+
+            {/* Divider */}
+            <div className="border-t border-gray-200 my-2" />
+
+            {/* Контактні номери */}
+            <div className="px-4 py-2">
+              <a href="tel:+380636507449" className="flex items-center gap-3 text-gray-700 py-2 hover:text-green-500">
+                <img src="/viber.png" alt="Viber" className="w-5 h-5" />
+                <div className="flex flex-col">
+                  <span className="font-medium text-sm">+380 (63) 650-74-49</span>
+                  <span className="text-xs text-gray-500">Анастасія</span>
+                </div>
+              </a>
+              <a href="tel:+380952510347" className="flex items-center gap-3 text-gray-700 py-2 hover:text-green-500">
+                <img src="/vodafone.png" alt="Vodafone" className="w-5 h-5" />
+                <div className="flex flex-col">
+                  <span className="font-medium text-sm">+380 (95) 251-03-47</span>
+                  <span className="text-xs text-gray-500">Ігор</span>
+                </div>
+              </a>
+            </div>
+
+            {/* Графік роботи */}
+            <div className="px-4 py-2">
+              <div className="flex items-center gap-3 text-gray-600">
+                <Clock className="w-5 h-5 text-green-500" />
+                <div>
+                  <p className="text-sm text-gray-500">Пн-Нд: 8:00 - 20:00</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Fixed Footer with Social Icons */}
+          <div className="flex-shrink-0 border-t border-gray-200 bg-gray-50 p-4">
+            <p className="text-xs font-semibold text-gray-500 uppercase mb-3">Ми в соц мережах</p>
+            <div className="flex items-center gap-3">
+              <a
+                href="https://www.instagram.com/platansad.uaa?igsh=cmhhbG4zbjNkMTBr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-11 h-11 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-md"
+              >
+                <img src="/instagram.png" alt="Instagram" className="w-11 h-11 rounded-full" />
+              </a>
+
+              <a
+                href="https://www.tiktok.com/@platansad.ua?_r=1&_t=ZM-939QCCJ5tAx"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-11 h-11 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-md"
+              >
+                <img src="/tiktok.png" alt="TikTok" className="w-11 h-11 rounded-full" />
+              </a>
+
+              <a
+                href="viber://chat?number=+380636507449"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-11 h-11 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-md"
+              >
+                <img src="/viber.png" alt="Viber" className="w-11 h-11 rounded-full" />
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+
+      {/* Cart Side Panel */}
+      <div
+        className={`fixed inset-0 z-[100] transition-all duration-300 ${
+          isCartOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
+        }`}
+      >
+        {/* Backdrop */}
+        <div
+          className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${
+            isCartOpen ? 'opacity-100' : 'opacity-0'
+          }`}
+          onClick={() => setIsCartOpen(false)}
+        />
+
+        {/* Cart Panel - from right */}
+        <div
+          className={`absolute top-0 right-0 h-full w-[92vw] max-w-[400px] bg-white shadow-2xl transition-transform duration-300 ease-out flex flex-col ${
+            isCartOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
+        >
+          {/* Cart Header */}
+          <div className="bg-green-500 text-white p-4 flex items-center justify-between flex-shrink-0">
+            <div className="flex items-center gap-2">
+              <ShoppingBag className="w-6 h-6" />
+              <span className="font-bold text-lg">Кошик</span>
+              {cartCount > 0 && (
+                <span className="bg-white text-green-600 text-sm font-bold px-2 py-0.5 rounded-full">
+                  {cartCount}
+                </span>
+              )}
+            </div>
+            <button
+              onClick={() => setIsCartOpen(false)}
+              className="p-2 hover:bg-white/20 rounded-full transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Cart Items - Scrollable */}
+          <div className="flex-1 overflow-y-auto p-4">
+            {cartItems.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full text-center">
+                <ShoppingBag className="w-20 h-20 text-gray-300 mb-4" />
+                <h3 className="text-lg font-semibold text-gray-600 mb-2">Кошик порожній</h3>
+                <p className="text-sm text-gray-500 mb-4">Додайте товари до кошика</p>
+                <button
+                  onClick={() => {
+                    setIsCartOpen(false);
+                    navigate('/catalog');
+                  }}
+                  className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors"
+                >
+                  Перейти до каталогу
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {cartItems.map((item) => (
+                  <div key={item.id} className="flex gap-3 bg-white border border-gray-200 rounded-lg p-3">
+                    <img
+                      src={item.productImage || '/placeholder.png'}
+                      alt={item.productName}
+                      className="w-20 h-20 object-cover rounded-md flex-shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-semibold text-gray-800 mb-1 line-clamp-2">{item.productName}</h4>
+                      <p className="text-sm font-bold text-green-600 mb-2">{item.price} ₴</p>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                          className="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                        >
+                          -
+                        </button>
+                        <span className="text-sm font-medium w-8 text-center">{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          className="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+                        >
+                          +
+                        </button>
+                        <button onClick={() => removeFromCart(item.id)} className="ml-auto text-red-500 hover:text-red-600 text-sm">
+                          <X className="w-5 h-5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Cart Footer - Fixed */}
+          {cartItems.length > 0 && (
+            <div className="flex-shrink-0 border-t border-gray-200 bg-white p-4 space-y-3">
+              <div className="flex justify-between items-center text-lg font-bold">
+                <span>Всього:</span>
+                <span className="text-green-600">{cartTotal.toFixed(2)} ₴</span>
+              </div>
+
+              <div className="space-y-2">
+                <button
+                  onClick={handleCheckout}
+                  className="w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors"
+                >
+                  Оформити замовлення
+                </button>
+                <button
+                  onClick={() => {
+                    setIsCartOpen(false);
+                    navigate('/cart');
+                  }}
+                  className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors"
+                >
+                  Переглянути кошик
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Search Overlay */}
+      <div
+        className={`fixed inset-0 z-[100] transition-all duration-300 ${
+          isSearchOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+        }`}
+      >
+        <div className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={() => setIsSearchOpen(false)} />
+
+        <div
+          className={`absolute top-0 left-0 right-0 bg-white shadow-2xl transition-transform duration-300 ${
+            isSearchOpen ? 'translate-y-0' : '-translate-y-full'
+          }`}
+        >
+          <div className="max-w-3xl mx-auto px-4 py-6 md:py-8">
+            <button
+              onClick={() => setIsSearchOpen(false)}
+              className="absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+
+            <form onSubmit={handleSearch} className="mt-4">
+              <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-4 text-center">Пошук товарів</h2>
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="Введіть назву товару..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  autoFocus
+                  className="w-full px-6 py-4 text-lg border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-green-100 focus:border-green-500 transition-all"
+                  data-testid="search-input"
+                />
+                <button
+                  type="submit"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-green-500 hover:bg-green-600 text-white p-3 rounded-xl transition-colors"
+                  data-testid="search-btn"
+                >
+                  <Search className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="mt-6 flex flex-wrap gap-2 justify-center">
+                <span className="text-sm text-gray-500">Популярні:</span>
+                {['Туя', 'Бонсай', 'Нівакі', 'Самшит'].map((term) => (
+                  <button
+                    key={term}
+                    type="button"
+                    onClick={() => {
+                      navigate(`/catalog?search=${encodeURIComponent(term)}`);
+                      setIsSearchOpen(false);
+                    }}
+                    className="px-3 py-1 text-sm bg-gray-100 hover:bg-green-100 text-gray-700 hover:text-green-600 rounded-full transition-colors"
+                  >
+                    {term}
+                  </button>
+                ))}
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
 
-export default CatalogPage;
+export default Header;
