@@ -68,14 +68,6 @@ const CatalogPage = () => {
     };
   }, [showFilters]);
 
-  const activeFiltersCount = useMemo(() => {
-    return Object.entries(filters).filter(([k, v]) => {
-      if (!v) return false;
-      if (k === 'sortBy' && v === 'name') return false;
-      return true;
-    }).length;
-  }, [filters]);
-
   const quickFilters = useMemo(
     () => [
       { key: 'hit', label: 'Хіти', color: 'from-amber-400 to-orange-500' },
@@ -109,43 +101,27 @@ const CatalogPage = () => {
     setSearchParams({}, { replace: true });
   };
 
+  const activeFiltersCount = useMemo(() => {
+    return Object.entries(filters).filter(([k, v]) => {
+      if (!v) return false;
+      if (k === 'sortBy' && v === 'name') return false;
+      return true;
+    }).length;
+  }, [filters]);
+
   const abortRef = useRef(null);
 
+  // ✅ Load ALL products once (backend doesn't support badge param)
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
 
-        // cancel previous request (prevents race conditions)
         if (abortRef.current) abortRef.current.abort();
         const controller = new AbortController();
         abortRef.current = controller;
 
-        const params = {};
-        if (filters.category) params.category = filters.category;
-
-        // ✅ quick filters + “Тип” працюють (hit/new/sale)
-        if (filters.badge) params.badge = filters.badge;
-
-        if (filters.minPrice !== '') {
-          const v = Number(filters.minPrice);
-          if (!Number.isNaN(v)) params.minPrice = v;
-        }
-        if (filters.maxPrice !== '') {
-          const v = Number(filters.maxPrice);
-          if (!Number.isNaN(v)) params.maxPrice = v;
-        }
-
-        // normalize range if user swapped values
-        if (params.minPrice != null && params.maxPrice != null && params.minPrice > params.maxPrice) {
-          const tmp = params.minPrice;
-          params.minPrice = params.maxPrice;
-          params.maxPrice = tmp;
-        }
-
-        params.sortBy = filters.sortBy || 'name';
-
-        const data = await productsApi.getProducts(params, { signal: controller.signal });
+        const data = await productsApi.getProducts({}, { signal: controller.signal });
         setProducts(Array.isArray(data) ? data : []);
       } catch (error) {
         if (error?.name === 'AbortError') return;
@@ -160,7 +136,45 @@ const CatalogPage = () => {
     return () => {
       if (abortRef.current) abortRef.current.abort();
     };
-  }, [filters]);
+  }, []);
+
+  // ✅ Filter/sort on frontend (hit/new/sale works instantly)
+  const visibleProducts = useMemo(() => {
+    let list = Array.isArray(products) ? [...products] : [];
+
+    // category
+    if (filters.category) {
+      list = list.filter((p) => String(p.category || '') === String(filters.category));
+    }
+
+    // badge: hit/new/sale
+    if (filters.badge) {
+      list = list.filter((p) => Array.isArray(p.badges) && p.badges.includes(filters.badge));
+    }
+
+    // price range
+    const min = filters.minPrice !== '' ? Number(filters.minPrice) : null;
+    const max = filters.maxPrice !== '' ? Number(filters.maxPrice) : null;
+
+    if (min != null && !Number.isNaN(min)) {
+      list = list.filter((p) => Number(p.price) >= min);
+    }
+    if (max != null && !Number.isNaN(max)) {
+      list = list.filter((p) => Number(p.price) <= max);
+    }
+
+    // sort
+    const sortBy = filters.sortBy || 'name';
+    if (sortBy === 'price') {
+      list.sort((a, b) => Number(a.price || 0) - Number(b.price || 0));
+    } else if (sortBy === '-price') {
+      list.sort((a, b) => Number(b.price || 0) - Number(a.price || 0));
+    } else {
+      list.sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'uk'));
+    }
+
+    return list;
+  }, [products, filters]);
 
   return (
     <div className="min-h-screen bg-gray-50 py-3 sm:py-6 pb-20 sm:pb-10" data-testid="catalog-page">
@@ -181,9 +195,9 @@ const CatalogPage = () => {
           <div className="min-w-0">
             <h1 className="text-xl sm:text-3xl font-bold text-gray-800" data-testid="catalog-title">
               Каталог
-              {products?.length > 0 && (
+              {visibleProducts?.length > 0 && (
                 <span className="text-gray-400 font-normal ml-1 sm:ml-3 text-sm sm:text-xl">
-                  ({products.length})
+                  ({visibleProducts.length})
                 </span>
               )}
             </h1>
@@ -221,7 +235,7 @@ const CatalogPage = () => {
           </div>
         </div>
 
-        {/* ✅ прибрали mobile search bar (лупа глобальна на сайті НЕ чіпається) */}
+        {/* ✅ прибрали mobile search bar тільки на цій сторінці (глобальний пошук з лупою НЕ чіпаємо) */}
 
         {/* Quick badge filters */}
         <div className="mb-3 sm:mb-4 overflow-x-auto scrollbar-hide -mx-2 px-2 sm:mx-0 sm:px-0">
@@ -474,7 +488,11 @@ const CatalogPage = () => {
             {/* Desktop toolbar */}
             <div className="hidden lg:flex items-center justify-between mb-4">
               <div className="text-sm text-gray-600">
-                {loading ? 'Завантаження…' : products.length ? `Знайдено: ${products.length}` : 'Нічого не знайдено'}
+                {loading
+                  ? 'Завантаження…'
+                  : visibleProducts.length
+                  ? `Знайдено: ${visibleProducts.length}`
+                  : 'Нічого не знайдено'}
               </div>
               <button
                 onClick={() => setCompactView((v) => !v)}
@@ -498,18 +516,18 @@ const CatalogPage = () => {
                   </div>
                 ))}
               </div>
-            ) : products.length > 0 ? (
+            ) : visibleProducts.length > 0 ? (
               <div
                 className={`grid gap-2 sm:gap-4 lg:gap-6 ${
                   compactView ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3'
                 }`}
                 data-testid="products-grid"
               >
-                {products.map((product) => (
+                {visibleProducts.map((product) => (
                   <ProductCard
                     key={product?.id ?? `${product?.slug ?? 'p'}-${Math.random()}`}
                     product={product}
-                    variant="catalog" // ✅ компактніша картка на мобільному (реалізуємо в ProductCard)
+                    variant="catalog" // ✅ компактніша картка на мобільному (внеси правки в ProductCard)
                   />
                 ))}
               </div>
@@ -530,3 +548,4 @@ const CatalogPage = () => {
 };
 
 export default CatalogPage;
+
