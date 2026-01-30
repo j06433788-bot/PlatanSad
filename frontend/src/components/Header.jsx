@@ -219,22 +219,27 @@ const Header = () => {
   const cartPanelRef = useRef(null);
   const searchPanelRef = useRef(null);
 
-  // Ripple
+  // Ripple state
   const [ripples, setRipples] = useState([]);
-  const addRipple = useCallback((e) => {
-    if (reducedMotion) return; // повага до reduced motion
-    const el = e.currentTarget;
-    const rect = el.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    const size = Math.max(rect.width, rect.height) * 1.25;
 
-    const id = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-    setRipples((prev) => [...prev, { id, x, y, size }]);
-    setTimeout(() => {
-      setRipples((prev) => prev.filter((r) => r.id !== id));
-    }, 520);
-  }, [reducedMotion]);
+  // ✅ Ripple helper: accept native event + key
+  const addRipple = useCallback(
+    (e, targetKey) => {
+      if (reducedMotion) return;
+      const el = e.currentTarget;
+      const rect = el.getBoundingClientRect();
+      const x = (e.clientX ?? rect.left + rect.width / 2) - rect.left;
+      const y = (e.clientY ?? rect.top + rect.height / 2) - rect.top;
+      const size = Math.max(rect.width, rect.height) * 1.25;
+
+      const id = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      setRipples((prev) => [...prev, { id, x, y, size, targetKey }]);
+      setTimeout(() => {
+        setRipples((prev) => prev.filter((r) => r.id !== id));
+      }, 520);
+    },
+    [reducedMotion]
+  );
 
   useEffect(() => {
     setIsSearchOpen(false);
@@ -266,11 +271,18 @@ const Header = () => {
   useDialogA11y({ open: isCartOpen, onClose: closeCart, containerRef: cartPanelRef, returnFocusRef: cartBtnRef });
   useDialogA11y({ open: isSearchOpen, onClose: closeSearch, containerRef: searchPanelRef, returnFocusRef: searchBtnRef });
 
+  // ✅ FIXED: if empty -> open /catalog (not "do nothing")
   const handleSearch = useCallback(
     (e) => {
       e.preventDefault();
       const q = searchQuery.trim();
-      if (!q) return;
+
+      if (!q) {
+        navigate('/catalog');
+        setIsSearchOpen(false);
+        return;
+      }
+
       navigate(`/catalog?search=${encodeURIComponent(q)}`);
       setIsSearchOpen(false);
       setSearchQuery('');
@@ -286,41 +298,21 @@ const Header = () => {
   const popularTerms = useMemo(() => ['Туя', 'Бонсай', 'Нівакі', 'Самшит'], []);
   const overlayTransition = reducedMotion ? 'duration-0' : 'duration-300';
 
-  // small helper: render ripples inside a button (by target key)
-  const RipplesLayer = ({ targetKey }) => (
-    <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
-      {ripples
-        .filter((r) => r.targetKey === targetKey)
-        .map((r) => (
-          <span
-            key={r.id}
-            className="absolute rounded-full bg-green-500/25"
-            style={{
-              width: r.size,
-              height: r.size,
-              left: r.x - r.size / 2,
-              top: r.y - r.size / 2,
-              transform: 'scale(0)',
-              animation: reducedMotion ? 'none' : 'ripple 520ms ease-out',
-            }}
-          />
-        ))}
-    </span>
-  );
+  // local keyframes for ripple + breath
+  const localKeyframes = `
+    @keyframes ripple {
+      0% { transform: scale(0); opacity: 0.35; }
+      100% { transform: scale(1); opacity: 0; }
+    }
+    @keyframes breath {
+      0%, 100% { transform: translateZ(0) scale(1); }
+      50% { transform: translateZ(0) scale(1.03); }
+    }
+  `;
 
   return (
     <>
-      {/* local keyframes for ripple + breath */}
-      <style>{`
-        @keyframes ripple {
-          0% { transform: scale(0); opacity: 0.35; }
-          100% { transform: scale(1); opacity: 0; }
-        }
-        @keyframes breath {
-          0%, 100% { transform: translateZ(0) scale(1); }
-          50% { transform: translateZ(0) scale(1.03); }
-        }
-      `}</style>
+      <style>{localKeyframes}</style>
 
       <a
         href="#main"
@@ -464,11 +456,7 @@ const Header = () => {
       >
         <button
           type="button"
-          className={cx(
-            'absolute inset-0 bg-black/50 transition-opacity',
-            overlayTransition,
-            isMenuOpen ? 'opacity-100' : 'opacity-0'
-          )}
+          className={cx('absolute inset-0 bg-black/50 transition-opacity', overlayTransition, isMenuOpen ? 'opacity-100' : 'opacity-0')}
           onClick={closeMenu}
           aria-label="Закрити меню"
           tabIndex={isMenuOpen ? 0 : -1}
@@ -626,7 +614,7 @@ const Header = () => {
             </div>
           </div>
 
-          {/* SOCIAL: subtle always-breath + ripple on tap/click + modern Viber icon */}
+          {/* SOCIAL: breathing + ripple + modern Viber icon */}
           <div
             className="flex-shrink-0 border-t border-gray-200 bg-white p-4"
             style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
@@ -637,14 +625,8 @@ const Header = () => {
                 href="https://www.instagram.com/platansad.uaa?igsh=cmhhbG4zbjNkMTBr"
                 target="_blank"
                 rel="noopener noreferrer"
-                onPointerDown={(e) => {
-                  e.currentTarget.dataset.rippleKey = 'ig';
-                  addRipple({ ...e, currentTarget: e.currentTarget });
-                }}
-                onClick={(e) => {
-                  // ensure ripple also works on click (desktop)
-                  e.currentTarget.dataset.rippleKey = 'ig';
-                }}
+                onPointerDown={(e) => addRipple(e, 'ig')}
+                onClick={(e) => addRipple(e, 'ig')}
                 className={cx(
                   'group relative overflow-hidden flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm font-semibold text-gray-700',
                   'hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-all',
@@ -653,17 +635,14 @@ const Header = () => {
                 )}
                 aria-label="Instagram"
               >
-                {/* glow */}
                 <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
                   <span className="absolute -inset-6 rounded-full bg-green-200/40 blur-2xl motion-safe:animate-pulse motion-reduce:animate-none" />
                 </span>
 
-                {/* ping dot */}
                 <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-green-500/80">
                   <span className="absolute inset-0 rounded-full bg-green-500 motion-safe:animate-ping motion-reduce:animate-none" />
                 </span>
 
-                {/* ripple layer */}
                 <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
                   {ripples
                     .filter((r) => r.targetKey === 'ig')
@@ -695,10 +674,8 @@ const Header = () => {
                 href="https://www.tiktok.com/@platansad.ua?_r=1&_t=ZM-939QCCJ5tAx"
                 target="_blank"
                 rel="noopener noreferrer"
-                onPointerDown={(e) => {
-                  e.currentTarget.dataset.rippleKey = 'tt';
-                  addRipple({ ...e, currentTarget: e.currentTarget });
-                }}
+                onPointerDown={(e) => addRipple(e, 'tt')}
+                onClick={(e) => addRipple(e, 'tt')}
                 className={cx(
                   'group relative overflow-hidden flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm font-semibold text-gray-700',
                   'hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-all',
@@ -746,10 +723,8 @@ const Header = () => {
                 href="viber://chat?number=+380636507449"
                 target="_blank"
                 rel="noopener noreferrer"
-                onPointerDown={(e) => {
-                  e.currentTarget.dataset.rippleKey = 'vb';
-                  addRipple({ ...e, currentTarget: e.currentTarget });
-                }}
+                onPointerDown={(e) => addRipple(e, 'vb')}
+                onClick={(e) => addRipple(e, 'vb')}
                 className={cx(
                   'group relative overflow-hidden flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm font-semibold text-gray-700',
                   'hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-all',
@@ -837,11 +812,7 @@ const Header = () => {
       >
         <button
           type="button"
-          className={cx(
-            'absolute inset-0 bg-black/50 transition-opacity',
-            overlayTransition,
-            isCartOpen ? 'opacity-100' : 'opacity-0'
-          )}
+          className={cx('absolute inset-0 bg-black/50 transition-opacity', overlayTransition, isCartOpen ? 'opacity-100' : 'opacity-0')}
           onClick={closeCart}
           aria-label="Закрити кошик"
           tabIndex={isCartOpen ? 0 : -1}
@@ -863,9 +834,7 @@ const Header = () => {
             <div className="flex items-center gap-2">
               <ShoppingBag className="w-6 h-6" />
               <span className="font-bold text-lg">Кошик</span>
-              {cartCount > 0 && (
-                <span className="bg-white text-green-600 text-sm font-bold px-2 py-0.5 rounded-full">{cartCount}</span>
-              )}
+              {cartCount > 0 && <span className="bg-white text-green-600 text-sm font-bold px-2 py-0.5 rounded-full">{cartCount}</span>}
             </div>
             <button
               type="button"
@@ -944,10 +913,7 @@ const Header = () => {
           </div>
 
           {cartItems.length > 0 && (
-            <div
-              className="flex-shrink-0 border-t border-gray-200 bg-white p-4 space-y-3"
-              style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
-            >
+            <div className="flex-shrink-0 border-t border-gray-200 bg-white p-4 space-y-3" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
               <div className="flex justify-between items-center text-lg font-bold">
                 <span>Всього:</span>
                 <span className="text-green-600">{cartTotal.toFixed(2)} ₴</span>
