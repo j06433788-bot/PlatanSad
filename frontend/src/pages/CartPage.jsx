@@ -1,9 +1,3 @@
-// CartPage.jsx (ГОТОВИЙ, заміни повністю)
-// ✅ fly-to-cart при видаленні
-// ✅ slide-out анімація картки
-// ✅ custom toast з Undo (Повернути) — 100% працює з твоїм CartContext
-// ✅ без дубля тостів (remove/add викликаються з { silent: true })
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
