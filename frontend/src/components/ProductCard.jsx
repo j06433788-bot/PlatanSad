@@ -36,11 +36,9 @@ const flyToCart = (imgEl) => {
   clone.style.willChange = 'transform, opacity';
   document.body.appendChild(clone);
 
-  // end position centered at cart
   const endX = cartRect.left + cartRect.width / 2 - imgRect.left - imgRect.width / 2;
   const endY = cartRect.top + cartRect.height / 2 - imgRect.top - imgRect.height / 2;
 
-  // Use WAAPI if possible
   if (!reduce && clone.animate) {
     clone.animate(
       [
@@ -53,7 +51,6 @@ const flyToCart = (imgEl) => {
 
     setTimeout(() => {
       clone.remove();
-      // bounce cart icon
       cartIcon.animate(
         [
           { transform: 'scale(1)' },
@@ -68,7 +65,6 @@ const flyToCart = (imgEl) => {
     return;
   }
 
-  // fallback (reduced motion or no animate)
   setTimeout(() => clone.remove(), 350);
 };
 
@@ -124,7 +120,7 @@ const ProductCard = ({ product }) => {
   const [addedToCart, setAddedToCart] = useState(false);
 
   const imgRef = useRef(null);
-  const wishBtnRef = useRef(null); // used for burst anchor
+  const wishBtnRef = useRef(null);
 
   const isFavorite = isInWishlist(product.id);
 
@@ -146,7 +142,6 @@ const ProductCard = ({ product }) => {
     e.stopPropagation();
     if (!canBuy) return;
 
-    // ✅ fly-to-cart BEFORE async (so it always feels instant)
     flyToCart(imgRef.current);
 
     await addToCart(product);
@@ -179,7 +174,6 @@ const ProductCard = ({ product }) => {
 
     const wasInWishlist = isFavorite;
 
-    // ✅ pop animation on button itself
     const btn = wishBtnRef.current || e.currentTarget;
     if (!prefersReducedMotion() && btn?.animate) {
       btn.animate(
@@ -193,7 +187,6 @@ const ProductCard = ({ product }) => {
       );
     }
 
-    // ✅ burst only when adding
     if (!wasInWishlist) burstHearts(btn);
 
     await toggleWishlist(product.id);
@@ -220,14 +213,26 @@ const ProductCard = ({ product }) => {
 
   return (
     <>
+      {/* ✅ local keyframes for button shine + subtle glow */}
+      <style>{`
+        @keyframes ps_shine {
+          0% { transform: translateX(-120%) skewX(-18deg); opacity: 0; }
+          15% { opacity: .55; }
+          55% { opacity: .55; }
+          100% { transform: translateX(220%) skewX(-18deg); opacity: 0; }
+        }
+        @keyframes ps_breathGlow {
+          0%,100% { filter: drop-shadow(0 0 0 rgba(16,185,129,0)); transform: translateZ(0) scale(1); }
+          50% { filter: drop-shadow(0 12px 20px rgba(16,185,129,.22)); transform: translateZ(0) scale(1.01); }
+        }
+      `}</style>
+
       <div
         className="group bg-white rounded-xl sm:rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 relative h-full flex flex-col cursor-pointer card-appear"
         onClick={() => navigate(`/products/${product.id}`)}
         data-testid={`product-card-${product.id}`}
       >
-        {/* Image */}
         <div className="relative aspect-[4/3] sm:aspect-square overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
-          {/* Badges */}
           <div className="absolute top-1.5 left-1.5 sm:top-2 sm:left-2 z-10 flex flex-col gap-1">
             {badgeEls.map((b) => (
               <span
@@ -239,7 +244,6 @@ const ProductCard = ({ product }) => {
             ))}
           </div>
 
-          {/* Discount */}
           {product.discount > 0 && (
             <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 z-10 discount-badge">
               <div className="bg-red-500 text-white text-[10px] sm:text-sm font-bold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-lg">
@@ -248,7 +252,6 @@ const ProductCard = ({ product }) => {
             </div>
           )}
 
-          {/* Product Image (ref for fly-to-cart) */}
           <img
             ref={imgRef}
             src={product.image}
@@ -258,7 +261,6 @@ const ProductCard = ({ product }) => {
             draggable={false}
           />
 
-          {/* Desktop hover overlay */}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 hidden sm:flex items-center justify-center opacity-0 group-hover:opacity-100">
             <div className="flex gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
               <button
@@ -266,9 +268,7 @@ const ProductCard = ({ product }) => {
                 onClick={handleWishlist}
                 disabled={wishlistLoading}
                 className={`p-3 rounded-full shadow-lg backdrop-blur-sm transition-all active:scale-[0.98] ${
-                  isFavorite
-                    ? 'bg-red-500 text-white'
-                    : 'bg-white/90 text-gray-700 hover:bg-red-500 hover:text-white'
+                  isFavorite ? 'bg-red-500 text-white' : 'bg-white/90 text-gray-700 hover:bg-red-500 hover:text-white'
                 }`}
                 aria-label="Додати в бажання"
               >
@@ -277,7 +277,6 @@ const ProductCard = ({ product }) => {
             </div>
           </div>
 
-          {/* Mobile wishlist button */}
           <button
             ref={wishBtnRef}
             onClick={handleWishlist}
@@ -291,7 +290,6 @@ const ProductCard = ({ product }) => {
           </button>
         </div>
 
-        {/* Content */}
         <div className="p-2 sm:p-4 flex-1 flex flex-col">
           <span className="text-[9px] sm:text-xs text-gray-400 font-medium uppercase tracking-wide mb-0.5 sm:mb-1 truncate">
             {product.category}
@@ -320,18 +318,42 @@ const ProductCard = ({ product }) => {
             </div>
 
             <div className="flex gap-1.5 sm:gap-2">
+              {/* ✅ BUY BUTTON with shine */}
               <button
                 onClick={handleAddToCart}
                 disabled={cartLoading || product.stock === 0 || addedToCart}
-                className={`flex-1 py-2 sm:py-3 px-2 sm:px-3 rounded-lg sm:rounded-xl font-semibold text-[11px] sm:text-sm transition-all flex items-center justify-center gap-1 sm:gap-2 ${
+                className={`relative overflow-hidden flex-1 py-2 sm:py-3 px-2 sm:px-3 rounded-lg sm:rounded-xl font-semibold text-[11px] sm:text-sm transition-all flex items-center justify-center gap-1 sm:gap-2 ${
                   addedToCart
                     ? 'bg-green-500 text-white'
                     : product.stock === 0
                     ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
                     : 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-md shadow-green-500/30 hover:shadow-lg hover:shadow-green-500/40 active:scale-[0.98]'
                 }`}
+                style={
+                  !addedToCart && product.stock > 0 && !prefersReducedMotion()
+                    ? { animation: 'ps_breathGlow 2.9s ease-in-out infinite' }
+                    : undefined
+                }
                 data-testid={`add-to-cart-${product.id}`}
               >
+                {/* shine overlay (only when active) */}
+                {!addedToCart && product.stock > 0 && (
+                  <span
+                    className="pointer-events-none absolute inset-0"
+                    aria-hidden="true"
+                  >
+                    <span
+                      className="absolute inset-y-0 left-0 w-1/3 bg-white/35 blur-[1px]"
+                      style={{
+                        transform: 'translateX(-120%) skewX(-18deg)',
+                        animation: prefersReducedMotion() ? 'none' : 'ps_shine 2.6s ease-in-out infinite',
+                      }}
+                    />
+                    {/* subtle highlight */}
+                    <span className="absolute inset-0 bg-gradient-to-t from-black/0 via-white/0 to-white/10 opacity-80" />
+                  </span>
+                )}
+
                 {addedToCart ? (
                   <>
                     <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -362,7 +384,6 @@ const ProductCard = ({ product }) => {
         </div>
       </div>
 
-      {/* Quick Order Modal */}
       {showQuickOrder && <QuickOrderModal product={product} onClose={() => setShowQuickOrder(false)} />}
     </>
   );
