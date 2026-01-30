@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { productsApi } from '../api/productsApi';
 import ProductCard from '../components/ProductCard';
-import { SlidersHorizontal, X, Grid3X3, LayoutGrid, Search } from 'lucide-react';
+import { SlidersHorizontal, X, Grid3X3, LayoutGrid } from 'lucide-react';
 
 const CatalogPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -13,13 +13,9 @@ const CatalogPage = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [compactView, setCompactView] = useState(true); // mobile default
 
-  // local "draft" search to avoid fetch on every keystroke
-  const [searchDraft, setSearchDraft] = useState(searchParams.get('search') || '');
-
   const [filters, setFilters] = useState({
-    search: searchParams.get('search') || '',
     category: searchParams.get('category') || '',
-    badge: searchParams.get('badge') || '',
+    badge: searchParams.get('badge') || '', // hit | new | sale
     minPrice: searchParams.get('minPrice') || '',
     maxPrice: searchParams.get('maxPrice') || '',
     sortBy: searchParams.get('sortBy') || 'name',
@@ -28,7 +24,6 @@ const CatalogPage = () => {
   // keep URL -> state in sync when user navigates back/forward or opens links with params
   useEffect(() => {
     const next = {
-      search: searchParams.get('search') || '',
       category: searchParams.get('category') || '',
       badge: searchParams.get('badge') || '',
       minPrice: searchParams.get('minPrice') || '',
@@ -38,7 +33,6 @@ const CatalogPage = () => {
 
     setFilters((prev) => {
       const same =
-        prev.search === next.search &&
         prev.category === next.category &&
         prev.badge === next.badge &&
         prev.minPrice === next.minPrice &&
@@ -46,18 +40,15 @@ const CatalogPage = () => {
         prev.sortBy === next.sortBy;
       return same ? prev : next;
     });
-
-    setSearchDraft(next.search);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   // mobile view auto: compact on small screens
   useEffect(() => {
     const mq = window.matchMedia('(max-width: 640px)');
-    const apply = () => setCompactView(mq.matches ? true : compactView);
-    // set only on first mount if small
     if (mq.matches) setCompactView(true);
 
+    const apply = () => setCompactView((prev) => (mq.matches ? true : prev));
     if (mq.addEventListener) mq.addEventListener('change', apply);
     else mq.addListener(apply);
 
@@ -65,7 +56,6 @@ const CatalogPage = () => {
       if (mq.removeEventListener) mq.removeEventListener('change', apply);
       else mq.removeListener(apply);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // lock body scroll when bottom sheet is open (mobile)
@@ -77,25 +67,6 @@ const CatalogPage = () => {
       document.body.style.overflow = prev;
     };
   }, [showFilters]);
-
-  // debounce search input -> filters.search
-  useEffect(() => {
-    const t = setTimeout(() => {
-      setFilters((prev) => {
-        if (prev.search === searchDraft) return prev;
-        const next = { ...prev, search: searchDraft };
-        // sync URL (but don't blow away other params)
-        const newParams = new URLSearchParams(searchParams);
-        if (searchDraft) newParams.set('search', searchDraft);
-        else newParams.delete('search');
-        setSearchParams(newParams, { replace: true });
-        return next;
-      });
-    }, 350);
-
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchDraft]);
 
   const activeFiltersCount = useMemo(() => {
     return Object.entries(filters).filter(([k, v]) => {
@@ -128,7 +99,6 @@ const CatalogPage = () => {
 
   const clearFilters = () => {
     const reset = {
-      search: '',
       category: '',
       badge: '',
       minPrice: '',
@@ -136,7 +106,6 @@ const CatalogPage = () => {
       sortBy: 'name',
     };
     setFilters(reset);
-    setSearchDraft('');
     setSearchParams({}, { replace: true });
   };
 
@@ -153,8 +122,9 @@ const CatalogPage = () => {
         abortRef.current = controller;
 
         const params = {};
-        if (filters.search) params.search = filters.search;
         if (filters.category) params.category = filters.category;
+
+        // ✅ quick filters + “Тип” працюють (hit/new/sale)
         if (filters.badge) params.badge = filters.badge;
 
         if (filters.minPrice !== '') {
@@ -175,8 +145,6 @@ const CatalogPage = () => {
 
         params.sortBy = filters.sortBy || 'name';
 
-        // IMPORTANT: if your productsApi supports abort, pass signal.
-        // If it doesn't, this still protects from race via local controller variable.
         const data = await productsApi.getProducts(params, { signal: controller.signal });
         setProducts(Array.isArray(data) ? data : []);
       } catch (error) {
@@ -209,7 +177,7 @@ const CatalogPage = () => {
 
       <div className="max-w-7xl mx-auto px-2 sm:px-4">
         {/* Header */}
-        <div className="flex items-center justify-between mb-3 sm:mb-6">
+        <div className="flex items-center justify-between mb-3 sm:mb-5">
           <div className="min-w-0">
             <h1 className="text-xl sm:text-3xl font-bold text-gray-800" data-testid="catalog-title">
               Каталог
@@ -219,9 +187,7 @@ const CatalogPage = () => {
                 </span>
               )}
             </h1>
-            <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
-              Знайдіть рослини для вашого саду та розсадника PlatanSad
-            </p>
+            {/* ✅ прибрали “Знайдіть рослини...” */}
           </div>
 
           {/* Mobile controls */}
@@ -231,7 +197,11 @@ const CatalogPage = () => {
               className="p-2 bg-white rounded-lg shadow-sm border border-gray-200 active:scale-95"
               aria-label="Змінити вигляд"
             >
-              {compactView ? <LayoutGrid className="w-5 h-5 text-gray-600" /> : <Grid3X3 className="w-5 h-5 text-gray-600" />}
+              {compactView ? (
+                <LayoutGrid className="w-5 h-5 text-gray-600" />
+              ) : (
+                <Grid3X3 className="w-5 h-5 text-gray-600" />
+              )}
             </button>
 
             <button
@@ -251,28 +221,7 @@ const CatalogPage = () => {
           </div>
         </div>
 
-        {/* Mobile search bar (always visible) */}
-        <div className="lg:hidden mb-3">
-          <div className="bg-white border border-gray-200 rounded-xl shadow-sm px-3 py-2 flex items-center gap-2">
-            <Search className="w-4 h-4 text-gray-400" />
-            <input
-              value={searchDraft}
-              onChange={(e) => setSearchDraft(e.target.value)}
-              placeholder="Пошук у каталозі…"
-              className="w-full text-sm outline-none bg-transparent"
-              aria-label="Пошук"
-            />
-            {searchDraft && (
-              <button
-                onClick={() => setSearchDraft('')}
-                className="p-1 rounded-md hover:bg-gray-100 text-gray-500"
-                aria-label="Очистити пошук"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-        </div>
+        {/* ✅ прибрали mobile search bar (лупа глобальна на сайті НЕ чіпається) */}
 
         {/* Quick badge filters */}
         <div className="mb-3 sm:mb-4 overflow-x-auto scrollbar-hide -mx-2 px-2 sm:mx-0 sm:px-0">
@@ -302,31 +251,14 @@ const CatalogPage = () => {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold text-gray-800">Фільтри</h2>
                 {activeFiltersCount > 0 && (
-                  <button
-                    onClick={clearFilters}
-                    className="text-sm font-medium text-gray-500 hover:text-gray-700"
-                  >
+                  <button onClick={clearFilters} className="text-sm font-medium text-gray-500 hover:text-gray-700">
                     Скинути
                   </button>
                 )}
               </div>
 
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Пошук</label>
-                  <input
-                    type="text"
-                    value={filters.search}
-                    onChange={(e) => {
-                      // keep desktop input immediate, and keep mobile draft in sync
-                      handleFilterChange('search', e.target.value);
-                      setSearchDraft(e.target.value);
-                    }}
-                    className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Назва товару..."
-                    data-testid="filter-search"
-                  />
-                </div>
+                {/* ✅ прибрали Пошук */}
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Категорія</label>
@@ -356,7 +288,7 @@ const CatalogPage = () => {
                   >
                     <option value="">Всі товари</option>
                     <option value="hit">Хіти продажу</option>
-                    <option value="sale">Розпродаж</option>
+                    <option value="sale">Знижки</option>
                     <option value="new">Новинки</option>
                   </select>
                 </div>
@@ -414,10 +346,7 @@ const CatalogPage = () => {
             {/* Mobile bottom sheet */}
             {showFilters && (
               <>
-                <div
-                  className="lg:hidden fixed inset-0 bg-black/50 z-40"
-                  onClick={() => setShowFilters(false)}
-                />
+                <div className="lg:hidden fixed inset-0 bg-black/50 z-40" onClick={() => setShowFilters(false)} />
 
                 <div
                   className="lg:hidden fixed bottom-0 left-0 right-0 bg-white z-50 rounded-t-2xl shadow-2xl max-h-[75vh] overflow-y-auto animate-slide-up"
@@ -442,17 +371,7 @@ const CatalogPage = () => {
                   </div>
 
                   <div className="space-y-4 px-4 py-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">Пошук</label>
-                      <input
-                        type="text"
-                        value={searchDraft}
-                        onChange={(e) => setSearchDraft(e.target.value)}
-                        className="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="Назва товару..."
-                        data-testid="filter-search"
-                      />
-                    </div>
+                    {/* ✅ прибрали Пошук */}
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">Категорія</label>
@@ -482,7 +401,7 @@ const CatalogPage = () => {
                       >
                         <option value="">Всі товари</option>
                         <option value="hit">Хіти продажу</option>
-                        <option value="sale">Розпродаж</option>
+                        <option value="sale">Знижки</option>
                         <option value="new">Новинки</option>
                       </select>
                     </div>
@@ -587,17 +506,18 @@ const CatalogPage = () => {
                 data-testid="products-grid"
               >
                 {products.map((product) => (
-                  <ProductCard key={product?.id ?? `${product?.slug ?? 'p'}-${Math.random()}`} product={product} />
+                  <ProductCard
+                    key={product?.id ?? `${product?.slug ?? 'p'}-${Math.random()}`}
+                    product={product}
+                    variant="catalog" // ✅ компактніша картка на мобільному (реалізуємо в ProductCard)
+                  />
                 ))}
               </div>
             ) : (
               <div className="bg-white rounded-lg shadow-md p-6 sm:p-12 text-center">
                 <p className="text-gray-700 font-medium mb-1">Товарів не знайдено</p>
-                <p className="text-gray-500 text-sm mb-4">Спробуйте змінити фільтри або очистити пошук.</p>
-                <button
-                  onClick={clearFilters}
-                  className="text-green-600 hover:text-green-700 font-medium text-sm sm:text-base"
-                >
+                <p className="text-gray-500 text-sm mb-4">Спробуйте змінити фільтри або очистити їх.</p>
+                <button onClick={clearFilters} className="text-green-600 hover:text-green-700 font-medium text-sm sm:text-base">
                   Скинути фільтри
                 </button>
               </div>
