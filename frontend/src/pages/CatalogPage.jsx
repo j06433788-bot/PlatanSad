@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { productsApi } from '../api/productsApi';
 import ProductCard from '../components/ProductCard';
-import { SlidersHorizontal, X, Grid3X3, LayoutGrid } from 'lucide-react';
+import { SlidersHorizontal, X, Grid3X3, LayoutGrid, Instagram } from 'lucide-react';
 
 const CatalogPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -176,9 +176,12 @@ const CatalogPage = () => {
     return list;
   }, [products, filters]);
 
+  const isIndoor = filters.category === 'Кімнатні рослини';
+  const showInstagramCTA = isIndoor && !filters.badge; // ✅ only when category = indoor AND badge not selected
+
   return (
     <div className="min-h-screen bg-gray-50 py-3 sm:py-6 pb-20 sm:pb-10" data-testid="catalog-page">
-      {/* animation + scrollbar utility (local) */}
+      {/* local css */}
       <style>{`
         @keyframes slideUp {
           from { transform: translateY(14px); opacity: .6; }
@@ -187,6 +190,37 @@ const CatalogPage = () => {
         .animate-slide-up { animation: slideUp .18s ease-out; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Premium Instagram button */
+        .ig-btn { position: relative; isolation: isolate; }
+        .ig-btn::before {
+          content: "";
+          position: absolute;
+          inset: -1px;
+          border-radius: 9999px;
+          background: linear-gradient(135deg, #f9ce34, #ee2a7b, #6228d7);
+          opacity: 1;
+          z-index: -2;
+        }
+        .ig-btn::after {
+          content: "";
+          position: absolute;
+          inset: 2px;
+          border-radius: 9999px;
+          background: white;
+          z-index: -1;
+        }
+        .ig-glow { box-shadow: 0 10px 24px rgba(238, 42, 123, 0.22); }
+        @keyframes igPop {
+          0% { transform: translateY(0) scale(1); }
+          100% { transform: translateY(-1px) scale(1.02); }
+        }
+        .ig-btn:hover { animation: igPop 160ms ease-out forwards; }
+        @keyframes igPulse {
+          0%, 100% { transform: scale(1); opacity: .85; }
+          50% { transform: scale(1.06); opacity: 1; }
+        }
+        .ig-badge { animation: igPulse 1.6s ease-in-out infinite; }
       `}</style>
 
       <div className="max-w-7xl mx-auto px-2 sm:px-4">
@@ -201,7 +235,6 @@ const CatalogPage = () => {
                 </span>
               )}
             </h1>
-            {/* ✅ прибрали “Знайдіть рослини...” */}
           </div>
 
           {/* Mobile controls */}
@@ -211,11 +244,7 @@ const CatalogPage = () => {
               className="p-2 bg-white rounded-lg shadow-sm border border-gray-200 active:scale-95"
               aria-label="Змінити вигляд"
             >
-              {compactView ? (
-                <LayoutGrid className="w-5 h-5 text-gray-600" />
-              ) : (
-                <Grid3X3 className="w-5 h-5 text-gray-600" />
-              )}
+              {compactView ? <LayoutGrid className="w-5 h-5 text-gray-600" /> : <Grid3X3 className="w-5 h-5 text-gray-600" />}
             </button>
 
             <button
@@ -234,8 +263,6 @@ const CatalogPage = () => {
             </button>
           </div>
         </div>
-
-        {/* ✅ прибрали mobile search bar тільки на цій сторінці (глобальний пошук з лупою НЕ чіпаємо) */}
 
         {/* Quick badge filters */}
         <div className="mb-3 sm:mb-4 overflow-x-auto scrollbar-hide -mx-2 px-2 sm:mx-0 sm:px-0">
@@ -257,6 +284,25 @@ const CatalogPage = () => {
           </div>
         </div>
 
+        {/* ✅ Premium Instagram button under quick filters (only Indoor + no badge) */}
+        {showInstagramCTA && (
+          <div className="mb-4 flex items-center justify-center sm:justify-start">
+            <a
+              href="https://www.instagram.com/maisternia.roslyn/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ig-btn ig-glow inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-extrabold text-sm text-gray-900 transition active:scale-95"
+              aria-label="Instagram Maisternia Roslyn"
+            >
+              <Instagram className="w-5 h-5 text-pink-600" />
+              <span>Instagram</span>
+              <span className="ig-badge ml-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-pink-500 to-violet-600 text-white">
+                Дивитись рослини
+              </span>
+            </a>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 lg:gap-8">
           {/* Filters Sidebar / Bottom sheet */}
           <div className="lg:block">
@@ -272,8 +318,6 @@ const CatalogPage = () => {
               </div>
 
               <div className="space-y-4">
-                {/* ✅ прибрали Пошук */}
-
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Категорія</label>
                   <select
@@ -385,8 +429,6 @@ const CatalogPage = () => {
                   </div>
 
                   <div className="space-y-4 px-4 py-4">
-                    {/* ✅ прибрали Пошук */}
-
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1.5">Категорія</label>
                       <select
@@ -488,11 +530,7 @@ const CatalogPage = () => {
             {/* Desktop toolbar */}
             <div className="hidden lg:flex items-center justify-between mb-4">
               <div className="text-sm text-gray-600">
-                {loading
-                  ? 'Завантаження…'
-                  : visibleProducts.length
-                  ? `Знайдено: ${visibleProducts.length}`
-                  : 'Нічого не знайдено'}
+                {loading ? 'Завантаження…' : visibleProducts.length ? `Знайдено: ${visibleProducts.length}` : 'Нічого не знайдено'}
               </div>
               <button
                 onClick={() => setCompactView((v) => !v)}
@@ -527,7 +565,7 @@ const CatalogPage = () => {
                   <ProductCard
                     key={product?.id ?? `${product?.slug ?? 'p'}-${Math.random()}`}
                     product={product}
-                    variant="catalog" // ✅ компактніша картка на мобільному (внеси правки в ProductCard)
+                    variant="catalog"
                   />
                 ))}
               </div>
@@ -542,6 +580,24 @@ const CatalogPage = () => {
             )}
           </div>
         </div>
+
+        {/* ✅ Sticky Instagram CTA on mobile (Indoor + no badge only) */}
+        {showInstagramCTA && (
+          <div className="sm:hidden fixed bottom-16 left-0 right-0 z-40 px-3">
+            <a
+              href="https://www.instagram.com/maisternia.roslyn/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ig-btn ig-glow w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-full font-extrabold text-base text-gray-900 active:scale-[0.99]"
+            >
+              <Instagram className="w-5 h-5 text-pink-600" />
+              Дивитись Instagram
+              <span className="ig-badge ml-1 text-[11px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-pink-500 to-violet-600 text-white">
+                Кімнатні
+              </span>
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );
