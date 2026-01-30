@@ -196,33 +196,31 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { cartItems, removeFromCart, updateQuantity, cartCount, cartTotal } = useCart();
+  // ✅ ТЕПЕР: в хедері не робимо “другий кошик”
+  // лише показуємо лічильник + перехід на /cart
+  const { cartCount } = useCart();
   const { wishlistCount } = useWishlist();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const [categories, setCategories] = useState([]);
 
   const reducedMotion = usePrefersReducedMotion();
   const isMobile = useMediaQuery('(max-width: 767px)');
 
-  const anyOverlayOpen = isSearchOpen || isMenuOpen || isCartOpen;
+  const anyOverlayOpen = isSearchOpen || isMenuOpen;
   useLockBodyScroll(anyOverlayOpen);
 
   const menuBtnRef = useRef(null);
   const searchBtnRef = useRef(null);
-  const cartBtnRef = useRef(null);
 
   const menuPanelRef = useRef(null);
-  const cartPanelRef = useRef(null);
   const searchPanelRef = useRef(null);
 
   // Ripple state
   const [ripples, setRipples] = useState([]);
 
-  // ✅ Ripple helper: accept native event + key
   const addRipple = useCallback(
     (e, targetKey) => {
       if (reducedMotion) return;
@@ -244,7 +242,6 @@ const Header = () => {
   useEffect(() => {
     setIsSearchOpen(false);
     setIsMenuOpen(false);
-    setIsCartOpen(false);
   }, [location.pathname]);
 
   useEffect(() => {
@@ -264,14 +261,11 @@ const Header = () => {
   }, []);
 
   const closeMenu = useCallback(() => setIsMenuOpen(false), []);
-  const closeCart = useCallback(() => setIsCartOpen(false), []);
   const closeSearch = useCallback(() => setIsSearchOpen(false), []);
 
   useDialogA11y({ open: isMenuOpen, onClose: closeMenu, containerRef: menuPanelRef, returnFocusRef: menuBtnRef });
-  useDialogA11y({ open: isCartOpen, onClose: closeCart, containerRef: cartPanelRef, returnFocusRef: cartBtnRef });
   useDialogA11y({ open: isSearchOpen, onClose: closeSearch, containerRef: searchPanelRef, returnFocusRef: searchBtnRef });
 
-  // ✅ FIXED: if empty -> open /catalog (not "do nothing")
   const handleSearch = useCallback(
     (e) => {
       e.preventDefault();
@@ -290,15 +284,9 @@ const Header = () => {
     [navigate, searchQuery]
   );
 
-  const handleCheckout = useCallback(() => {
-    setIsCartOpen(false);
-    navigate('/checkout');
-  }, [navigate]);
-
   const popularTerms = useMemo(() => ['Туя', 'Бонсай', 'Нівакі', 'Самшит'], []);
   const overlayTransition = reducedMotion ? 'duration-0' : 'duration-300';
 
-  // local keyframes for ripple + breath
   const localKeyframes = `
     @keyframes ripple {
       0% { transform: scale(0); opacity: 0.35; }
@@ -393,15 +381,13 @@ const Header = () => {
                   )}
                 </button>
 
+                {/* ✅ CART ICON: now just navigate to /cart (ONE cart) */}
                 <button
-                  ref={cartBtnRef}
                   type="button"
-                  onClick={() => setIsCartOpen(true)}
+                  onClick={() => navigate('/cart')}
                   className="p-2 sm:p-3 md:p-2 text-gray-600 hover:text-green-500 transition-colors hover:bg-gray-100 rounded-full relative active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-200"
                   data-testid="cart-icon"
                   aria-label="Кошик"
-                  aria-haspopup="dialog"
-                  aria-expanded={isCartOpen}
                 >
                   <div className="relative">
                     <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6" />
@@ -798,148 +784,6 @@ const Header = () => {
               </a>
             </div>
           </div>
-        </aside>
-      </div>
-
-      {/* CART DRAWER */}
-      <div
-        className={cx(
-          'fixed inset-0 z-[100] transition-all',
-          overlayTransition,
-          isCartOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
-        )}
-        aria-hidden={!isCartOpen}
-      >
-        <button
-          type="button"
-          className={cx('absolute inset-0 bg-black/50 transition-opacity', overlayTransition, isCartOpen ? 'opacity-100' : 'opacity-0')}
-          onClick={closeCart}
-          aria-label="Закрити кошик"
-          tabIndex={isCartOpen ? 0 : -1}
-        />
-
-        <aside
-          ref={cartPanelRef}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Кошик"
-          className={cx(
-            'absolute top-0 right-0 h-full w-[92vw] max-w-[400px] bg-white shadow-2xl flex flex-col',
-            reducedMotion ? '' : 'transition-transform duration-300 ease-out',
-            isCartOpen ? 'translate-x-0' : 'translate-x-full'
-          )}
-          style={{ paddingTop: 'env(safe-area-inset-top)' }}
-        >
-          <div className="bg-green-500 text-white p-4 flex items-center justify-between flex-shrink-0">
-            <div className="flex items-center gap-2">
-              <ShoppingBag className="w-6 h-6" />
-              <span className="font-bold text-lg">Кошик</span>
-              {cartCount > 0 && <span className="bg-white text-green-600 text-sm font-bold px-2 py-0.5 rounded-full">{cartCount}</span>}
-            </div>
-            <button
-              type="button"
-              onClick={closeCart}
-              className="p-2 hover:bg-white/20 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-white/40"
-              aria-label="Закрити"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-4">
-            {cartItems.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full text-center">
-                <ShoppingBag className="w-20 h-20 text-gray-300 mb-4" />
-                <h3 className="text-lg font-semibold text-gray-600 mb-2">Кошик порожній</h3>
-                <p className="text-sm text-gray-500 mb-4">Додайте товари до кошика</p>
-                <button
-                  type="button"
-                  onClick={() => {
-                    closeCart();
-                    navigate('/catalog');
-                  }}
-                  className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors focus:outline-none focus:ring-2 focus:ring-green-200"
-                >
-                  Перейти до каталогу
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {cartItems.map((item) => (
-                  <div key={item.id} className="flex gap-3 bg-white border border-gray-200 rounded-lg p-3">
-                    <img
-                      src={item.productImage || '/placeholder.png'}
-                      alt={item.productName}
-                      className="w-20 h-20 object-cover rounded-md flex-shrink-0"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <h4 className="text-sm font-semibold text-gray-800 mb-1 line-clamp-2">{item.productName}</h4>
-                      <p className="text-sm font-bold text-green-600 mb-2">{item.price} ₴</p>
-
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
-                          className="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-green-200"
-                          aria-label="Зменшити кількість"
-                        >
-                          -
-                        </button>
-                        <span className="text-sm font-medium w-8 text-center">{item.quantity}</span>
-                        <button
-                          type="button"
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="w-7 h-7 flex items-center justify-center bg-gray-100 hover:bg-gray-200 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-green-200"
-                          aria-label="Збільшити кількість"
-                        >
-                          +
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => removeFromCart(item.id)}
-                          className="ml-auto text-red-500 hover:text-red-600 text-sm p-1 rounded focus:outline-none focus:ring-2 focus:ring-red-200"
-                          aria-label="Видалити з кошика"
-                        >
-                          <X className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {cartItems.length > 0 && (
-            <div className="flex-shrink-0 border-t border-gray-200 bg-white p-4 space-y-3" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
-              <div className="flex justify-between items-center text-lg font-bold">
-                <span>Всього:</span>
-                <span className="text-green-600">{cartTotal.toFixed(2)} ₴</span>
-              </div>
-
-              <div className="space-y-2">
-                <button
-                  type="button"
-                  onClick={handleCheckout}
-                  className="w-full bg-green-500 text-white py-3 rounded-lg font-semibold hover:bg-green-600 transition-colors focus:outline-none focus:ring-2 focus:ring-green-200"
-                >
-                  Оформити замовлення
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    closeCart();
-                    navigate('/cart');
-                  }}
-                  className="w-full bg-gray-100 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-green-200"
-                >
-                  Переглянути кошик
-                </button>
-              </div>
-            </div>
-          )}
         </aside>
       </div>
 
