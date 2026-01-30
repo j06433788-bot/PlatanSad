@@ -361,19 +361,31 @@ const Header = () => {
               </button>
 
               <div className="flex items-center gap-0.5 sm:gap-1 md:gap-3 flex-shrink-0">
+                {/* ✅ WISHLIST ICON (НЕАКТИВНЕ КОЛИ 0) */}
                 <button
                   type="button"
-                  onClick={() => navigate('/wishlist')}
+                  onClick={() => {
+                    if (wishlistCount > 0) navigate('/wishlist');
+                  }}
+                  disabled={wishlistCount === 0}
+                  aria-disabled={wishlistCount === 0}
+                  tabIndex={wishlistCount === 0 ? -1 : 0}
                   className={cx(
-                    'p-2 sm:p-3 md:p-2 transition-all duration-300 rounded-full relative active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-200',
+                    'p-2 sm:p-3 md:p-2 transition-all duration-300 rounded-full relative focus:outline-none focus:ring-2 focus:ring-green-200',
                     wishlistCount > 0
-                      ? 'text-red-500 hover:text-red-600 hover:bg-red-50'
-                      : 'text-gray-400 hover:text-gray-500 hover:bg-gray-100'
+                      ? 'text-red-500 hover:text-red-600 hover:bg-red-50 active:scale-95'
+                      : 'text-gray-400 cursor-not-allowed opacity-70'
                   )}
                   data-testid="wishlist-icon"
                   aria-label="Список бажань"
+                  title={wishlistCount === 0 ? 'Список бажань порожній' : 'Список бажань'}
                 >
-                  <Heart className={cx('w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6', wishlistCount > 0 && 'fill-red-500')} />
+                  <Heart
+                    className={cx(
+                      'w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6',
+                      wishlistCount > 0 ? 'fill-red-500' : 'fill-none'
+                    )}
+                  />
                   {wishlistCount > 0 && (
                     <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-red-500 text-white text-[10px] sm:text-xs min-w-[18px] sm:min-w-[22px] h-[18px] sm:h-[22px] px-0.5 sm:px-1 rounded-full flex items-center justify-center font-bold animate-pulse shadow-md">
                       {wishlistCount}
@@ -381,7 +393,7 @@ const Header = () => {
                   )}
                 </button>
 
-                {/* ✅ CART ICON: now just navigate to /cart (ONE cart) */}
+                {/* ✅ CART ICON */}
                 <button
                   type="button"
                   onClick={() => navigate('/cart')}
@@ -600,7 +612,7 @@ const Header = () => {
             </div>
           </div>
 
-          {/* SOCIAL: breathing + ripple + modern Viber icon */}
+          {/* SOCIAL */}
           <div
             className="flex-shrink-0 border-t border-gray-200 bg-white p-4"
             style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
