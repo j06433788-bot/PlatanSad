@@ -1,5 +1,3 @@
-// CartContext.jsx (ГОТОВИЙ, заміни повністю)
-// ✅ Додав параметр `options?.silent` для add/remove, щоб НЕ було дубля тостів
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { cartApi } from '../api/cartApi';
 import { toast } from 'sonner';
@@ -8,10 +6,18 @@ const CartContext = createContext();
 
 export const useCart = () => {
   const context = useContext(CartContext);
-  if (!context) {
-    throw new Error('useCart must be used within CartProvider');
-  }
+  if (!context) throw new Error('useCart must be used within CartProvider');
   return context;
+};
+
+// ✅ Нормалізація: приймає product або cartItem і повертає productId
+const getProductId = (obj) => {
+  if (!obj) return null;
+  // якщо передали cart item
+  if (obj.productId) return obj.productId;
+  // якщо передали product
+  if (obj.id) return obj.id;
+  return null;
 };
 
 export const CartProvider = ({ children }) => {
@@ -36,21 +42,29 @@ export const CartProvider = ({ children }) => {
     fetchCart();
   }, [fetchCart]);
 
-  // ✅ Add to cart (options.silent щоб не дублювати toast у UI)
-  const addToCart = async (product, quantity = 1, options = {}) => {
+  const addToCart = async (productOrCartItem, quantity = 1, options = {}) => {
+    const productId = getProductId(productOrCartItem);
+
+    if (!productId) {
+      console.error('addToCart: cannot determine productId from', productOrCartItem);
+      if (!options?.silent) toast.error('Помилка: невідомий товар');
+      return;
+    }
+
+    const name =
+      productOrCartItem?.name ||
+      productOrCartItem?.productName ||
+      'Товар';
+
     try {
       setLoading(true);
-      await cartApi.addToCart(product.id, quantity, userId);
+      await cartApi.addToCart(productId, quantity, userId);
       await fetchCart();
 
-      if (!options?.silent) {
-        toast.success(`${product.name} додано до кошика!`);
-      }
+      if (!options?.silent) toast.success(`${name} додано до кошика!`);
     } catch (error) {
       console.error('Error adding to cart:', error);
-      if (!options?.silent) {
-        toast.error('Помилка додавання до кошика');
-      }
+      if (!options?.silent) toast.error('Помилка додавання до кошика');
     } finally {
       setLoading(false);
     }
@@ -58,7 +72,6 @@ export const CartProvider = ({ children }) => {
 
   const updateQuantity = async (itemId, newQuantity) => {
     if (newQuantity < 1) return;
-
     try {
       setLoading(true);
       await cartApi.updateCartItem(itemId, newQuantity);
@@ -71,21 +84,15 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // ✅ Remove from cart (options.silent щоб сторінка могла показати свій custom toast + Undo)
   const removeFromCart = async (itemId, productName, options = {}) => {
     try {
       setLoading(true);
       await cartApi.removeFromCart(itemId);
       await fetchCart();
-
-      if (!options?.silent) {
-        toast.success(`${productName} видалено з кошика`);
-      }
+      if (!options?.silent) toast.success(`${productName} видалено з кошика`);
     } catch (error) {
       console.error('Error removing from cart:', error);
-      if (!options?.silent) {
-        toast.error('Помилка видалення з кошика');
-      }
+      if (!options?.silent) toast.error('Помилка видалення з кошика');
     } finally {
       setLoading(false);
     }
