@@ -107,14 +107,7 @@ function useDialogA11y({ open, onClose, containerRef, returnFocusRef }) {
 }
 
 /** BottomSheet: drag down to close (mobile) */
-function BottomSheet({
-  open,
-  onClose,
-  label = 'Bottom sheet',
-  containerRef,
-  children,
-  reducedMotion,
-}) {
+function BottomSheet({ open, onClose, label = 'Bottom sheet', containerRef, children, reducedMotion }) {
   const sheetRef = useRef(null);
   const [dragY, setDragY] = useState(0);
   const dragging = useRef(false);
@@ -151,9 +144,7 @@ function BottomSheet({
   };
 
   const transition = reducedMotion ? 'none' : 'transform 220ms ease-out';
-  const transform = open
-    ? `translateY(${dragY}px)`
-    : 'translateY(110%)';
+  const transform = open ? `translateY(${dragY}px)` : 'translateY(110%)';
 
   return (
     <div
@@ -191,15 +182,11 @@ function BottomSheet({
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
       >
-        {/* Handle */}
         <div className="pt-3 pb-2 flex justify-center">
           <div className="h-1.5 w-12 rounded-full bg-gray-300" />
         </div>
 
-        {/* Content (make it scrollable) */}
-        <div className="max-h-[85vh] overflow-y-auto px-4 pb-4">
-          {children}
-        </div>
+        <div className="max-h-[85vh] overflow-y-auto px-4 pb-4">{children}</div>
       </aside>
     </div>
   );
@@ -224,24 +211,20 @@ const Header = () => {
   const anyOverlayOpen = isSearchOpen || isMenuOpen || isCartOpen;
   useLockBodyScroll(anyOverlayOpen);
 
-  // refs to return focus
   const menuBtnRef = useRef(null);
   const searchBtnRef = useRef(null);
   const cartBtnRef = useRef(null);
 
-  // dialog container refs (for focus trap)
   const menuPanelRef = useRef(null);
   const cartPanelRef = useRef(null);
   const searchPanelRef = useRef(null);
 
-  // close on route change
   useEffect(() => {
     setIsSearchOpen(false);
     setIsMenuOpen(false);
     setIsCartOpen(false);
   }, [location.pathname]);
 
-  // fetch categories
   useEffect(() => {
     let alive = true;
     (async () => {
@@ -262,26 +245,9 @@ const Header = () => {
   const closeCart = useCallback(() => setIsCartOpen(false), []);
   const closeSearch = useCallback(() => setIsSearchOpen(false), []);
 
-  useDialogA11y({
-    open: isMenuOpen,
-    onClose: closeMenu,
-    containerRef: menuPanelRef,
-    returnFocusRef: menuBtnRef,
-  });
-
-  useDialogA11y({
-    open: isCartOpen,
-    onClose: closeCart,
-    containerRef: cartPanelRef,
-    returnFocusRef: cartBtnRef,
-  });
-
-  useDialogA11y({
-    open: isSearchOpen,
-    onClose: closeSearch,
-    containerRef: searchPanelRef,
-    returnFocusRef: searchBtnRef,
-  });
+  useDialogA11y({ open: isMenuOpen, onClose: closeMenu, containerRef: menuPanelRef, returnFocusRef: menuBtnRef });
+  useDialogA11y({ open: isCartOpen, onClose: closeCart, containerRef: cartPanelRef, returnFocusRef: cartBtnRef });
+  useDialogA11y({ open: isSearchOpen, onClose: closeSearch, containerRef: searchPanelRef, returnFocusRef: searchBtnRef });
 
   const handleSearch = useCallback(
     (e) => {
@@ -317,7 +283,6 @@ const Header = () => {
         <div className="bg-white">
           <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-5 md:py-6 lg:py-8">
             <div className="flex items-center justify-between w-full gap-2 sm:gap-4">
-              {/* Left */}
               <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2 flex-shrink-0">
                 <button
                   ref={menuBtnRef}
@@ -346,7 +311,6 @@ const Header = () => {
                 </button>
               </div>
 
-              {/* Logo */}
               <button
                 type="button"
                 className="flex items-center gap-0.5 sm:gap-1 md:gap-2 cursor-pointer active:scale-95 transition-transform min-w-0 justify-center focus:outline-none"
@@ -366,7 +330,6 @@ const Header = () => {
                 </span>
               </button>
 
-              {/* Right */}
               <div className="flex items-center gap-0.5 sm:gap-1 md:gap-3 flex-shrink-0">
                 <button
                   type="button"
@@ -422,13 +385,19 @@ const Header = () => {
                 <button onClick={() => navigate('/about')} className="hover:text-green-400 transition-colors whitespace-nowrap">
                   Про нас
                 </button>
-                <button onClick={() => navigate('/delivery')} className="hover:text-green-400 transition-colors whitespace-nowrap">
+                <button
+                  onClick={() => navigate('/delivery')}
+                  className="hover:text-green-400 transition-colors whitespace-nowrap"
+                >
                   Оплата і доставка
                 </button>
                 <button onClick={() => navigate('/return')} className="hover:text-green-400 transition-colors whitespace-nowrap">
                   Обмін та повернення
                 </button>
-                <button onClick={() => navigate('/contacts')} className="hover:text-green-400 transition-colors whitespace-nowrap">
+                <button
+                  onClick={() => navigate('/contacts')}
+                  className="hover:text-green-400 transition-colors whitespace-nowrap"
+                >
                   Контакти
                 </button>
                 <button onClick={() => navigate('/blog')} className="hover:text-green-400 transition-colors whitespace-nowrap">
@@ -440,7 +409,7 @@ const Header = () => {
         </nav>
       </header>
 
-      {/* -------------------- MENU DRAWER -------------------- */}
+      {/* MENU DRAWER */}
       <div
         className={cx(
           'fixed inset-0 z-[100] transition-all',
@@ -451,7 +420,11 @@ const Header = () => {
       >
         <button
           type="button"
-          className={cx('absolute inset-0 bg-black/50 transition-opacity', overlayTransition, isMenuOpen ? 'opacity-100' : 'opacity-0')}
+          className={cx(
+            'absolute inset-0 bg-black/50 transition-opacity',
+            overlayTransition,
+            isMenuOpen ? 'opacity-100' : 'opacity-0'
+          )}
           onClick={closeMenu}
           aria-label="Закрити меню"
           tabIndex={isMenuOpen ? 0 : -1}
@@ -609,44 +582,50 @@ const Header = () => {
             </div>
           </div>
 
+          {/* UPDATED SOCIAL (same style as main) */}
           <div
-            className="flex-shrink-0 border-t border-gray-200 bg-gray-50 p-4"
+            className="flex-shrink-0 border-t border-gray-200 bg-white p-4"
             style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
           >
-            <p className="text-xs font-semibold text-gray-500 uppercase mb-3">Ми в соц мережах</p>
-            <div className="flex items-center gap-3">
+            <div className="grid grid-cols-3 gap-2">
               <a
                 href="https://www.instagram.com/platansad.uaa?igsh=cmhhbG4zbjNkMTBr"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-11 h-11 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-md focus:outline-none focus:ring-2 focus:ring-green-200"
+                className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm font-semibold text-gray-700 hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-200"
+                aria-label="Instagram"
               >
-                <img src="/instagram.png" alt="Instagram" className="w-11 h-11 rounded-full" />
+                <img src="/instagram.png" alt="" className="w-5 h-5" />
+                <span className="hidden sm:inline">Instagram</span>
               </a>
 
               <a
                 href="https://www.tiktok.com/@platansad.ua?_r=1&_t=ZM-939QCCJ5tAx"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-11 h-11 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-md focus:outline-none focus:ring-2 focus:ring-green-200"
+                className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm font-semibold text-gray-700 hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-200"
+                aria-label="TikTok"
               >
-                <img src="/tiktok.png" alt="TikTok" className="w-11 h-11 rounded-full" />
+                <img src="/tiktok.png" alt="" className="w-5 h-5" />
+                <span className="hidden sm:inline">TikTok</span>
               </a>
 
               <a
                 href="viber://chat?number=+380636507449"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-11 h-11 rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-md focus:outline-none focus:ring-2 focus:ring-green-200"
+                className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm font-semibold text-gray-700 hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-200"
+                aria-label="Viber"
               >
-                <img src="/viber.png" alt="Viber" className="w-11 h-11 rounded-full" />
+                <img src="/viber.png" alt="" className="w-5 h-5" />
+                <span className="hidden sm:inline">Viber</span>
               </a>
             </div>
           </div>
         </aside>
       </div>
 
-      {/* -------------------- CART DRAWER -------------------- */}
+      {/* CART DRAWER */}
       <div
         className={cx(
           'fixed inset-0 z-[100] transition-all',
@@ -657,7 +636,11 @@ const Header = () => {
       >
         <button
           type="button"
-          className={cx('absolute inset-0 bg-black/50 transition-opacity', overlayTransition, isCartOpen ? 'opacity-100' : 'opacity-0')}
+          className={cx(
+            'absolute inset-0 bg-black/50 transition-opacity',
+            overlayTransition,
+            isCartOpen ? 'opacity-100' : 'opacity-0'
+          )}
           onClick={closeCart}
           aria-label="Закрити кошик"
           tabIndex={isCartOpen ? 0 : -1}
@@ -680,9 +663,7 @@ const Header = () => {
               <ShoppingBag className="w-6 h-6" />
               <span className="font-bold text-lg">Кошик</span>
               {cartCount > 0 && (
-                <span className="bg-white text-green-600 text-sm font-bold px-2 py-0.5 rounded-full">
-                  {cartCount}
-                </span>
+                <span className="bg-white text-green-600 text-sm font-bold px-2 py-0.5 rounded-full">{cartCount}</span>
               )}
             </div>
             <button
@@ -795,7 +776,7 @@ const Header = () => {
         </aside>
       </div>
 
-      {/* -------------------- SEARCH: MOBILE BOTTOM SHEET -------------------- */}
+      {/* SEARCH */}
       {isMobile ? (
         <BottomSheet
           open={isSearchOpen}
@@ -854,13 +835,10 @@ const Header = () => {
               ))}
             </div>
 
-            <div className="mt-4 text-xs text-gray-500">
-              Порада: потягни вниз, щоб закрити 👇
-            </div>
+            <div className="mt-4 text-xs text-gray-500">Порада: потягни вниз, щоб закрити 👇</div>
           </form>
         </BottomSheet>
       ) : (
-        /* -------------------- SEARCH: DESKTOP TOP OVERLAY -------------------- */
         <div
           className={cx(
             'fixed inset-0 z-[100] transition-all',
