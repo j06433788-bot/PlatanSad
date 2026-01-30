@@ -1,4 +1,9 @@
-// CartPage.jsx
+// CartPage.jsx (ГОТОВИЙ, заміни повністю)
+// ✅ fly-to-cart при видаленні
+// ✅ slide-out анімація картки
+// ✅ custom toast з Undo (Повернути) — 100% працює з твоїм CartContext
+// ✅ без дубля тостів (remove/add викликаються з { silent: true })
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
@@ -101,6 +106,7 @@ const CartPage = () => {
   const cardRefs = useRef(new Map());
   const [removingIds, setRemovingIds] = useState(() => new Set());
 
+  // Initialize all items as selected when cart loads
   useEffect(() => {
     const newSelected = new Set();
     cartItems.forEach(item => newSelected.add(item.id));
@@ -147,10 +153,7 @@ const CartPage = () => {
       return s;
     });
 
-    const imgEl = imgRefs.current.get(item.id);
-    const cardEl = cardRefs.current.get(item.id);
-
-    // prepare payload for undo BEFORE remove
+    // Prepare Undo payload BEFORE removal
     const undoProduct = {
       id: item.productId, // IMPORTANT: CartContext expects product.id
       name: item.productName,
@@ -159,14 +162,17 @@ const CartPage = () => {
     };
     const undoQty = item.quantity;
 
-    // animations
+    const imgEl = imgRefs.current.get(item.id);
+    const cardEl = cardRefs.current.get(item.id);
+
+    // Animations
     flyRemoveFromCart(imgEl);
     await animateSlideOut(cardEl);
 
-    // actual remove (will refresh cart)
-    await removeFromCart(item.id, item.productName);
+    // Real remove (silent to avoid double toasts)
+    await removeFromCart(item.id, item.productName, { silent: true });
 
-    // custom toast with undo (we don't rely on context toast here)
+    // Custom toast with Undo
     toast.custom((t) => (
       <div className="bg-gradient-to-r from-gray-800 to-gray-900 rounded-2xl p-4 text-white min-w-[320px] shadow-2xl shadow-black/40">
         <div className="flex items-start gap-3">
@@ -183,7 +189,20 @@ const CartPage = () => {
                 className="px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/20 transition text-sm font-semibold"
                 onClick={async () => {
                   try {
-                    await addToCart(undoProduct, undoQty);
+                    await addToCart(undoProduct, undoQty, { silent: true });
+                    toast.custom(() => (
+                      <div className="bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl p-4 text-white min-w-[280px] shadow-2xl shadow-green-500/40">
+                        <div className="flex items-center gap-3">
+                          <div className="bg-white/20 p-2.5 rounded-xl">
+                            <Check className="w-6 h-6" />
+                          </div>
+                          <div>
+                            <p className="font-bold text-lg">Повернуто ✅</p>
+                            <p className="text-sm text-white/90 mt-0.5">{undoProduct.name}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ), { duration: 1800, position: 'top-center' });
                   } finally {
                     toast.dismiss(t);
                   }
@@ -211,7 +230,7 @@ const CartPage = () => {
     });
   };
 
-  // empty cart
+  // ✅ Empty cart
   if (cartItems.length === 0) {
     return (
       <div className="bg-gray-50 min-h-screen">
@@ -260,6 +279,7 @@ const CartPage = () => {
         </h1>
 
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-8">
+          {/* Cart Items List */}
           <div className="flex-1 space-y-4">
             <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-3">
               <button
@@ -287,6 +307,7 @@ const CartPage = () => {
                 }`}
               >
                 <div className="flex gap-4">
+                  {/* Checkbox */}
                   <div className="flex items-center justify-center pt-8 sm:pt-0">
                     <button
                       onClick={() => toggleSelection(item.id)}
@@ -301,6 +322,7 @@ const CartPage = () => {
                     </button>
                   </div>
 
+                  {/* Image */}
                   <div
                     className="w-24 h-24 sm:w-32 sm:h-32 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0 cursor-pointer"
                     onClick={() => navigate(`/products/${item.productId}`)}
@@ -316,6 +338,7 @@ const CartPage = () => {
                     />
                   </div>
 
+                  {/* Info */}
                   <div className="flex-1 flex flex-col justify-between min-w-0 py-1">
                     <div>
                       <div className="flex justify-between items-start gap-2">
@@ -342,6 +365,7 @@ const CartPage = () => {
                     </div>
 
                     <div className="flex items-end justify-between mt-3">
+                      {/* Qty Controls */}
                       <div className="flex items-center bg-gray-50 rounded-lg border border-gray-200 p-0.5">
                         <button
                           onClick={() => updateQuantity(item.id, item.quantity - 1)}
@@ -374,6 +398,7 @@ const CartPage = () => {
             ))}
           </div>
 
+          {/* Order Summary Sidebar */}
           <div className="lg:w-96 flex-shrink-0">
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-24 hidden lg:block">
               <h2 className="text-xl font-bold text-gray-900 mb-6">Разом</h2>
@@ -408,6 +433,7 @@ const CartPage = () => {
               </div>
             </div>
 
+            {/* Mobile Bottom Bar */}
             <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-2xl lg:hidden z-40 safe-area-pb">
               <div className="flex items-center justify-between gap-4">
                 <div>
@@ -435,4 +461,3 @@ const CartPage = () => {
 };
 
 export default CartPage;
-
