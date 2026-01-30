@@ -149,7 +149,7 @@ const WishlistPage = () => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const productPromises = wishlistItems.map(item => productsApi.getProduct(item.productId));
+        const productPromises = wishlistItems.map((item) => productsApi.getProduct(item.productId));
         const productsData = await Promise.all(productPromises);
         setProducts(productsData);
       } catch (error) {
@@ -160,7 +160,10 @@ const WishlistPage = () => {
     };
 
     if (wishlistItems.length > 0) fetchProducts();
-    else setLoading(false);
+    else {
+      setProducts([]); // ✅ одразу чистимо, щоб пустий стан зʼявився миттєво
+      setLoading(false);
+    }
   }, [wishlistItems]);
 
   const handleAddToCart = async (product, e) => {
@@ -198,6 +201,9 @@ const WishlistPage = () => {
 
     const btn = e?.currentTarget;
     burstBrokenHearts(btn);
+
+    // ✅ ГОЛОВНЕ: прибираємо з UI одразу (щоб лічильник і список стали 0 миттєво)
+    setProducts((prev) => prev.filter((p) => p.id !== product.id));
 
     const cardEl = cardRefs.current.get(product.id);
     await animateSlideOut(cardEl);
@@ -239,7 +245,9 @@ const WishlistPage = () => {
         <div className="max-w-7xl mx-auto px-4">
           <div className="bg-white rounded-lg shadow-md p-8 sm:p-12 text-center">
             <Heart className="w-20 h-20 sm:w-24 sm:h-24 mx-auto text-gray-300 mb-4 sm:mb-6" />
-            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">Список бажань порожній</h2>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-3 sm:mb-4">
+              Список бажань порожній
+            </h2>
             <p className="text-sm sm:text-base text-gray-600 mb-6 sm:mb-8">
               Додайте товари до списку бажань, щоб не забути про них
             </p>
@@ -288,6 +296,7 @@ const WishlistPage = () => {
                   src={product.image}
                   alt={product.name}
                   className="w-full h-full object-cover hover:scale-110 transition-transform"
+                  loading="lazy"
                 />
 
                 <div className="absolute top-2 left-2 flex flex-col gap-1">
@@ -343,6 +352,7 @@ const WishlistPage = () => {
                     className="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
                     data-testid={`add-to-cart-wishlist-${product.id}`}
                     disabled={removingIds.has(product.id)}
+                    type="button"
                   >
                     <ShoppingCart className="w-4 h-4" />
                     <span>В кошик</span>
@@ -353,6 +363,7 @@ const WishlistPage = () => {
                     className="w-10 h-10 border border-gray-300 rounded-lg flex items-center justify-center hover:border-red-500 hover:bg-red-50 hover:text-red-500 transition-all active:scale-[0.98] disabled:opacity-50"
                     data-testid={`remove-wishlist-${product.id}`}
                     disabled={removingIds.has(product.id)}
+                    type="button"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
