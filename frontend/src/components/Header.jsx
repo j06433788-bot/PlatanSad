@@ -219,6 +219,23 @@ const Header = () => {
   const cartPanelRef = useRef(null);
   const searchPanelRef = useRef(null);
 
+  // Ripple
+  const [ripples, setRipples] = useState([]);
+  const addRipple = useCallback((e) => {
+    if (reducedMotion) return; // повага до reduced motion
+    const el = e.currentTarget;
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const size = Math.max(rect.width, rect.height) * 1.25;
+
+    const id = `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    setRipples((prev) => [...prev, { id, x, y, size }]);
+    setTimeout(() => {
+      setRipples((prev) => prev.filter((r) => r.id !== id));
+    }, 520);
+  }, [reducedMotion]);
+
   useEffect(() => {
     setIsSearchOpen(false);
     setIsMenuOpen(false);
@@ -267,11 +284,44 @@ const Header = () => {
   }, [navigate]);
 
   const popularTerms = useMemo(() => ['Туя', 'Бонсай', 'Нівакі', 'Самшит'], []);
-
   const overlayTransition = reducedMotion ? 'duration-0' : 'duration-300';
+
+  // small helper: render ripples inside a button (by target key)
+  const RipplesLayer = ({ targetKey }) => (
+    <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+      {ripples
+        .filter((r) => r.targetKey === targetKey)
+        .map((r) => (
+          <span
+            key={r.id}
+            className="absolute rounded-full bg-green-500/25"
+            style={{
+              width: r.size,
+              height: r.size,
+              left: r.x - r.size / 2,
+              top: r.y - r.size / 2,
+              transform: 'scale(0)',
+              animation: reducedMotion ? 'none' : 'ripple 520ms ease-out',
+            }}
+          />
+        ))}
+    </span>
+  );
 
   return (
     <>
+      {/* local keyframes for ripple + breath */}
+      <style>{`
+        @keyframes ripple {
+          0% { transform: scale(0); opacity: 0.35; }
+          100% { transform: scale(1); opacity: 0; }
+        }
+        @keyframes breath {
+          0%, 100% { transform: translateZ(0) scale(1); }
+          50% { transform: translateZ(0) scale(1.03); }
+        }
+      `}</style>
+
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:bg-white focus:text-gray-900 focus:px-4 focus:py-2 focus:rounded-xl focus:shadow"
@@ -385,19 +435,13 @@ const Header = () => {
                 <button onClick={() => navigate('/about')} className="hover:text-green-400 transition-colors whitespace-nowrap">
                   Про нас
                 </button>
-                <button
-                  onClick={() => navigate('/delivery')}
-                  className="hover:text-green-400 transition-colors whitespace-nowrap"
-                >
+                <button onClick={() => navigate('/delivery')} className="hover:text-green-400 transition-colors whitespace-nowrap">
                   Оплата і доставка
                 </button>
                 <button onClick={() => navigate('/return')} className="hover:text-green-400 transition-colors whitespace-nowrap">
                   Обмін та повернення
                 </button>
-                <button
-                  onClick={() => navigate('/contacts')}
-                  className="hover:text-green-400 transition-colors whitespace-nowrap"
-                >
+                <button onClick={() => navigate('/contacts')} className="hover:text-green-400 transition-colors whitespace-nowrap">
                   Контакти
                 </button>
                 <button onClick={() => navigate('/blog')} className="hover:text-green-400 transition-colors whitespace-nowrap">
@@ -582,42 +626,199 @@ const Header = () => {
             </div>
           </div>
 
-          {/* UPDATED SOCIAL (same style as main) */}
+          {/* SOCIAL: subtle always-breath + ripple on tap/click + modern Viber icon */}
           <div
             className="flex-shrink-0 border-t border-gray-200 bg-white p-4"
             style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
           >
             <div className="grid grid-cols-3 gap-2">
+              {/* Instagram */}
               <a
                 href="https://www.instagram.com/platansad.uaa?igsh=cmhhbG4zbjNkMTBr"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm font-semibold text-gray-700 hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-200"
+                onPointerDown={(e) => {
+                  e.currentTarget.dataset.rippleKey = 'ig';
+                  addRipple({ ...e, currentTarget: e.currentTarget });
+                }}
+                onClick={(e) => {
+                  // ensure ripple also works on click (desktop)
+                  e.currentTarget.dataset.rippleKey = 'ig';
+                }}
+                className={cx(
+                  'group relative overflow-hidden flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm font-semibold text-gray-700',
+                  'hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-all',
+                  'active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-green-200',
+                  reducedMotion ? '' : 'motion-safe:[animation:breath_2.8s_ease-in-out_infinite]'
+                )}
                 aria-label="Instagram"
               >
-                <img src="/instagram.png" alt="" className="w-5 h-5" />
+                {/* glow */}
+                <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="absolute -inset-6 rounded-full bg-green-200/40 blur-2xl motion-safe:animate-pulse motion-reduce:animate-none" />
+                </span>
+
+                {/* ping dot */}
+                <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-green-500/80">
+                  <span className="absolute inset-0 rounded-full bg-green-500 motion-safe:animate-ping motion-reduce:animate-none" />
+                </span>
+
+                {/* ripple layer */}
+                <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+                  {ripples
+                    .filter((r) => r.targetKey === 'ig')
+                    .map((r) => (
+                      <span
+                        key={r.id}
+                        className="absolute rounded-full bg-green-500/25"
+                        style={{
+                          width: r.size,
+                          height: r.size,
+                          left: r.x - r.size / 2,
+                          top: r.y - r.size / 2,
+                          animation: reducedMotion ? 'none' : 'ripple 520ms ease-out',
+                        }}
+                      />
+                    ))}
+                </span>
+
+                <img
+                  src="/instagram.png"
+                  alt=""
+                  className="w-5 h-5 transition-transform duration-300 group-hover:scale-110 motion-safe:animate-pulse motion-reduce:animate-none"
+                />
                 <span className="hidden sm:inline">Instagram</span>
               </a>
 
+              {/* TikTok */}
               <a
                 href="https://www.tiktok.com/@platansad.ua?_r=1&_t=ZM-939QCCJ5tAx"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm font-semibold text-gray-700 hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-200"
+                onPointerDown={(e) => {
+                  e.currentTarget.dataset.rippleKey = 'tt';
+                  addRipple({ ...e, currentTarget: e.currentTarget });
+                }}
+                className={cx(
+                  'group relative overflow-hidden flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm font-semibold text-gray-700',
+                  'hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-all',
+                  'active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-green-200',
+                  reducedMotion ? '' : 'motion-safe:[animation:breath_3.1s_ease-in-out_infinite]'
+                )}
                 aria-label="TikTok"
               >
-                <img src="/tiktok.png" alt="" className="w-5 h-5" />
+                <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="absolute -inset-6 rounded-full bg-green-200/40 blur-2xl motion-safe:animate-pulse motion-reduce:animate-none" />
+                </span>
+
+                <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-green-500/80">
+                  <span className="absolute inset-0 rounded-full bg-green-500 motion-safe:animate-ping motion-reduce:animate-none" />
+                </span>
+
+                <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+                  {ripples
+                    .filter((r) => r.targetKey === 'tt')
+                    .map((r) => (
+                      <span
+                        key={r.id}
+                        className="absolute rounded-full bg-green-500/25"
+                        style={{
+                          width: r.size,
+                          height: r.size,
+                          left: r.x - r.size / 2,
+                          top: r.y - r.size / 2,
+                          animation: reducedMotion ? 'none' : 'ripple 520ms ease-out',
+                        }}
+                      />
+                    ))}
+                </span>
+
+                <img
+                  src="/tiktok.png"
+                  alt=""
+                  className="w-5 h-5 transition-transform duration-300 group-hover:scale-110 motion-safe:animate-pulse motion-reduce:animate-none"
+                />
                 <span className="hidden sm:inline">TikTok</span>
               </a>
 
+              {/* Viber */}
               <a
                 href="viber://chat?number=+380636507449"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm font-semibold text-gray-700 hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-green-200"
+                onPointerDown={(e) => {
+                  e.currentTarget.dataset.rippleKey = 'vb';
+                  addRipple({ ...e, currentTarget: e.currentTarget });
+                }}
+                className={cx(
+                  'group relative overflow-hidden flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm font-semibold text-gray-700',
+                  'hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-all',
+                  'active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-green-200',
+                  reducedMotion ? '' : 'motion-safe:[animation:breath_2.9s_ease-in-out_infinite]'
+                )}
                 aria-label="Viber"
               >
-                <img src="/viber.png" alt="" className="w-5 h-5" />
+                <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="absolute -inset-6 rounded-full bg-green-200/40 blur-2xl motion-safe:animate-pulse motion-reduce:animate-none" />
+                </span>
+
+                <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-green-500/80">
+                  <span className="absolute inset-0 rounded-full bg-green-500 motion-safe:animate-ping motion-reduce:animate-none" />
+                </span>
+
+                <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+                  {ripples
+                    .filter((r) => r.targetKey === 'vb')
+                    .map((r) => (
+                      <span
+                        key={r.id}
+                        className="absolute rounded-full bg-green-500/25"
+                        style={{
+                          width: r.size,
+                          height: r.size,
+                          left: r.x - r.size / 2,
+                          top: r.y - r.size / 2,
+                          animation: reducedMotion ? 'none' : 'ripple 520ms ease-out',
+                        }}
+                      />
+                    ))}
+                </span>
+
+                <span className="w-5 h-5 transition-transform duration-300 group-hover:scale-110 motion-safe:animate-pulse motion-reduce:animate-none">
+                  <svg viewBox="0 0 48 48" className="w-5 h-5" aria-hidden="true">
+                    <defs>
+                      <linearGradient id="viberGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0" stopColor="#8A3FFC" />
+                        <stop offset="1" stopColor="#6D28D9" />
+                      </linearGradient>
+                    </defs>
+                    <path
+                      d="M24 6c9.94 0 18 7.16 18 16 0 8.84-8.06 16-18 16-1.62 0-3.19-.19-4.68-.55L10 41l1.9-7.12C8.84 31.4 6 27.97 6 22c0-8.84 8.06-16 18-16z"
+                      fill="url(#viberGrad)"
+                    />
+                    <path
+                      d="M19.3 16.6c.6-.7 1.8-.6 2.3.2l1.3 2c.5.8.4 1.8-.2 2.4l-.9.9c-.2.2-.3.6-.1.9 1 1.8 2.5 3.3 4.3 4.3.3.2.7.1.9-.1l.9-.9c.6-.6 1.6-.7 2.4-.2l2 1.3c.8.5.9 1.7.2 2.3-.9.9-2 1.4-3.2 1.3-6.4-.4-12-6-12.4-12.4-.1-1.2.4-2.3 1.3-3.2z"
+                      fill="#fff"
+                    />
+                    <path
+                      d="M28.3 14.6c2 .6 3.5 2.1 4.1 4.1"
+                      fill="none"
+                      stroke="#fff"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      opacity=".9"
+                    />
+                    <path
+                      d="M26.8 12.2c3.2.7 5.7 3.2 6.4 6.4"
+                      fill="none"
+                      stroke="#fff"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      opacity=".7"
+                    />
+                  </svg>
+                </span>
+
                 <span className="hidden sm:inline">Viber</span>
               </a>
             </div>
@@ -778,13 +979,7 @@ const Header = () => {
 
       {/* SEARCH */}
       {isMobile ? (
-        <BottomSheet
-          open={isSearchOpen}
-          onClose={closeSearch}
-          label="Пошук"
-          containerRef={searchPanelRef}
-          reducedMotion={reducedMotion}
-        >
+        <BottomSheet open={isSearchOpen} onClose={closeSearch} label="Пошук" containerRef={searchPanelRef} reducedMotion={reducedMotion}>
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-lg font-bold text-gray-800">Пошук товарів</h2>
             <button
