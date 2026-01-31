@@ -9,8 +9,6 @@ import {
   Truck,
   RefreshCw,
   MapPin,
-  BookOpen,
-  Clock,
   Sprout,
   ChevronRight,
 } from 'lucide-react';
@@ -20,6 +18,68 @@ import { useWishlist } from '../context/WishlistContext';
 import { categoriesApi } from '../api/categoriesApi';
 
 const cx = (...c) => c.filter(Boolean).join(' ');
+
+/* =================== SVG CLOCK (custom) =================== */
+const ClockBadgeIcon = ({ className = 'w-6 h-6' }) => (
+  <svg viewBox="0 0 24 24" className={className} aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="clockGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stopColor="#22c55e" />
+        <stop offset="1" stopColor="#16a34a" />
+      </linearGradient>
+      <filter id="clockShadow" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#16a34a" floodOpacity="0.25" />
+      </filter>
+    </defs>
+
+    {/* badge */}
+    <path
+      d="M12 2.2c3.3 0 6 2.7 6 6v1.05c0 .45.18.88.5 1.2l.85.85c.7.7.7 1.84 0 2.55l-.85.85c-.32.32-.5.75-.5 1.2V18c0 3.3-2.7 6-6 6s-6-2.7-6-6v-1.05c0-.45-.18-.88-.5-1.2l-.85-.85c-.7-.7-.7-1.84 0-2.55l.85-.85c.32-.32.5-.75.5-1.2V8.2c0-3.3 2.7-6 6-6z"
+      fill="url(#clockGrad)"
+      filter="url(#clockShadow)"
+    />
+
+    {/* inner circle */}
+    <circle cx="12" cy="12" r="6.6" fill="rgba(255,255,255,0.92)" />
+    <circle cx="12" cy="12" r="6.6" fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth="1" />
+
+    {/* ticks */}
+    <g opacity="0.6" stroke="#16a34a" strokeLinecap="round">
+      <path d="M12 6.2v1.1" strokeWidth="1.2" />
+      <path d="M12 16.7v1.1" strokeWidth="1.2" />
+      <path d="M6.2 12h1.1" strokeWidth="1.2" />
+      <path d="M16.7 12h1.1" strokeWidth="1.2" />
+    </g>
+
+    {/* hands */}
+    <path
+      d="M12 8.7v3.5l2.6 1.6"
+      fill="none"
+      stroke="#16a34a"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <circle cx="12" cy="12" r="1.1" fill="#16a34a" />
+  </svg>
+);
+
+/* =================== Kyiv time helpers =================== */
+function getKyivHoursMinutes() {
+  const t = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Kiev',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  }).format(new Date());
+  const [hh, mm] = t.split(':').map((v) => Number(v));
+  return { hh: hh || 0, mm: mm || 0 };
+}
+function isOpenNowKyiv({ hh, mm }) {
+  // Open daily: 08:00–17:00 (17:00 вже закрито)
+  const minutes = hh * 60 + mm;
+  return minutes >= 8 * 60 && minutes < 17 * 60;
+}
 
 function useLockBodyScroll(locked) {
   useEffect(() => {
@@ -218,6 +278,16 @@ const Header = () => {
 
   // Ripple state
   const [ripples, setRipples] = useState([]);
+
+  // ✅ Live status by Kyiv time (updates every 30s)
+  const [kyivTime, setKyivTime] = useState(() => getKyivHoursMinutes());
+  useEffect(() => {
+    const tick = () => setKyivTime(getKyivHoursMinutes());
+    const id = setInterval(tick, 30_000);
+    return () => clearInterval(id);
+  }, []);
+  const openNow = useMemo(() => isOpenNowKyiv(kyivTime), [kyivTime]);
+  const statusText = openNow ? 'Зараз відкрито' : 'Зараз зачинено';
 
   const addRipple = useCallback(
     (e, targetKey) => {
@@ -420,6 +490,7 @@ const Header = () => {
           </div>
         </div>
 
+        {/* DESKTOP NAV (Блог прибрано) */}
         <nav className="bg-[#2d2d39] text-white hidden md:block">
           <div className="max-w-7xl mx-auto px-4">
             <div className="flex items-center justify-between py-2 md:py-3">
@@ -435,9 +506,6 @@ const Header = () => {
                 </button>
                 <button onClick={() => navigate('/contacts')} className="hover:text-green-400 transition-colors whitespace-nowrap">
                   Контакти
-                </button>
-                <button onClick={() => navigate('/blog')} className="hover:text-green-400 transition-colors whitespace-nowrap">
-                  Блог
                 </button>
               </div>
             </div>
@@ -573,17 +641,7 @@ const Header = () => {
               <span className="font-medium text-sm">Контакти</span>
             </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                navigate('/blog');
-                closeMenu();
-              }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-green-50 hover:text-green-500 transition-colors"
-            >
-              <BookOpen className="w-5 h-5" />
-              <span className="font-medium text-sm">Блог</span>
-            </button>
+            {/* ✅ БЛОГ ПРИБРАНО ПОВНІСТЮ */}
 
             <div className="border-t border-gray-200 my-2" />
 
@@ -604,11 +662,48 @@ const Header = () => {
               </a>
             </div>
 
-            <div className="px-4 py-2">
-              <div className="flex items-center gap-3 text-gray-600">
-                <Clock className="w-5 h-5 text-green-500" />
-                <div>
-                  <p className="text-sm text-gray-500">Пн-Нд: 8:00 - 20:00</p>
+            {/* ✅ Графік + Live status */}
+            <div className="px-4 py-3">
+              <div className="rounded-2xl border border-green-100 bg-green-50 p-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-11 h-11 rounded-2xl bg-white border border-green-100 shadow-sm flex items-center justify-center flex-shrink-0">
+                    <ClockBadgeIcon className="w-6 h-6" />
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm font-bold text-gray-800 leading-tight">Графік роботи</p>
+
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span
+                          className={cx(
+                            'relative inline-flex h-2.5 w-2.5 rounded-full',
+                            openNow ? 'bg-green-500' : 'bg-gray-400'
+                          )}
+                          aria-hidden="true"
+                        >
+                          {!reducedMotion && (
+                            <span
+                              className={cx(
+                                'absolute inset-0 rounded-full opacity-75',
+                                openNow ? 'animate-ping bg-green-500' : 'animate-ping bg-gray-400'
+                              )}
+                            />
+                          )}
+                        </span>
+                        <span className={cx('text-xs font-semibold', openNow ? 'text-green-700' : 'text-gray-600')}>
+                          {statusText}
+                        </span>
+                      </div>
+                    </div>
+
+                    <p className="text-sm text-gray-700 mt-1">
+                      Пн–Нд: <span className="font-semibold text-gray-900">08:00–17:00</span>
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+                      Статус оновлюється автоматично (час Києва).
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
