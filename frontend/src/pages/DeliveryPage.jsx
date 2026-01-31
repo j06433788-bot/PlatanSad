@@ -1,5 +1,12 @@
 import React from 'react';
-import { CreditCard, Package, Clock, MapPin, CheckCircle } from 'lucide-react';
+import {
+  CreditCard,
+  Package,
+  Clock,
+  MapPin,
+  CheckCircle,
+  AlertTriangle,
+} from 'lucide-react';
 
 const DeliveryPage = () => {
   return (
@@ -18,7 +25,6 @@ const DeliveryPage = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 md:py-12">
-
         {/* Payment Section */}
         <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-8 md:p-12 mb-6 md:mb-12">
           <div className="flex items-center gap-3 mb-5">
@@ -47,8 +53,7 @@ const DeliveryPage = () => {
 
         {/* Delivery Section */}
         <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-8 md:p-12 mb-6 md:mb-12">
-
-          {/* GREEN PRIORITY BLOCK (moved to top) */}
+          {/* GREEN PRIORITY BLOCK */}
           <div className="mb-6 rounded-2xl border border-green-300 bg-green-50 p-4 sm:p-5">
             <div className="flex items-start gap-3">
               <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
@@ -65,7 +70,6 @@ const DeliveryPage = () => {
           </div>
 
           <div className="space-y-4">
-
             {/* Нова Пошта */}
             <div className="border-2 border-gray-200 rounded-xl p-4 sm:p-6">
               <div className="flex items-start gap-3">
@@ -93,6 +97,50 @@ const DeliveryPage = () => {
                   </ul>
                 </div>
               </div>
+            </div>
+
+            {/* ВАЖЛИВО ЗНАТИ + ПУЛЬСУЮЧА КНОПКА УВАГА */}
+            <div className="rounded-2xl border border-yellow-300 bg-yellow-50 p-4 sm:p-6">
+              <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-yellow-700" />
+                  <h4 className="font-bold text-gray-800">
+                    Важливо знати перед отриманням:
+                  </h4>
+                </div>
+
+                {/* Pulsing "Увага" badge/button */}
+                <div className="relative">
+                  <span className="absolute -inset-1 rounded-full bg-yellow-300/50 blur-md animate-pulse" />
+                  <span className="relative inline-flex items-center gap-2 rounded-full bg-yellow-400 px-3 py-1 text-xs sm:text-sm font-bold text-gray-900 shadow-sm">
+                    <AlertTriangle className="w-4 h-4" />
+                    Увага
+                  </span>
+                </div>
+              </div>
+
+              <ul className="space-y-2 text-gray-700">
+                <li className="flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-yellow-700 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm sm:text-base">
+                    Під час отримання замовлення, будь ласка, перевірте рослини на цілісність
+                  </span>
+                </li>
+
+                <li className="flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-yellow-700 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm sm:text-base">
+                    Ми надійно власноруч пакуємо рослини, щоб вони безпечно доїхали до Вас і не постраждали під час транспортування
+                  </span>
+                </li>
+
+                <li className="flex items-start gap-2">
+                  <AlertTriangle className="w-4 h-4 text-yellow-700 mt-0.5 flex-shrink-0" />
+                  <span className="text-sm sm:text-base">
+                    Після відправлення ви отримаєте номер накладної для відстеження рослин
+                  </span>
+                </li>
+              </ul>
             </div>
 
             {/* Кур'єр */}
@@ -145,7 +193,6 @@ const DeliveryPage = () => {
 
           </div>
         </div>
-
       </div>
     </div>
   );
