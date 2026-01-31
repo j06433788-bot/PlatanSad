@@ -928,7 +928,8 @@ const Header = () => {
             className="flex-shrink-0 border-t border-gray-200 bg-white p-4"
             style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
           >
-            <div className="grid grid-cols-3 gap-2">
+            {/* 4 кнопки */}
+            <div className="grid grid-cols-4 gap-2">
               {/* Instagram */}
               <a
                 href="https://www.instagram.com/platansad.uaa?igsh=cmhhbG4zbjNkMTBr"
@@ -1025,6 +1026,80 @@ const Header = () => {
                   className="w-5 h-5 transition-transform duration-300 group-hover:scale-110 motion-safe:animate-pulse motion-reduce:animate-none"
                 />
                 <span className="hidden sm:inline">TikTok</span>
+              </a>
+
+              {/* Telegram ✅ (додано) */}
+              <a
+                href="https://t.me/+L3ufkaf-48pmMjAy"
+                target="_blank"
+                rel="noopener noreferrer"
+                onPointerDown={(e) => addRipple(e, 'tg')}
+                onClick={(e) => addRipple(e, 'tg')}
+                className={cx(
+                  'group relative overflow-hidden flex items-center justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-sm font-semibold text-gray-700',
+                  'hover:bg-green-50 hover:border-green-200 hover:text-green-700 transition-all',
+                  'active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-green-200',
+                  reducedMotion ? '' : 'motion-safe:[animation:breath_2.95s_ease-in-out_infinite]'
+                )}
+                aria-label="Telegram"
+                title="Telegram"
+              >
+                <span className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="absolute -inset-6 rounded-full bg-green-200/40 blur-2xl motion-safe:animate-pulse motion-reduce:animate-none" />
+                </span>
+
+                <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-green-500/80">
+                  <span className="absolute inset-0 rounded-full bg-green-500 motion-safe:animate-ping motion-reduce:animate-none" />
+                </span>
+
+                <span className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+                  {ripples
+                    .filter((r) => r.targetKey === 'tg')
+                    .map((r) => (
+                      <span
+                        key={r.id}
+                        className="absolute rounded-full bg-green-500/25"
+                        style={{
+                          width: r.size,
+                          height: r.size,
+                          left: r.x - r.size / 2,
+                          top: r.y - r.size / 2,
+                          animation: reducedMotion ? 'none' : 'ripple 520ms ease-out',
+                        }}
+                      />
+                    ))}
+                </span>
+
+                {/* Telegram SVG icon (lucide-ish) */}
+                <span className="w-5 h-5 transition-transform duration-300 group-hover:scale-110 motion-safe:animate-pulse motion-reduce:animate-none">
+                  <svg viewBox="0 0 48 48" className="w-5 h-5" aria-hidden="true">
+                    <defs>
+                      <linearGradient id="tgGrad" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0" stopColor="#2AABEE" />
+                        <stop offset="1" stopColor="#229ED9" />
+                      </linearGradient>
+                    </defs>
+                    <path
+                      d="M44 8.6c.6-2.7-2-4.9-4.6-3.9L6.6 17.4c-2.5 1-2.3 4.6.3 5.3l8.7 2.4 3.3 10.2c.7 2.1 3.4 2.6 4.8.9l5.2-6.2 9.1 6.7c1.9 1.4 4.6.3 5-2.1L44 8.6z"
+                      fill="url(#tgGrad)"
+                    />
+                    <path
+                      d="M18.2 24.6l18.7-11.6c.7-.4 1.4.5.8 1.1L22.4 28.6c-.6.6-1 .9-1.1 1.8l-.4 4.9c-.1 1 .9 1.6 1.7 1l3.6-2.4"
+                      fill="#fff"
+                      opacity=".95"
+                    />
+                    <path
+                      d="M18.1 24.6l3 9.7"
+                      fill="none"
+                      stroke="#fff"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      opacity=".85"
+                    />
+                  </svg>
+                </span>
+
+                <span className="hidden sm:inline">Telegram</span>
               </a>
 
               {/* Viber */}
