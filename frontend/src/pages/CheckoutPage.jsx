@@ -455,7 +455,9 @@ const CheckoutPage = () => {
                   </div>
                   <div className="flex-1">
                     <div className="font-bold text-base mb-1">Самовивіз</div>
-                    <div className="text-xs text-gray-500">З нашого розсадника</div>
+                    <div className="text-xs text-gray-500">З нашого розсадника готується в порядку черги 2-4 робочих дні
+                       (залежить від сезону та завантаженості).
+                    </div>
                   </div>
                   {formData.deliveryMethod === 'self_pickup' && (
                     <CheckCircle2 className="w-6 h-6 text-green-500 flex-shrink-0" />
