@@ -701,16 +701,10 @@ const Header = () => {
                 >
                   Оплата і доставка
                 </button>
-                <button
-                  onClick={() => navigate('/return')}
-                  className="hover:text-green-400 transition-colors whitespace-nowrap"
-                >
+                <button onClick={() => navigate('/return')} className="hover:text-green-400 transition-colors whitespace-nowrap">
                   Обмін та повернення
                 </button>
-                <button
-                  onClick={() => navigate('/contacts')}
-                  className="hover:text-green-400 transition-colors whitespace-nowrap"
-                >
+                <button onClick={() => navigate('/contacts')} className="hover:text-green-400 transition-colors whitespace-nowrap">
                   Контакти
                 </button>
               </div>
@@ -860,63 +854,48 @@ const Header = () => {
 
             <div className="border-t border-gray-200 my-2" />
 
-            {/* ✅ CONTACTS (COMPACT + MODERN SVG ICONS) */}
+            {/* ✅ Compact Contacts (Viber + Vodafone icons kept) */}
             <div className="px-4 py-2">
-              <div className="grid grid-cols-2 gap-2">
-                {/* VIBER */}
+              <div className="grid grid-cols-1 gap-2">
                 <a
                   href="tel:+380636507449"
-                  className="group flex items-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2.5
-                             hover:bg-violet-50 hover:border-violet-200 transition
-                             active:scale-[0.98]"
+                  className="flex items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 hover:bg-green-50 hover:border-green-200 transition-colors"
                 >
-                  <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#8A3FFC] to-[#6D28D9]
-                                   flex items-center justify-center shadow-sm flex-shrink-0"
-                  >
-                    <svg viewBox="0 0 48 48" className="w-5 h-5" aria-hidden="true">
-                      <path
-                        d="M24 6c9.94 0 18 7.16 18 16 0 8.84-8.06 16-18 16-1.62 0-3.19-.19-4.68-.55L10 41l1.9-7.12C8.84 31.4 6 27.97 6 22c0-8.84 8.06-16 18-16z"
-                        fill="white"
-                        opacity=".95"
-                      />
-                      <path
-                        d="M19.3 16.6c.6-.7 1.8-.6 2.3.2l1.3 2c.5.8.4 1.8-.2 2.4l-.9.9c-.2.2-.3.6-.1.9 1 1.8 2.5 3.3 4.3 4.3.3.2.7.1.9-.1l.9-.9c.6-.6 1.6-.7 2.4-.2l2 1.3c.8.5.9 1.7.2 2.3-.9.9-2 1.4-3.2 1.3-6.4-.4-12-6-12.4-12.4-.1-1.2.4-2.3 1.3-3.2z"
-                        fill="#6D28D9"
-                      />
-                    </svg>
-                  </span>
-
-                  <div className="min-w-0">
-                    <p className="text-[11px] uppercase font-semibold text-gray-500 leading-none">Viber</p>
-                    <p className="text-[13px] font-bold text-gray-800 truncate leading-tight">+380 63 650 74 49</p>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-xl bg-white border border-gray-200 flex items-center justify-center flex-shrink-0">
+                      <img src="/viber.png" alt="Viber" className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold text-gray-800 truncate">+380 (63) 650-74-49</div>
+                      <div className="text-xs text-gray-500">Анастасія</div>
+                    </div>
                   </div>
+                  <span className="text-xs font-semibold text-green-700 bg-green-100 px-2 py-1 rounded-full flex-shrink-0">
+                    Viber
+                  </span>
                 </a>
 
-                {/* VODAFONE */}
                 <a
                   href="tel:+380952510347"
-                  className="group flex items-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2.5
-                             hover:bg-red-50 hover:border-red-200 transition
-                             active:scale-[0.98]"
+                  className="flex items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 hover:bg-green-50 hover:border-green-200 transition-colors"
                 >
-                  <span className="w-9 h-9 rounded-xl bg-gradient-to-br from-red-500 to-red-600
-                                   flex items-center justify-center shadow-sm flex-shrink-0"
-                  >
-                    <svg viewBox="0 0 48 48" className="w-5 h-5" aria-hidden="true">
-                      <circle cx="24" cy="24" r="18" fill="white" opacity=".95" />
-                      <circle cx="24" cy="24" r="11" fill="none" stroke="#dc2626" strokeWidth="4" />
-                    </svg>
-                  </span>
-
-                  <div className="min-w-0">
-                    <p className="text-[11px] uppercase font-semibold text-gray-500 leading-none">Vodafone</p>
-                    <p className="text-[13px] font-bold text-gray-800 truncate leading-tight">+380 95 251 03 47</p>
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-9 h-9 rounded-xl bg-white border border-gray-200 flex items-center justify-center flex-shrink-0">
+                      <img src="/vodafone.png" alt="Vodafone" className="w-5 h-5" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold text-gray-800 truncate">+380 (95) 251-03-47</div>
+                      <div className="text-xs text-gray-500">Ігор</div>
+                    </div>
                   </div>
+                  <span className="text-xs font-semibold text-green-700 bg-green-100 px-2 py-1 rounded-full flex-shrink-0">
+                    Vodafone
+                  </span>
                 </a>
               </div>
             </div>
 
-            {/* ✅ WORK TIME + LIVE STATUS */}
+            {/* ✅ WORK TIME + LIVE STATUS (без "Статус оновлюється...") */}
             <div className="px-4 py-3">
               <div className="rounded-2xl border border-green-100 bg-green-50 p-3">
                 <div className="flex items-start gap-3">
@@ -950,10 +929,6 @@ const Header = () => {
 
                     <p className="text-sm text-gray-700 mt-1">
                       Пн–Нд: <span className="font-semibold text-gray-900">08:00–17:00</span>
-                    </p>
-
-                    <p className="text-xs text-gray-500 mt-1 leading-relaxed">
-                      Статус оновлюється автоматично (час Києва).
                     </p>
                   </div>
                 </div>
@@ -1150,7 +1125,13 @@ const Header = () => {
 
       {/* SEARCH */}
       {isMobile ? (
-        <BottomSheet open={isSearchOpen} onClose={closeSearch} label="Пошук" containerRef={searchPanelRef} reducedMotion={reducedMotion}>
+        <BottomSheet
+          open={isSearchOpen}
+          onClose={closeSearch}
+          label="Пошук"
+          containerRef={searchPanelRef}
+          reducedMotion={reducedMotion}
+        >
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-lg font-bold text-gray-800">Пошук товарів</h2>
             <button
