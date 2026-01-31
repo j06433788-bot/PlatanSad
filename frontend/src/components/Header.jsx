@@ -216,6 +216,7 @@ const Header = () => {
   const menuPanelRef = useRef(null);
   const searchPanelRef = useRef(null);
 
+  // Ripple state
   const [ripples, setRipples] = useState([]);
 
   const addRipple = useCallback(
@@ -308,9 +309,8 @@ const Header = () => {
 
       <header className="w-full sticky top-0 z-50 bg-white shadow-sm">
         <div className="bg-white">
-          {/* ✅ трошки компактніше на мобільному, більше — на десктопі */}
           <div className="max-w-7xl mx-auto px-2 sm:px-4 py-2.5 sm:py-4 md:py-5 lg:py-6">
-            {/* ✅ 1fr auto 1fr = центр завжди по центру */}
+            {/* ✅ center stays centered: 1fr auto 1fr */}
             <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-4 w-full">
               {/* LEFT */}
               <div className="flex items-center justify-start gap-1 sm:gap-2">
@@ -324,7 +324,6 @@ const Header = () => {
                   aria-haspopup="dialog"
                   aria-expanded={isMenuOpen}
                 >
-                  {/* ✅ збільшені, але адаптивно */}
                   <Menu className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10" />
                 </button>
 
@@ -346,11 +345,10 @@ const Header = () => {
               <div className="flex items-center justify-center min-w-0">
                 <button
                   type="button"
-                  className="flex items-center gap-1.5 sm:gap-3 cursor-pointer active:scale-95 transition-transform min-w-0 justify-center focus:outline-none"
+                  className="flex items-center gap-0.5 sm:gap-1 md:gap-1.5 lg:gap-2 cursor-pointer active:scale-95 transition-transform min-w-0 justify-center focus:outline-none"
                   onClick={() => navigate('/')}
                   aria-label="На головну"
                 >
-                  {/* ✅ логотип 2x, але не “вбиває” мобільний */}
                   <img
                     src="/logo.webp"
                     alt="PlatanSad Logo"
@@ -360,7 +358,6 @@ const Header = () => {
                     style={{ filter: 'drop-shadow(0 0 0 transparent)' }}
                   />
 
-                  {/* ✅ текст 2x, але адаптивно + не переноситься */}
                   <span className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-800 whitespace-nowrap leading-none text-center">
                     Platan<span className="text-green-500">Sad</span>
                   </span>
@@ -623,6 +620,7 @@ const Header = () => {
             className="flex-shrink-0 border-t border-gray-200 bg-white p-4"
             style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
           >
+            {/* соц блок як був — лишив */}
             <div className="grid grid-cols-3 gap-2">
               {/* Instagram */}
               <a
