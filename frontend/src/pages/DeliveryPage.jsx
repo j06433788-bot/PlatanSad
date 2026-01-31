@@ -168,7 +168,8 @@ const DeliveryPage = () => {
                 <div>
                   <h3 className="font-bold text-gray-800 mb-2">Самовивіз</h3>
                   <p className="text-sm sm:text-base text-gray-600 mb-3">
-                    Забрати замовлення можна з нашого розсадника
+                    Забрати замовлення можна з нашого розсадника за попередньою домовленістю. 
+                    Копати на місці нагоди немає через велику завантаженість
                   </p>
 
                   <ul className="space-y-2 text-gray-600">
