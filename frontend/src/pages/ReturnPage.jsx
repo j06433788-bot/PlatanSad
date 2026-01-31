@@ -4,7 +4,7 @@ import { RefreshCw, AlertCircle, CheckCircle2, Clock, Phone } from 'lucide-react
 const ReturnPage = () => {
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero Section */}
+      {/* Hero */}
       <div className="bg-gradient-to-r from-green-500 to-green-600 text-white py-10 sm:py-12 md:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <h1
@@ -14,125 +14,153 @@ const ReturnPage = () => {
             Обмін та повернення
           </h1>
           <p className="text-sm sm:text-base md:text-xl text-center text-green-50 max-w-3xl mx-auto">
-            Умови обміну та повернення товарів
+            Умови обміну рослини або повернення коштів
           </p>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12">
-        {/* Return Policy */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 md:p-12 mb-6 md:mb-12">
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12 space-y-6 md:space-y-12">
+        {/* Main policy */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 md:p-12">
           <div className="flex items-center gap-2.5 md:gap-3 mb-4 md:mb-6">
             <RefreshCw className="w-6 h-6 md:w-8 md:h-8 text-green-500" />
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
-              Умови повернення
+              Коли можливий обмін або повернення коштів
             </h2>
           </div>
 
-          <div className="space-y-3 md:space-y-4 text-gray-600">
-            <p className="text-sm sm:text-base md:text-lg">
-              Ви маєте право повернути або обміняти товар протягом{' '}
-              <strong className="text-green-600">14 днів</strong> з моменту отримання.
-            </p>
-            <p className="text-sm sm:text-base md:text-lg">
-              Товар повинен бути належної якості, без слідів використання та в оригінальній упаковці.
-            </p>
+          <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed">
+            Обмін рослини або повернення коштів можливі виключно у разі, якщо:
+          </p>
+
+          <ul className="mt-4 space-y-3 text-gray-700">
+            {[
+              'рослина була пошкоджена під час транспортування;',
+              'отриманий товар не відповідає замовленню (інший сорт або розмір);',
+              'рослина прибула у критично незадовільному стані.',
+            ].map((item, i) => (
+              <li key={i} className="flex items-start gap-3">
+                <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green-100 text-green-700 text-sm font-bold">
+                  ✓
+                </span>
+                <span className="text-sm sm:text-base leading-relaxed">{item}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="mt-6 rounded-2xl bg-green-50 border border-green-200 p-4 sm:p-5 md:p-6">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-green-700 mt-0.5 shrink-0" />
+              <p className="text-sm sm:text-base text-gray-700 leading-relaxed">
+                Рішення щодо обміну або компенсації приймається індивідуально після розгляду звернення.
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* Conditions Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 mb-6 md:mb-12">
-          {/* Allowed */}
+        {/* Conditions grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
+          {/* Required */}
           <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-6 md:p-8">
             <div className="flex items-center gap-2.5 md:gap-3 mb-4 md:mb-6">
               <div className="bg-green-100 p-2 rounded-lg">
                 <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-green-600" />
               </div>
               <h3 className="text-xl md:text-2xl font-bold text-gray-800">
-                Можна повернути
+                Обовʼязкові умови розгляду
               </h3>
             </div>
 
-            <ul className="space-y-2.5 md:space-y-3 text-gray-600">
+            <ul className="space-y-3 text-gray-700">
               {[
-                'Товар має належну якість',
-                'Збережена оригінальна упаковка',
-                'Рослина не має слідів висадки',
-                'Протягом 14 днів з моменту отримання',
+                'повідомлення протягом 24 годин з моменту отримання замовлення;',
+                'надання фото або відео матеріалів, зроблених у відділенні служби доставки або одразу після отримання;',
+                'рослина не була висаджена або пересаджена.',
               ].map((item, i) => (
-                <li key={i} className="flex items-start gap-2.5">
-                  <span className="text-green-500 text-lg mt-0.5">✓</span>
-                  <span className="text-sm sm:text-base">{item}</span>
+                <li key={i} className="flex items-start gap-3">
+                  <span className="mt-0.5 text-green-600 text-lg leading-none">•</span>
+                  <span className="text-sm sm:text-base leading-relaxed">{item}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          {/* Not Allowed */}
+          {/* Not accepted */}
           <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-6 md:p-8">
             <div className="flex items-center gap-2.5 md:gap-3 mb-4 md:mb-6">
               <div className="bg-red-100 p-2 rounded-lg">
                 <AlertCircle className="w-5 h-5 md:w-6 md:h-6 text-red-600" />
               </div>
               <h3 className="text-xl md:text-2xl font-bold text-gray-800">
-                Не підлягає поверненню
+                Коли звернення не розглядається
               </h3>
             </div>
 
-            <ul className="space-y-2.5 md:space-y-3 text-gray-600">
+            <ul className="space-y-3 text-gray-700">
               {[
-                'Товар був у використанні',
-                'Пошкоджена упаковка',
-                'Рослина була висаджена в ґрунт',
-                'Минув термін повернення (14 днів)',
+                'минуло більше 24 годин з моменту отримання замовлення;',
+                'відсутні фото або відео матеріали, зроблені у відділенні служби доставки або одразу після отримання;',
+                'рослина була висаджена або пересаджена.',
               ].map((item, i) => (
-                <li key={i} className="flex items-start gap-2.5">
-                  <span className="text-red-500 text-lg mt-0.5">✗</span>
-                  <span className="text-sm sm:text-base">{item}</span>
+                <li key={i} className="flex items-start gap-3">
+                  <span className="mt-0.5 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-red-50 text-red-600 text-sm font-bold">
+                    ✕
+                  </span>
+                  <span className="text-sm sm:text-base leading-relaxed">{item}</span>
                 </li>
               ))}
             </ul>
           </div>
         </div>
 
-        {/* Return Process */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 md:p-12 mb-6 md:mb-12">
+        {/* Steps */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 md:p-12">
           <div className="flex items-center gap-2.5 md:gap-3 mb-6 md:mb-8">
             <Clock className="w-6 h-6 md:w-8 md:h-8 text-green-500" />
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">
-              Процес повернення
+              Як подати звернення
             </h2>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {[
-              ['1', "Зв\'яжіться з нами", 'Телефонуйте або пишіть про намір повернути товар'],
-              ['2', 'Відправте товар', 'Надішліть товар за нашою адресою'],
-              ['3', 'Перевірка', 'Ми перевіримо стан товару після отримання'],
-              ['4', 'Повернення коштів', 'Гроші повернуться протягом 3-5 робочих днів'],
+              ['1', "Звʼяжіться з нами", 'Напишіть або зателефонуйте протягом 24 годин після отримання.'],
+              ['2', 'Додайте докази', 'Надайте фото/відео з відділення доставки або одразу після отримання.'],
+              ['3', 'Не висаджуйте', 'Не висаджуйте та не пересаджуйте рослину до розгляду звернення.'],
+              ['4', 'Рішення', 'Ми індивідуально розглянемо звернення та повідомимо результат.'],
             ].map(([num, title, desc], i) => (
-              <div key={i} className="text-center" data-testid="return-step">
-                <div className="bg-green-100 w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center mx-auto mb-2 md:mb-4">
-                  <span className="text-lg md:text-2xl font-bold text-green-600">{num}</span>
+              <div
+                key={i}
+                className="rounded-2xl border border-gray-100 bg-gray-50 p-4 md:p-5 text-left sm:text-center"
+                data-testid="return-step"
+              >
+                <div className="flex sm:flex-col items-center sm:items-center gap-3 sm:gap-2 mb-2 sm:mb-3">
+                  <div className="bg-green-100 w-11 h-11 md:w-14 md:h-14 rounded-full flex items-center justify-center shrink-0">
+                    <span className="text-lg md:text-2xl font-bold text-green-600">
+                      {num}
+                    </span>
+                  </div>
+                  <h4 className="font-bold text-gray-800 text-sm sm:text-base md:text-lg leading-snug">
+                    {title}
+                  </h4>
                 </div>
-                <h4 className="font-bold text-gray-800 mb-1 text-xs sm:text-sm md:text-base">
-                  {title}
-                </h4>
-                <p className="text-xs sm:text-sm text-gray-600">{desc}</p>
+                <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                  {desc}
+                </p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Contact Info (UPDATED TEXT) */}
+        {/* Contact */}
         <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-5 sm:p-6 md:p-8">
           <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-2 md:mb-4">
             Маєте запитання?
           </h3>
 
-          <p className="text-sm sm:text-base text-gray-700 mb-4">
-            Зателефонуйте нам — допоможемо розібратися з будь-яким питанням щодо обміну та повернення товарів.
+          <p className="text-sm sm:text-base text-gray-700 mb-4 leading-relaxed">
+            Зателефонуйте нам — допоможемо по зверненню щодо обміну або компенсації.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
@@ -159,4 +187,3 @@ const ReturnPage = () => {
 };
 
 export default ReturnPage;
-
