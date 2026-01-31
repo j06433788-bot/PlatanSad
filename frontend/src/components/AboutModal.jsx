@@ -1,10 +1,14 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, Sprout, Shield, Truck, Award, Users } from "lucide-react";
+import { X, Sprout, Truck, Award, Users } from "lucide-react";
 
 const AboutModal = ({ isOpen, onClose }) => {
   const panelRef = useRef(null);
   const navigate = useNavigate();
+
+  // Counters
+  const [years, setYears] = useState(0);
+  const [pines, setPines] = useState(0);
 
   // Lock body scroll + Esc close + focus first element
   useEffect(() => {
@@ -31,6 +35,45 @@ const AboutModal = ({ isOpen, onClose }) => {
     };
   }, [isOpen, onClose]);
 
+  // Animate counters on open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    setYears(0);
+    setPines(0);
+
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (prefersReduced) {
+      setYears(20);
+      setPines(200);
+      return;
+    }
+
+    const start = performance.now();
+    const duration = 900; // ms
+    const yTarget = 20;
+    const pTarget = 200;
+
+    let raf = 0;
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / duration);
+      // easeOutCubic
+      const eased = 1 - Math.pow(1 - t, 3);
+
+      setYears(Math.round(yTarget * eased));
+      setPines(Math.round(pTarget * eased));
+
+      if (t < 1) raf = requestAnimationFrame(tick);
+    };
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [isOpen]);
+
   if (!isOpen) return null;
 
   const goToCatalog = () => {
@@ -56,25 +99,20 @@ const AboutModal = ({ isOpen, onClose }) => {
         ref={panelRef}
         className={[
           "relative w-full sm:max-w-3xl bg-white shadow-2xl overflow-hidden",
-          // Mobile: bottom sheet
           "rounded-t-3xl sm:rounded-2xl",
-          // Safer heights on phones + iOS
           "max-h-[92vh] sm:max-h-[90vh]",
-          // Smooth entrance
           "animate-slideUp sm:animate-fadeIn",
         ].join(" ")}
-        style={{
-          paddingBottom: "env(safe-area-inset-bottom, 0px)",
-        }}
+        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       >
         {/* Header */}
         <div className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-4 sm:p-6 relative">
           <div className="pr-12">
             <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold leading-tight">
-              PlatanSad – усе для вашого саду та городу
+              PlatanSad — сад, створений з досвідом.
             </h2>
             <p className="text-green-100 text-xs sm:text-sm md:text-base mt-1">
-              Розсадник декоративних і садових рослин
+              Хвойні рослини, нівакі та понад 100 видів вічнозелених рослин .
             </p>
           </div>
 
@@ -107,44 +145,25 @@ const AboutModal = ({ isOpen, onClose }) => {
             </h3>
 
             <div className="space-y-3">
-              <div className="flex gap-3">
+              <div className="flex gap-3 items-start">
                 <div className="w-9 h-9 sm:w-10 sm:h-10 bg-green-100 rounded-full flex items-center justify-center shrink-0">
                   <Sprout className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
                 </div>
-                <div className="min-w-0">
-                  <p className="font-semibold text-gray-800 text-sm sm:text-base">
-                    Декоративні та хвойні рослини
-                  </p>
-                  <p className="text-xs sm:text-sm text-gray-600">
-                    Туї, ялини, самшит, нівакі, формовані та класичні рослини
-                  </p>
-                </div>
-              </div>
 
-              <div className="flex gap-3">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-green-100 rounded-full flex items-center justify-center shrink-0">
-                  <Sprout className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
-                </div>
-                <div className="min-w-0">
-                  <p className="font-semibold text-gray-800 text-sm sm:text-base">
-                    Листопадні дерева та кущі
-                  </p>
-                  <p className="text-xs sm:text-sm text-gray-600">
-                    Для саду, двору та ландшафтного дизайну
-                  </p>
-                </div>
-              </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="font-semibold text-gray-800 text-sm sm:text-base">
+                      Нівакі та формовані дерева
+                    </p>
 
-              <div className="flex gap-3">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 bg-green-100 rounded-full flex items-center justify-center shrink-0">
-                  <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
-                </div>
-                <div className="min-w-0">
-                  <p className="font-semibold text-gray-800 text-sm sm:text-base">
-                    Засоби догляду та захисту
-                  </p>
-                  <p className="text-xs sm:text-sm text-gray-600">
-                    Підживки, захист, рекомендації по догляду
+                    {/* Counter badge */}
+                    <div className="shrink-0 rounded-full bg-green-600 text-white px-3 py-1 text-xs sm:text-sm font-extrabold">
+                      {pines}+
+                    </div>
+                  </div>
+
+                  <p className="text-xs sm:text-sm text-gray-600 mt-1">
+                    Понад {pines}+ сформованих сосен з правильною кроною
                   </p>
                 </div>
               </div>
@@ -160,12 +179,20 @@ const AboutModal = ({ isOpen, onClose }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="p-4 bg-green-50 rounded-2xl flex gap-3">
                 <Award className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-bold text-gray-800 text-sm sm:text-base">
-                    Якість та досвід
-                  </p>
-                  <p className="text-xs sm:text-sm text-gray-600">
-                    Перевірені рослини з правильним доглядом
+                <div className="min-w-0">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="font-bold text-gray-800 text-sm sm:text-base">
+                      Понад {years}+ років досвіду
+                    </p>
+
+                    {/* Counter badge */}
+                    <div className="shrink-0 rounded-full bg-green-600 text-white px-3 py-1 text-xs sm:text-sm font-extrabold">
+                      {years}+
+                    </div>
+                  </div>
+
+                  <p className="text-xs sm:text-sm text-gray-600 mt-1">
+                    Дорослі, власно вирощені рослини з правильною кореневою системою
                   </p>
                 </div>
               </div>
@@ -186,10 +213,10 @@ const AboutModal = ({ isOpen, onClose }) => {
                 <Truck className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
                 <div>
                   <p className="font-bold text-gray-800 text-sm sm:text-base">
-                    Швидка доставка
+                    Надійна доставка
                   </p>
                   <p className="text-xs sm:text-sm text-gray-600">
-                    Надійне пакування по всій Україні
+                    Акуратне пакування та відправка рослин по всій Україні
                   </p>
                 </div>
               </div>
@@ -215,7 +242,6 @@ const AboutModal = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Mobile hint spacing */}
           <div className="h-2 sm:hidden" />
         </div>
       </div>
