@@ -177,11 +177,11 @@ const Hero = () => {
   const parallax = clamp(-dx * 0.08, -14, 14);
 
   return (
-    <section className="max-w-7xl mx-auto px-0 sm:px-4 py-0 sm:py-4">
+    <section className="max-w-7xl mx-auto px-0 sm:px-4 -mt-12 sm:-mt-16">
       <div className="relative overflow-hidden rounded-none sm:rounded-2xl shadow-md">
         <div
           ref={wrapRef}
-          className="relative h-[180px] xs:h-[200px] sm:aspect-[2.5/1] touch-pan-y bg-black"
+          className="relative h-[230px] xs:h-[260px] sm:aspect-[2.1/1] touch-pan-y bg-black"
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUpOrCancel}
@@ -237,7 +237,7 @@ const Hero = () => {
             })}
           </div>
 
-          {/* Pills — same width, thinner height, LOWER position */}
+          {/* Ultra thin pills */}
           {len > 1 && (
             <div className="absolute bottom-1 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5">
               {slides.map((_, i) => (
