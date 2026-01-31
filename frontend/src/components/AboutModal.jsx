@@ -108,10 +108,10 @@ const AboutModal = ({ isOpen, onClose }) => {
         <div className="bg-gradient-to-r from-green-600 to-green-700 text-white px-4 py-4 sm:p-6 relative">
           <div className="pr-12">
             <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold leading-tight">
-              PlatanSad — сад, створений з досвідом.
+              Ділимось тим, що вирощуємо з любов’ю
             </h2>
             <p className="text-green-100 text-xs sm:text-sm md:text-base mt-1">
-              Хвойні рослини, нівакі та понад 100 видів вічнозелених рослин .
+              Зазирніть за лаштунки Platansad
             </p>
           </div>
 
