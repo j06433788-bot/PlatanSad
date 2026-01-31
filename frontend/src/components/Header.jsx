@@ -1119,7 +1119,7 @@ const Header = () => {
 
               {/* Viber */}
               <a
-                href="viber://chat?number=+380636507449"
+                href="viber://https://invite.viber.com/?g2=AQAIkFEWkP%2FFgFE3qY1I4LQ2KyGYVMPue1%2Folm4J0UkpOZOtqnznL8yQga6ARqn%2F"
                 target="_blank"
                 rel="noopener noreferrer"
                 onPointerDown={(e) => addRipple(e, 'vb')}
