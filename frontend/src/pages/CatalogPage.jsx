@@ -22,6 +22,11 @@ const CatalogPage = () => {
     search: searchParams.get('search') || '',
   });
 
+  // ✅ Instagram button settings (shows only for Room plants)
+  const IG_HANDLE = '@maisternia.roslyn';
+  const IG_URL = 'https://www.instagram.com/maisternia.roslyn/';
+  const isRoomPlantsSelected = String(filters.category || '').trim() === 'Кімнатні рослини';
+
   // URL -> state sync (back/forward, shared links)
   useEffect(() => {
     const next = {
@@ -239,10 +244,20 @@ const CatalogPage = () => {
           animation: shimmer 1.2s ease-in-out infinite;
         }
 
+        /* Instagram glow (only when Room plants selected) */
+        @keyframes igGlow {
+          0%, 100% { transform: translateY(0) scale(1); filter: saturate(1.05); box-shadow: 0 14px 30px rgba(217,70,239,.22); }
+          50% { transform: translateY(-1px) scale(1.01); filter: saturate(1.25); box-shadow: 0 18px 44px rgba(217,70,239,.35); }
+        }
+        .ig-glow {
+          animation: igGlow 1.6s ease-in-out infinite;
+        }
+
         /* Respect reduced motion */
         @media (prefers-reduced-motion: reduce) {
           .item-in { animation: none !important; }
           .skeleton::after { animation: none !important; }
+          .ig-glow { animation: none !important; }
         }
       `}</style>
 
@@ -344,6 +359,32 @@ const CatalogPage = () => {
                   </button>
                 )}
               </div>
+
+              {/* ✅ Instagram button only for "Кімнатні рослини" */}
+              {isRoomPlantsSelected && (
+                <div className="mt-3">
+                  <a
+                    href={IG_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="
+                      ig-glow
+                      inline-flex items-center gap-2
+                      rounded-2xl px-4 py-2
+                      bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-500
+                      text-white font-semibold
+                      shadow-lg shadow-fuchsia-500/30
+                      hover:scale-[1.02] active:scale-[0.99]
+                      transition
+                    "
+                    aria-label="Instagram maisternia.roslyn"
+                    title="Instagram"
+                  >
+                    <span className="text-lg">📷</span>
+                    <span>{IG_HANDLE}</span>
+                  </a>
+                </div>
+              )}
             </div>
           </div>
 
@@ -615,5 +656,4 @@ const CatalogPage = () => {
 };
 
 export default CatalogPage;
-
 
