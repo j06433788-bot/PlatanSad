@@ -13,27 +13,27 @@ const DeliveryPage = () => {
           >
             Оплата і доставка
           </h1>
-          <p className="text-sm sm:text-base md:text-xl text-center text-green-50 max-w-3xl mx-auto">
+          <p className="text-sm sm:text-base md:text-xl text-center text-green-50 max-w-3xl mx-auto leading-relaxed">
             Вся інформація про способи оплати та доставки товарів
           </p>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 md:py-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 md:py-12">
         {/* Payment Section */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 md:p-12 mb-6 md:mb-12">
-          <div className="flex items-center gap-2.5 md:gap-3 mb-5 md:mb-6">
+        <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-8 md:p-12 mb-5 sm:mb-6 md:mb-12">
+          <div className="flex items-center gap-2.5 md:gap-3 mb-4 sm:mb-5 md:mb-6">
             <CreditCard className="w-6 h-6 md:w-8 md:h-8 text-green-500" />
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Способи оплати</h2>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">Способи оплати</h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-6">
             <div
-              className="border-2 border-gray-200 rounded-xl p-5 sm:p-6 hover:border-green-500 transition-colors"
+              className="border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-green-500 transition-colors"
               data-testid="payment-method"
             >
-              <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2 md:mb-3">
+              <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-800 mb-2">
                 Готівка при отриманні
               </h3>
               <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
@@ -42,10 +42,10 @@ const DeliveryPage = () => {
             </div>
 
             <div
-              className="border-2 border-gray-200 rounded-xl p-5 sm:p-6 hover:border-green-500 transition-colors"
+              className="border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:border-green-500 transition-colors"
               data-testid="payment-method"
             >
-              <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2 md:mb-3">
+              <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-800 mb-2">
                 Безготівковий розрахунок
               </h3>
               <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
@@ -56,26 +56,46 @@ const DeliveryPage = () => {
         </div>
 
         {/* Delivery Section */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 md:p-12 mb-6 md:mb-12">
-          <div className="flex items-center gap-2.5 md:gap-3 mb-5 md:mb-6">
+        <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-8 md:p-12 mb-5 sm:mb-6 md:mb-12">
+          <div className="flex items-center gap-2.5 md:gap-3 mb-4 sm:mb-5 md:mb-6">
             <Truck className="w-6 h-6 md:w-8 md:h-8 text-green-500" />
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-800">Доставка</h2>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800">Доставка</h2>
           </div>
 
-          <div className="space-y-4 md:space-y-6">
+          {/* Extra info block (новий) */}
+          <div className="mb-4 sm:mb-6 rounded-2xl border border-green-200 bg-green-50 p-4 sm:p-5">
+            <div className="flex items-start gap-3">
+              <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+              <div className="min-w-0">
+                <p className="text-sm sm:text-base text-gray-800 font-semibold leading-relaxed">
+                  Копаємо і відправляємо щодня в порядку живої черги.
+                </p>
+                <p className="text-sm sm:text-base text-gray-700 leading-relaxed mt-1">
+                  Терміни очікування: <span className="font-semibold">2-6 робочих дні</span> (залежить від сезону та
+                  завантаженості).
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-3 sm:space-y-4 md:space-y-6">
             {/* Нова Пошта */}
-            <div className="border-2 border-gray-200 rounded-xl p-5 sm:p-6" data-testid="delivery-method">
+            <div className="border-2 border-gray-200 rounded-xl p-4 sm:p-6" data-testid="delivery-method">
               <div className="flex items-start gap-3 sm:gap-4">
                 <Package className="w-5 h-5 md:w-6 md:h-6 text-green-500 mt-0.5 flex-shrink-0" />
                 <div className="min-w-0">
-                  <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2">Нова Пошта</h3>
-                  <p className="text-sm sm:text-base text-gray-600 mb-3 md:mb-3 leading-relaxed">
-                    Доставка у відділення або поштомат по всій Україні.
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-800 mb-2">Нова Пошта</h3>
+
+                  <p className="text-sm sm:text-base text-gray-600 mb-3 leading-relaxed">
+                    Доставка обов&apos;язково у вантажне відділення Нової Пошти (200-1100 кг).
                   </p>
+
                   <ul className="space-y-2 text-gray-600">
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm sm:text-base">Термін доставки: 1-3 дні</span>
+                      <span className="text-sm sm:text-base">
+                        Терміни доставки: <span className="font-semibold text-gray-800">3-6 робочих дні</span>
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
@@ -87,12 +107,14 @@ const DeliveryPage = () => {
             </div>
 
             {/* Кур'єрська доставка */}
-            <div className="border-2 border-gray-200 rounded-xl p-5 sm:p-6" data-testid="delivery-method">
+            <div className="border-2 border-gray-200 rounded-xl p-4 sm:p-6" data-testid="delivery-method">
               <div className="flex items-start gap-3 sm:gap-4">
                 <MapPin className="w-5 h-5 md:w-6 md:h-6 text-green-500 mt-0.5 flex-shrink-0" />
                 <div className="min-w-0">
-                  <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2">Кур&apos;єрська доставка</h3>
-                  <p className="text-sm sm:text-base text-gray-600 mb-3 md:mb-3 leading-relaxed">
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-800 mb-2">
+                    Кур&apos;єрська доставка
+                  </h3>
+                  <p className="text-sm sm:text-base text-gray-600 mb-3 leading-relaxed">
                     Доставка за вказаною адресою (доступно для великих міст).
                   </p>
                   <ul className="space-y-2 text-gray-600">
@@ -110,12 +132,12 @@ const DeliveryPage = () => {
             </div>
 
             {/* Самовивіз */}
-            <div className="border-2 border-gray-200 rounded-xl p-5 sm:p-6" data-testid="delivery-method">
+            <div className="border-2 border-gray-200 rounded-xl p-4 sm:p-6" data-testid="delivery-method">
               <div className="flex items-start gap-3 sm:gap-4">
                 <Clock className="w-5 h-5 md:w-6 md:h-6 text-green-500 mt-0.5 flex-shrink-0" />
                 <div className="min-w-0">
-                  <h3 className="text-lg md:text-xl font-bold text-gray-800 mb-2">Самовивіз</h3>
-                  <p className="text-sm sm:text-base text-gray-600 mb-3 md:mb-3 leading-relaxed">
+                  <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-800 mb-2">Самовивіз</h3>
+                  <p className="text-sm sm:text-base text-gray-600 mb-3 leading-relaxed">
                     Забрати замовлення можна з нашого розсадника.
                   </p>
                   <ul className="space-y-2 text-gray-600">
@@ -135,26 +157,26 @@ const DeliveryPage = () => {
         </div>
 
         {/* Important Info */}
-        <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-6 sm:p-7 md:p-8">
-          <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-3 md:mb-4">
+        <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-5 sm:p-7 md:p-8">
+          <h3 className="text-lg sm:text-xl md:text-2xl font-bold text-gray-800 mb-3 md:mb-4">
             Важлива інформація
           </h3>
           <ul className="space-y-2.5 md:space-y-3 text-gray-700">
             <li className="flex items-start gap-2.5 md:gap-3">
               <span className="text-green-500 text-lg md:text-xl mt-0.5 flex-shrink-0">•</span>
-              <span className="text-sm sm:text-base md:text-base leading-relaxed">
+              <span className="text-sm sm:text-base leading-relaxed">
                 При отриманні обов&apos;язково перевірте товар на наявність пошкоджень
               </span>
             </li>
             <li className="flex items-start gap-2.5 md:gap-3">
               <span className="text-green-500 text-lg md:text-xl mt-0.5 flex-shrink-0">•</span>
-              <span className="text-sm sm:text-base md:text-base leading-relaxed">
+              <span className="text-sm sm:text-base leading-relaxed">
                 Рослини надійно упаковані для безпечної доставки
               </span>
             </li>
             <li className="flex items-start gap-2.5 md:gap-3">
               <span className="text-green-500 text-lg md:text-xl mt-0.5 flex-shrink-0">•</span>
-              <span className="text-sm sm:text-base md:text-base leading-relaxed">
+              <span className="text-sm sm:text-base leading-relaxed">
                 Після відправлення ви отримаєте номер для відстеження
               </span>
             </li>
@@ -166,4 +188,3 @@ const DeliveryPage = () => {
 };
 
 export default DeliveryPage;
-
