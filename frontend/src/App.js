@@ -38,22 +38,6 @@ import ProtectedRoute from "./admin/components/ProtectedRoute";
 
 import "./App.css";
 
-const OrderSuccessStub = () => (
-  <div className="p-6">
-    <h1 className="text-2xl font-bold">✅ Замовлення оформлено</h1>
-    <p className="mt-2 text-gray-600">
-      Дякуємо! Сторінка підтвердження тимчасово на техобслуговуванні.
-    </p>
-    <a
-      href="/"
-      className="inline-flex mt-4 items-center justify-center rounded-xl bg-green-600 px-4 py-2 text-white font-semibold"
-    >
-      На головну
-    </a>
-  </div>
-);
-
-
 function App() {
   return (
     <Router>
