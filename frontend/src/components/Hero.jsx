@@ -237,9 +237,9 @@ const Hero = () => {
             })}
           </div>
 
-          {/* Pills — width same, height reduced */}
+          {/* Pills — same width, thinner height, LOWER position */}
           {len > 1 && (
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5">
+            <div className="absolute bottom-1 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5">
               {slides.map((_, i) => (
                 <button
                   key={i}
@@ -278,4 +278,3 @@ const Hero = () => {
 };
 
 export default Hero;
-
