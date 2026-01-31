@@ -19,19 +19,15 @@ const HomePage = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isDesktopControls, setIsDesktopControls] = useState(false);
 
-  // Decide when to show native controls (sm+)
+  // Detect desktop controls (>=640px)
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 640px)");
     const apply = () => setIsDesktopControls(mq.matches);
 
     apply();
-    if (mq.addEventListener) mq.addEventListener("change", apply);
-    else mq.addListener(apply);
+    mq.addEventListener("change", apply);
 
-    return () => {
-      if (mq.removeEventListener) mq.removeEventListener("change", apply);
-      else mq.removeListener(apply);
-    };
+    return () => mq.removeEventListener("change", apply);
   }, []);
 
   // Observe visibility
@@ -48,12 +44,12 @@ const HomePage = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Mark that we should animate in (only once)
+  // Trigger animation once
   useEffect(() => {
     if (isVisible) setHasAnimatedIn(true);
   }, [isVisible]);
 
-  // Autoplay when visible, pause when not
+  // Autoplay when visible
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -75,7 +71,7 @@ const HomePage = () => {
     }
   }, [isVisible]);
 
-  // Pause when tab is hidden (mobile optimization)
+  // Pause when tab hidden
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
@@ -92,7 +88,7 @@ const HomePage = () => {
       document.removeEventListener("visibilitychange", onVisibilityChange);
   }, []);
 
-  // Sync isPlaying with actual video state
+  // Sync state with video
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -109,7 +105,7 @@ const HomePage = () => {
     };
   }, []);
 
-  // Toggle native controls on sm+ without duplicating video
+  // Enable native controls on desktop
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -148,15 +144,14 @@ const HomePage = () => {
       {/* Products */}
       <ProductSection />
 
-      {/* FULL WIDTH VIDEO (fade-in + subtle zoom 1.02 -> 1.00) */}
+      {/* FULL WIDTH VIDEO */}
       <section
         ref={videoSectionRef}
         className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] mt-5 sm:mt-7"
       >
-        {/* Fade/zoom wrapper: animates once when first visible */}
         <div
           className={[
-            "w-screen bg-black transform-gpu will-change-transform",
+            "w-screen bg-black transform-gpu",
             "transition-[opacity,transform] duration-700 ease-out",
             hasAnimatedIn
               ? "opacity-100 scale-100 translate-y-0"
@@ -167,33 +162,36 @@ const HomePage = () => {
             <video
               ref={videoRef}
               className="absolute inset-0 w-full h-full object-cover"
-              src="/nursery.mp4"
+              src="https://platansad.com.ua/nursery.mp4"
               muted
               autoPlay
               loop
               playsInline
               preload="metadata"
+              onError={(e) => {
+                const v = e.currentTarget;
+                console.log("VIDEO ERROR:", v.currentSrc);
+              }}
             />
 
-            {/* readability gradient */}
+            {/* Gradient overlay */}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
 
-            {/* Minimal label (smaller + closer to left edge) */}
+            {/* Label */}
             <div className="pointer-events-none absolute bottom-2 left-2 sm:bottom-3 sm:left-3">
               <div className="bg-black/50 backdrop-blur-sm px-2 py-1 rounded-lg ring-1 ring-white/10">
-                <p className="text-[10px] sm:text-[11px] font-medium text-white leading-none">
-                  🌿Відео з нашого розсадника
+                <p className="text-[10px] sm:text-[11px] font-medium text-white">
+                  🌿 Відео з нашого розсадника
                 </p>
               </div>
             </div>
 
-            {/* Mobile play/pause (shown only when controls are hidden) */}
+            {/* Mobile Play Button */}
             {!isDesktopControls && (
               <div className="absolute bottom-3 right-3">
                 <button
                   onClick={togglePlay}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white/10 hover:bg-white/15 active:bg-white/10 text-white px-3.5 py-2.5 backdrop-blur-md ring-1 ring-white/20 shadow-sm transition"
-                  aria-label={isPlaying ? "Пауза" : "Відтворити"}
+                  className="flex items-center gap-2 rounded-2xl bg-white/10 text-white px-3.5 py-2.5 backdrop-blur-md ring-1 ring-white/20 shadow transition"
                 >
                   {isPlaying ? (
                     <Pause className="h-4 w-4" />
