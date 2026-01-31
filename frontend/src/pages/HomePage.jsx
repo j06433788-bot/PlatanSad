@@ -4,39 +4,56 @@ import Hero from "../components/Hero";
 import ProductSection from "../components/ProductSection";
 import CatalogModal from "../components/CatalogModal";
 
+const VIDEO_URL = "/nursery.mp4"; // файл має бути в /var/www/PlatanSad/frontend/build/nursery.mp4
+
 const HomePage = () => {
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
 
   // Video performance control
   const videoRef = useRef(null);
   const videoSectionRef = useRef(null);
-  const [isVisible, setIsVisible] = useState(false);
 
-  // Animate once when first visible
+  const [isVisible, setIsVisible] = useState(true); // safe default
   const [hasAnimatedIn, setHasAnimatedIn] = useState(false);
 
   // Mobile UX controls
   const [isPlaying, setIsPlaying] = useState(false);
   const [isDesktopControls, setIsDesktopControls] = useState(false);
 
-  // Detect desktop controls (>=640px)
+  const [videoFailed, setVideoFailed] = useState(false);
+
+  // Detect desktop controls (>=640px) - safe for old Safari
   useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return;
+
     const mq = window.matchMedia("(min-width: 640px)");
-    const apply = () => setIsDesktopControls(mq.matches);
+    const apply = () => setIsDesktopControls(!!mq.matches);
 
     apply();
-    mq.addEventListener("change", apply);
 
-    return () => mq.removeEventListener("change", apply);
+    if (mq.addEventListener) {
+      mq.addEventListener("change", apply);
+      return () => mq.removeEventListener("change", apply);
+    }
+
+    if (mq.addListener) {
+      mq.addListener(apply);
+      return () => mq.removeListener(apply);
+    }
   }, []);
 
-  // Observe visibility
+  // Observe visibility (safe fallback if IntersectionObserver missing)
   useEffect(() => {
     const el = videoSectionRef.current;
     if (!el) return;
 
+    if (typeof window === "undefined" || !("IntersectionObserver" in window)) {
+      setIsVisible(true);
+      return;
+    }
+
     const observer = new IntersectionObserver(
-      ([entry]) => setIsVisible(entry.isIntersecting),
+      ([entry]) => setIsVisible(!!entry?.isIntersecting),
       { threshold: 0.35 }
     );
 
@@ -44,49 +61,10 @@ const HomePage = () => {
     return () => observer.disconnect();
   }, []);
 
-  // Trigger animation once
+  // Animate once when first visible
   useEffect(() => {
     if (isVisible) setHasAnimatedIn(true);
   }, [isVisible]);
-
-  // Autoplay when visible
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const tryPlay = async () => {
-      try {
-        await video.play();
-        setIsPlaying(true);
-      } catch {
-        setIsPlaying(false);
-      }
-    };
-
-    if (isVisible) {
-      tryPlay();
-    } else {
-      video.pause();
-      setIsPlaying(false);
-    }
-  }, [isVisible]);
-
-  // Pause when tab hidden
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const onVisibilityChange = () => {
-      if (document.hidden) {
-        video.pause();
-        setIsPlaying(false);
-      }
-    };
-
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    return () =>
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-  }, []);
 
   // Sync state with video
   useEffect(() => {
@@ -109,8 +87,46 @@ const HomePage = () => {
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
-    v.controls = isDesktopControls;
+    v.controls = !!isDesktopControls;
   }, [isDesktopControls]);
+
+  // Autoplay when visible
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || videoFailed) return;
+
+    const tryPlay = async () => {
+      try {
+        await video.play();
+      } catch {
+        setIsPlaying(false);
+      }
+    };
+
+    if (isVisible) {
+      tryPlay();
+    } else {
+      video.pause();
+      setIsPlaying(false);
+    }
+  }, [isVisible, videoFailed]);
+
+  // Pause when tab hidden
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const onVisibilityChange = () => {
+      if (document.hidden) {
+        video.pause();
+        setIsPlaying(false);
+      }
+    };
+
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () =>
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+  }, []);
 
   const togglePlay = async () => {
     const v = videoRef.current;
@@ -159,20 +175,34 @@ const HomePage = () => {
           ].join(" ")}
         >
           <div className="relative w-screen h-[68vw] sm:h-[40vw] lg:h-[420px] max-h-[520px] overflow-hidden">
-            <video
-              ref={videoRef}
-              className="absolute inset-0 w-full h-full object-cover"
-              src="https://platansad.com.ua/nursery.mp4"
-              muted
-              autoPlay
-              loop
-              playsInline
-              preload="metadata"
-              onError={(e) => {
-                const v = e.currentTarget;
-                console.log("VIDEO ERROR:", v.currentSrc);
-              }}
-            />
+            {!videoFailed ? (
+              <video
+                ref={videoRef}
+                className="absolute inset-0 w-full h-full object-cover"
+                src={VIDEO_URL}
+                muted
+                autoPlay
+                loop
+                playsInline
+                preload="metadata"
+                onError={() => {
+                  setVideoFailed(true);
+                  console.log("VIDEO ERROR: cannot load", VIDEO_URL);
+                }}
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center bg-black">
+                <div className="text-center px-4">
+                  <div className="text-white/90 font-bold text-base sm:text-lg">
+                    🌿 Відео тимчасово недоступне
+                  </div>
+                  <div className="text-white/60 text-sm mt-1">
+                    Перевір файл{" "}
+                    <span className="font-mono">{VIDEO_URL}</span> на сервері
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Gradient overlay */}
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
@@ -187,11 +217,11 @@ const HomePage = () => {
             </div>
 
             {/* Mobile Play Button */}
-            {!isDesktopControls && (
+            {!isDesktopControls && !videoFailed && (
               <div className="absolute bottom-3 right-3">
                 <button
                   onClick={togglePlay}
-                  className="flex items-center gap-2 rounded-2xl bg-white/10 text-white px-3.5 py-2.5 backdrop-blur-md ring-1 ring-white/20 shadow transition"
+                  className="flex items-center gap-2 rounded-2xl bg-white/10 text-white px-3.5 py-2.5 backdrop-blur-md ring-1 ring-white/20 shadow transition active:scale-[0.98]"
                 >
                   {isPlaying ? (
                     <Pause className="h-4 w-4" />
