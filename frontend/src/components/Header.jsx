@@ -112,57 +112,58 @@ const getCategoryIcon = (nameRaw = '') => {
   const n = String(nameRaw).toLowerCase().replace(/\s+/g, ' ').trim();
 
   if (n.includes('бонсай') || n.includes('нівакі')) return IconBonsai;
-
   if (n.includes('глобоса')) return IconGlobeThuja;
   if (n.includes('туя') || n.includes('колумна') || n.includes('смарагд')) return IconThuja;
-
   if (n.includes('самшит')) return IconBoxwood;
-
   if (n.includes('ялина')) return IconSpruce;
-
   if (n.includes('хвой')) return IconConifers;
-
   if (n.includes('листопад')) return IconDeciduous;
-
   if (n.includes('катальпа')) return IconCatalpa;
-
   if (n.includes('кімнат')) return IconIndoor;
 
   return IconConifers;
 };
 
-/* =================== CLOCK SVG (custom badge) =================== */
+/* =================== NEW CLOCK SVG (modern, minimal, nicer) =================== */
 const ClockBadgeIcon = ({ className = 'w-6 h-6' }) => (
   <svg viewBox="0 0 24 24" className={className} aria-hidden="true" focusable="false">
     <defs>
-      <linearGradient id="clockGrad" x1="0" y1="0" x2="1" y2="1">
+      <linearGradient id="clkRing" x1="0" y1="0" x2="1" y2="1">
         <stop offset="0" stopColor="#22c55e" />
         <stop offset="1" stopColor="#16a34a" />
       </linearGradient>
-      <filter id="clockShadow" x="-30%" y="-30%" width="160%" height="160%">
-        <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#16a34a" floodOpacity="0.25" />
+      <radialGradient id="clkFace" cx="35%" cy="30%" r="75%">
+        <stop offset="0" stopColor="#ffffff" stopOpacity="0.98" />
+        <stop offset="1" stopColor="#f3f4f6" stopOpacity="0.98" />
+      </radialGradient>
+      <filter id="clkSoft" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0" dy="2" stdDeviation="2" floodColor="#0f172a" floodOpacity="0.08" />
       </filter>
     </defs>
 
-    <path
-      d="M12 2.2c3.3 0 6 2.7 6 6v1.05c0 .45.18.88.5 1.2l.85.85c.7.7.7 1.84 0 2.55l-.85.85c-.32.32-.5.75-.5 1.2V18c0 3.3-2.7 6-6 6s-6-2.7-6-6v-1.05c0-.45-.18-.88-.5-1.2l-.85-.85c-.7-.7-.7-1.84 0-2.55l.85-.85c.32-.32.5-.75.5-1.2V8.2c0-3.3 2.7-6 6-6z"
-      fill="url(#clockGrad)"
-      filter="url(#clockShadow)"
-    />
+    {/* outer ring */}
+    <circle cx="12" cy="12" r="9.2" fill="none" stroke="url(#clkRing)" strokeWidth="2.2" filter="url(#clkSoft)" />
+    {/* subtle inner ring */}
+    <circle cx="12" cy="12" r="7.9" fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth="1" />
 
-    <circle cx="12" cy="12" r="6.6" fill="rgba(255,255,255,0.92)" />
-    <circle cx="12" cy="12" r="6.6" fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth="1" />
+    {/* face */}
+    <circle cx="12" cy="12" r="7.25" fill="url(#clkFace)" />
 
-    <g opacity="0.6" stroke="#16a34a" strokeLinecap="round">
-      <path d="M12 6.2v1.1" strokeWidth="1.2" />
-      <path d="M12 16.7v1.1" strokeWidth="1.2" />
-      <path d="M6.2 12h1.1" strokeWidth="1.2" />
-      <path d="M16.7 12h1.1" strokeWidth="1.2" />
+    {/* ticks */}
+    <g strokeLinecap="round" stroke="#16a34a" opacity="0.55">
+      <path d="M12 6.25v1.05" strokeWidth="1.2" />
+      <path d="M12 16.7v1.05" strokeWidth="1.2" />
+      <path d="M6.25 12h1.05" strokeWidth="1.2" />
+      <path d="M16.7 12h1.05" strokeWidth="1.2" />
     </g>
 
-    <path d="M12 8.7v3.5l2.6 1.6" fill="none" stroke="#16a34a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+    {/* hands */}
+    <path d="M12 8.2v4.1" fill="none" stroke="#14532d" strokeWidth="1.9" strokeLinecap="round" />
+    <path d="M12 12l3 1.7" fill="none" stroke="#16a34a" strokeWidth="1.9" strokeLinecap="round" />
 
-    <circle cx="12" cy="12" r="1.1" fill="#16a34a" />
+    {/* center */}
+    <circle cx="12" cy="12" r="1.2" fill="#16a34a" />
+    <circle cx="12" cy="12" r="0.55" fill="#14532d" />
   </svg>
 );
 
@@ -546,20 +547,13 @@ const Header = () => {
                   tabIndex={wishlistCount === 0 ? -1 : 0}
                   className={cx(
                     'p-2.5 sm:p-3.5 md:p-4 transition-all duration-300 rounded-full relative focus:outline-none focus:ring-2 focus:ring-green-200',
-                    wishlistCount > 0
-                      ? 'text-red-500 hover:text-red-600 hover:bg-red-50 active:scale-95'
-                      : 'text-gray-400 cursor-not-allowed opacity-70'
+                    wishlistCount > 0 ? 'text-red-500 hover:text-red-600 hover:bg-red-50 active:scale-95' : 'text-gray-400 cursor-not-allowed opacity-70'
                   )}
                   data-testid="wishlist-icon"
                   aria-label="Список бажань"
                   title={wishlistCount === 0 ? 'Список бажань порожній' : 'Список бажань'}
                 >
-                  <Heart
-                    className={cx(
-                      'w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10',
-                      wishlistCount > 0 ? 'fill-red-500' : 'fill-none'
-                    )}
-                  />
+                  <Heart className={cx('w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10', wishlistCount > 0 ? 'fill-red-500' : 'fill-none')} />
                   {wishlistCount > 0 && (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[11px] sm:text-sm min-w-[20px] sm:min-w-[26px] h-[20px] sm:h-[26px] px-1 rounded-full flex items-center justify-center font-bold animate-pulse shadow-md">
                       {wishlistCount}
@@ -577,10 +571,7 @@ const Header = () => {
                   <div className="relative">
                     <ShoppingBag className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10" />
                     {cartCount > 0 && (
-                      <span
-                        className="absolute -top-2 -right-2 bg-green-500 text-white text-[11px] sm:text-sm min-w-[20px] sm:min-w-[26px] h-[20px] sm:h-[26px] px-1 rounded-full flex items-center justify-center font-bold shadow-md"
-                        data-testid="cart-count"
-                      >
+                      <span className="absolute -top-2 -right-2 bg-green-500 text-white text-[11px] sm:text-sm min-w-[20px] sm:min-w-[26px] h-[20px] sm:h-[26px] px-1 rounded-full flex items-center justify-center font-bold shadow-md" data-testid="cart-count">
                         {cartCount}
                       </span>
                     )}
@@ -615,14 +606,7 @@ const Header = () => {
       </header>
 
       {/* MENU DRAWER */}
-      <div
-        className={cx(
-          'fixed inset-0 z-[100] transition-all',
-          overlayTransition,
-          isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
-        )}
-        aria-hidden={!isMenuOpen}
-      >
+      <div className={cx('fixed inset-0 z-[100] transition-all', overlayTransition, isMenuOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none')} aria-hidden={!isMenuOpen}>
         <button
           type="button"
           className={cx('absolute inset-0 bg-black/50 transition-opacity', overlayTransition, isMenuOpen ? 'opacity-100' : 'opacity-0')}
@@ -648,12 +632,7 @@ const Header = () => {
               <img src="/logo.webp" alt="PlatanSad" className="w-9 h-9 bg-white rounded-full p-0.5" />
               <span className="font-bold text-lg">PlatanSad</span>
             </div>
-            <button
-              type="button"
-              onClick={closeMenu}
-              className="p-2 hover:bg-white/20 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-white/40"
-              aria-label="Закрити"
-            >
+            <button type="button" onClick={closeMenu} className="p-2 hover:bg-white/20 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-white/40" aria-label="Закрити">
               <X className="w-6 h-6" />
             </button>
           </div>
@@ -685,11 +664,7 @@ const Header = () => {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      {category.count > 0 && (
-                        <span className="text-xs text-gray-400 bg-white px-2 py-0.5 rounded-full border border-gray-200">
-                          {category.count}
-                        </span>
-                      )}
+                      {category.count > 0 && <span className="text-xs text-gray-400 bg-white px-2 py-0.5 rounded-full border border-gray-200">{category.count}</span>}
                       <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-green-600 transition-all" />
                     </div>
                   </button>
@@ -699,50 +674,22 @@ const Header = () => {
 
             <div className="border-t-4 border-gray-200 my-3" />
 
-            <button
-              type="button"
-              onClick={() => {
-                navigate('/about');
-                closeMenu();
-              }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-green-50 hover:text-green-500 transition-colors"
-            >
+            <button type="button" onClick={() => { navigate('/about'); closeMenu(); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-green-50 hover:text-green-500 transition-colors">
               <Info className="w-5 h-5" />
               <span className="font-medium text-sm">Про нас</span>
             </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                navigate('/delivery');
-                closeMenu();
-              }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-green-50 hover:text-green-500 transition-colors"
-            >
+            <button type="button" onClick={() => { navigate('/delivery'); closeMenu(); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-green-50 hover:text-green-500 transition-colors">
               <Truck className="w-5 h-5" />
               <span className="font-medium text-sm">Оплата і доставка</span>
             </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                navigate('/return');
-                closeMenu();
-              }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-green-50 hover:text-green-500 transition-colors"
-            >
+            <button type="button" onClick={() => { navigate('/return'); closeMenu(); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-green-50 hover:text-green-500 transition-colors">
               <RefreshCw className="w-5 h-5" />
               <span className="font-medium text-sm">Обмін та повернення</span>
             </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                navigate('/contacts');
-                closeMenu();
-              }}
-              className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-green-50 hover:text-green-500 transition-colors"
-            >
+            <button type="button" onClick={() => { navigate('/contacts'); closeMenu(); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-green-50 hover:text-green-500 transition-colors">
               <MapPin className="w-5 h-5" />
               <span className="font-medium text-sm">Контакти</span>
             </button>
@@ -766,10 +713,7 @@ const Header = () => {
                     </div>
                   </div>
 
-                  {/* leave only Viber tag */}
-                  <span className="text-xs font-semibold text-green-700 bg-green-100 px-2 py-1 rounded-full flex-shrink-0">
-                    Viber
-                  </span>
+                  <span className="text-xs font-semibold text-green-700 bg-green-100 px-2 py-1 rounded-full flex-shrink-0">Viber</span>
                 </a>
 
                 <a
@@ -785,8 +729,6 @@ const Header = () => {
                       <div className="text-xs text-gray-500">Ігор</div>
                     </div>
                   </div>
-
-                  {/* Vodafone tag removed */}
                 </a>
               </div>
             </div>
@@ -866,11 +808,7 @@ const Header = () => {
                     ))}
                 </span>
 
-                <img
-                  src="/instagram.png"
-                  alt=""
-                  className="w-5 h-5 transition-transform duration-300 group-hover:scale-110 motion-safe:animate-pulse motion-reduce:animate-none"
-                />
+                <img src="/instagram.png" alt="" className="w-5 h-5 transition-transform duration-300 group-hover:scale-110 motion-safe:animate-pulse motion-reduce:animate-none" />
                 <span className="hidden sm:inline">Instagram</span>
               </a>
 
@@ -915,11 +853,7 @@ const Header = () => {
                     ))}
                 </span>
 
-                <img
-                  src="/tiktok.png"
-                  alt=""
-                  className="w-5 h-5 transition-transform duration-300 group-hover:scale-110 motion-safe:animate-pulse motion-reduce:animate-none"
-                />
+                <img src="/tiktok.png" alt="" className="w-5 h-5 transition-transform duration-300 group-hover:scale-110 motion-safe:animate-pulse motion-reduce:animate-none" />
                 <span className="hidden sm:inline">TikTok</span>
               </a>
 
@@ -980,22 +914,8 @@ const Header = () => {
                       d="M19.3 16.6c.6-.7 1.8-.6 2.3.2l1.3 2c.5.8.4 1.8-.2 2.4l-.9.9c-.2.2-.3.6-.1.9 1 1.8 2.5 3.3 4.3 4.3.3.2.7.1.9-.1l.9-.9c.6-.6 1.6-.7 2.4-.2l2 1.3c.8.5.9 1.7.2 2.3-.9.9-2 1.4-3.2 1.3-6.4-.4-12-6-12.4-12.4-.1-1.2.4-2.3 1.3-3.2z"
                       fill="#fff"
                     />
-                    <path
-                      d="M28.3 14.6c2 .6 3.5 2.1 4.1 4.1"
-                      fill="none"
-                      stroke="#fff"
-                      strokeWidth="2.2"
-                      strokeLinecap="round"
-                      opacity=".9"
-                    />
-                    <path
-                      d="M26.8 12.2c3.2.7 5.7 3.2 6.4 6.4"
-                      fill="none"
-                      stroke="#fff"
-                      strokeWidth="2.2"
-                      strokeLinecap="round"
-                      opacity=".7"
-                    />
+                    <path d="M28.3 14.6c2 .6 3.5 2.1 4.1 4.1" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" opacity=".9" />
+                    <path d="M26.8 12.2c3.2.7 5.7 3.2 6.4 6.4" fill="none" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" opacity=".7" />
                   </svg>
                 </span>
 
@@ -1006,7 +926,7 @@ const Header = () => {
         </aside>
       </div>
 
-      {/* SEARCH (залишив як було у твоєму файлі, без змін) */}
+      {/* SEARCH */}
       {isMobile ? (
         <BottomSheet open={isSearchOpen} onClose={closeSearch} label="Пошук" containerRef={searchPanelRef} reducedMotion={reducedMotion}>
           <div className="flex items-center justify-between gap-3">
@@ -1063,14 +983,7 @@ const Header = () => {
           </form>
         </BottomSheet>
       ) : (
-        <div
-          className={cx(
-            'fixed inset-0 z-[100] transition-all',
-            overlayTransition,
-            isSearchOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
-          )}
-          aria-hidden={!isSearchOpen}
-        >
+        <div className={cx('fixed inset-0 z-[100] transition-all', overlayTransition, isSearchOpen ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none')} aria-hidden={!isSearchOpen}>
           <button type="button" className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={closeSearch} aria-label="Закрити пошук" tabIndex={isSearchOpen ? 0 : -1} />
 
           <div
@@ -1103,12 +1016,7 @@ const Header = () => {
                     className="w-full px-6 py-4 text-lg border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-4 focus:ring-green-100 focus:border-green-500 transition-all"
                     data-testid="search-input"
                   />
-                  <button
-                    type="submit"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-green-500 hover:bg-green-600 text-white p-3 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-green-200"
-                    data-testid="search-btn"
-                    aria-label="Шукати"
-                  >
+                  <button type="submit" className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-green-500 hover:bg-green-600 text-white p-3 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-green-200" data-testid="search-btn" aria-label="Шукати">
                     <Search className="w-5 h-5" />
                   </button>
                 </div>
@@ -1139,3 +1047,4 @@ const Header = () => {
 };
 
 export default Header;
+
