@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   CreditCard,
@@ -25,6 +26,7 @@ const DeliveryPage = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 md:py-12">
+
         {/* Payment Section */}
         <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-8 md:p-12 mb-6 md:mb-12">
           <div className="flex items-center gap-3 mb-5">
@@ -53,6 +55,7 @@ const DeliveryPage = () => {
 
         {/* Delivery Section */}
         <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-8 md:p-12 mb-6 md:mb-12">
+
           {/* GREEN PRIORITY BLOCK */}
           <div className="mb-6 rounded-2xl border border-green-300 bg-green-50 p-4 sm:p-5">
             <div className="flex items-start gap-3">
@@ -62,7 +65,8 @@ const DeliveryPage = () => {
                   Копаємо і відправляємо щодня в порядку живої черги
                 </p>
                 <p className="text-sm sm:text-base text-gray-700 mt-1">
-                  Терміни очікування: <span className="font-semibold">2–6 робочих днів</span>
+                  Терміни очікування:{' '}
+                  <span className="font-semibold">2–6 робочих днів</span>
                   <span className="text-gray-500"> (залежить від сезону та завантаженості)</span>
                 </p>
               </div>
@@ -70,6 +74,7 @@ const DeliveryPage = () => {
           </div>
 
           <div className="space-y-4">
+
             {/* Нова Пошта */}
             <div className="border-2 border-gray-200 rounded-xl p-4 sm:p-6">
               <div className="flex items-start gap-3">
@@ -99,45 +104,34 @@ const DeliveryPage = () => {
               </div>
             </div>
 
-            {/* ВАЖЛИВО ЗНАТИ + ПУЛЬСУЮЧА КНОПКА УВАГА */}
-            <div className="rounded-2xl border border-yellow-300 bg-yellow-50 p-4 sm:p-6">
-              <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
-                <div className="flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5 text-yellow-700" />
-                  <h4 className="font-bold text-gray-800">
-                    Важливо знати перед отриманням:
-                  </h4>
-                </div>
-
-                {/* Pulsing "Увага" badge/button */}
-                <div className="relative">
-                  <span className="absolute -inset-1 rounded-full bg-yellow-300/50 blur-md animate-pulse" />
-                  <span className="relative inline-flex items-center gap-2 rounded-full bg-yellow-400 px-3 py-1 text-xs sm:text-sm font-bold text-gray-900 shadow-sm">
-                    <AlertTriangle className="w-4 h-4" />
-                    Увага
-                  </span>
-                </div>
+            {/* COMPACT "ВАЖЛИВО ЗНАТИ" */}
+            <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-3 sm:p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <AlertTriangle className="w-4 h-4 text-yellow-700" />
+                <h4 className="font-semibold text-gray-800 text-sm sm:text-base">
+                  Важливо знати перед отриманням:
+                </h4>
               </div>
 
-              <ul className="space-y-2 text-gray-700">
+              <ul className="space-y-1.5 text-gray-700">
                 <li className="flex items-start gap-2">
-                  <AlertTriangle className="w-4 h-4 text-yellow-700 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">
-                    Під час отримання замовлення, будь ласка, перевірте рослини на цілісність
+                  <AlertTriangle className="w-3.5 h-3.5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm">
+                    Перевірте рослини на цілісність під час отримання
                   </span>
                 </li>
 
                 <li className="flex items-start gap-2">
-                  <AlertTriangle className="w-4 h-4 text-yellow-700 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">
-                    Ми надійно власноруч пакуємо рослини, щоб вони безпечно доїхали до Вас і не постраждали під час транспортування
+                  <AlertTriangle className="w-3.5 h-3.5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm">
+                    Рослини пакуються вручну для безпечного транспортування
                   </span>
                 </li>
 
                 <li className="flex items-start gap-2">
-                  <AlertTriangle className="w-4 h-4 text-yellow-700 mt-0.5 flex-shrink-0" />
-                  <span className="text-sm sm:text-base">
-                    Після відправлення ви отримаєте номер накладної для відстеження рослин
+                  <AlertTriangle className="w-3.5 h-3.5 text-yellow-600 mt-0.5 flex-shrink-0" />
+                  <span className="text-xs sm:text-sm">
+                    Після відправлення ви отримаєте номер накладної
                   </span>
                 </li>
               </ul>
@@ -193,6 +187,7 @@ const DeliveryPage = () => {
 
           </div>
         </div>
+
       </div>
     </div>
   );
