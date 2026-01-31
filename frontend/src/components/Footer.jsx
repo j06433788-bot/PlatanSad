@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import AboutModal from "./AboutModal";
 import { useSettings } from "../context/SettingsContext";
-import { ChevronUp } from "lucide-react";
+import { ChevronUp, TreePine } from "lucide-react";
 
 const Footer = () => {
   const { settings } = useSettings();
@@ -32,6 +32,7 @@ const Footer = () => {
     if (!el) return;
 
     let raf = 0;
+
     const onScroll = () => {
       if (raf) return;
       raf = window.requestAnimationFrame(() => {
@@ -69,17 +70,27 @@ const Footer = () => {
           100% { transform: scale(1.35); opacity: 0; }
         }
 
-        /* ✅ "Live shadow" — slow moving soft shade */
+        /* Live shadow drift */
         @keyframes psShadowDrift {
           0%   { transform: translate3d(-10%, -6%, 0) rotate(0deg) scale(1.02); opacity: .55; }
           50%  { transform: translate3d(10%, 6%, 0) rotate(2deg)  scale(1.06); opacity: .70; }
           100% { transform: translate3d(-10%, -6%, 0) rotate(0deg) scale(1.02); opacity: .55; }
         }
-
-        /* Subtle shimmer for shadow edge (very light) */
         @keyframes psShadowBreath {
           0%, 100% { filter: blur(28px); }
           50%      { filter: blur(34px); }
+        }
+
+        /* Breathing green aura */
+        @keyframes psAuraBreath {
+          0%, 100% { transform: scale(1); opacity: .55; }
+          50%      { transform: scale(1.08); opacity: .85; }
+        }
+
+        /* Gentle pine sway */
+        @keyframes psPineSway {
+          0%, 100% { transform: rotate(-2deg) translateY(0); }
+          50%      { transform: rotate(2deg) translateY(-1px); }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -87,6 +98,7 @@ const Footer = () => {
         }
       `}</style>
 
+      {/* ---------- FOOTER ---------- */}
       <footer className="relative text-white overflow-hidden">
         {/* Background */}
         <div className="absolute inset-0 ps-anim">
@@ -109,7 +121,7 @@ const Footer = () => {
           {/* Subtle green glow */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(16,185,129,.20),transparent_55%)] pointer-events-none" />
 
-          {/* ✅ Live moving shadow layer */}
+          {/* Live moving shadow layer */}
           <div
             aria-hidden="true"
             className="absolute -inset-[30%] will-change-transform"
@@ -122,7 +134,7 @@ const Footer = () => {
             }}
           />
 
-          {/* ✅ Second very soft shade (adds depth) */}
+          {/* Second very soft shade (depth) */}
           <div
             aria-hidden="true"
             className="absolute -inset-[30%] will-change-transform"
@@ -135,7 +147,7 @@ const Footer = () => {
             }}
           />
 
-          {/* ✅ Gentle breathing blur to make it feel organic (cheap cost) */}
+          {/* Gentle breathing blur to feel organic */}
           <div
             aria-hidden="true"
             className="absolute inset-0"
@@ -149,7 +161,9 @@ const Footer = () => {
         {/* Content */}
         <div
           className="relative max-w-7xl mx-auto px-4"
-          style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 14px)" }}
+          style={{
+            paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 14px)",
+          }}
         >
           <div className="py-4 sm:py-6 text-center">
             {/* Phones - premium green */}
@@ -187,24 +201,48 @@ const Footer = () => {
               </a>
             </div>
 
-            {/* About */}
-            <div className="mt-3">
+            {/* About - breathing aura + pine sway */}
+            <div className="mt-3 flex justify-center ps-anim">
               <button
                 onClick={() => setIsAboutOpen(true)}
-                className={[
-                  "inline-flex items-center justify-center rounded-full",
-                  "px-4 py-2 text-[12px] sm:text-sm font-semibold",
-                  "bg-white/12 hover:bg-white/18 active:bg-white/22",
-                  "text-white/90 hover:text-white transition",
-                  "backdrop-blur-md ring-1 ring-white/15 hover:ring-white/25",
-                ].join(" ")}
+                className="
+                  relative inline-flex items-center gap-2
+                  rounded-full px-4 py-2.5
+                  text-[12px] sm:text-sm font-semibold
+                  text-emerald-50
+                  bg-gradient-to-r from-emerald-500/80 to-green-500/80
+                  ring-1 ring-white/15 hover:ring-white/30
+                  shadow-[0_12px_30px_rgba(16,185,129,.22)]
+                  backdrop-blur-md
+                  transition-all duration-300
+                  active:scale-[0.97]
+                  overflow-visible
+                "
               >
-                Про розсадник
+                <span
+                  aria-hidden="true"
+                  className="absolute -inset-2 rounded-full"
+                  style={{
+                    background:
+                      "radial-gradient(circle at 50% 50%, rgba(16,185,129,.40) 0%, rgba(16,185,129,.18) 38%, rgba(16,185,129,0) 70%)",
+                    filter: "blur(10px)",
+                    animation: "psAuraBreath 2.8s ease-in-out infinite",
+                    zIndex: -1,
+                  }}
+                />
+                <TreePine
+                  size={16}
+                  className="text-emerald-100 drop-shadow-sm"
+                  style={{ animation: "psPineSway 2.4s ease-in-out infinite" }}
+                />
+                <span className="tracking-wide">Про розсадник</span>
               </button>
             </div>
 
+            {/* Divider */}
             <div className="mx-auto mt-4 h-px w-40 bg-white/25" />
 
+            {/* Copyright */}
             <div className="mt-3 text-[11px] sm:text-xs text-white/80">
               © {year} {siteName}. Усі права захищено.
             </div>
@@ -224,7 +262,9 @@ const Footer = () => {
             "backdrop-blur-md",
             "transition-all duration-300",
             "focus:outline-none focus:ring-2 focus:ring-emerald-200/70",
-            showTop ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2 pointer-events-none",
+            showTop
+              ? "opacity-100 translate-y-0"
+              : "opacity-0 translate-y-2 pointer-events-none",
           ].join(" ")}
           style={{
             animation: showTop ? "psPulse 1.8s ease-in-out infinite" : "none",
@@ -246,6 +286,7 @@ const Footer = () => {
         </button>
       </footer>
 
+      {/* ---------- ABOUT MODAL ---------- */}
       <AboutModal isOpen={isAboutOpen} onClose={() => setIsAboutOpen(false)} />
     </>
   );
