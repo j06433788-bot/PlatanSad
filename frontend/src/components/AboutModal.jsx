@@ -218,10 +218,10 @@ const AboutModal = ({ isOpen, onClose }) => {
           <div className="rounded-2xl overflow-hidden border border-green-700/10">
             <div className="bg-gradient-to-r from-green-600 to-green-700 px-4 py-4 sm:p-5 text-center text-white">
               <h3 className="text-base sm:text-lg font-extrabold mb-1">
-                Розвивайте свій сад разом із PlatanSad
+                Ділимось тим, що вирощуємо з любов’ю
               </h3>
               <p className="text-green-100 text-xs sm:text-sm mb-3">
-                Якісні рослини та чесні поради
+                Зазирніть за лаштунки Platansad
               </p>
 
               <button
