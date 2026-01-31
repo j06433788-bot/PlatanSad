@@ -198,13 +198,30 @@ const IconIndoor = ({ className = 'w-5 h-5' }) => (
   </svg>
 );
 
-const getCategoryIcon = (nameRaw = '') => {
-  const n = String(nameRaw).toLowerCase().replace(/\s+/g, ' ').trim();
+/* ✅ FIX: robust normalize (quotes, dashes) + правильні назви */
+const normalizeCategoryName = (nameRaw = '') =>
+  String(nameRaw)
+    .toLowerCase()
+    .replace(/[«»"“”„]/g, '') // прибираємо лапки
+    .replace(/[–—-]/g, ' ') // тире в пробіл
+    .replace(/\s+/g, ' ')
+    .trim();
 
-  if (n.includes('Нівакі') || n.includes('Pinus sylvestris')) return IconBonsai;
-  if (n.includes('«Глобоза»')) return IconGlobeThuja;
-  if (n.includes('туя') || n.includes('«Колумна»') || n.includes('«Смарагд»')) return IconThuja;
-  if (n.includes('самшит')) n.includes('«Колумна»') return IconBoxwood;
+const getCategoryIcon = (nameRaw = '') => {
+  const n = normalizeCategoryName(nameRaw);
+
+  // Нівакі Pinus sylvestris
+  if (n.includes('нівакі') || n.includes('бонсай') || n.includes('pinus sylvestris')) return IconBonsai;
+
+  // Куляста туя «Глобоза» (і варіації)
+  if (n.includes('глобоза') || n.includes('globosa') || n.includes('куляста туя')) return IconGlobeThuja;
+
+  // Туя «Колумна» / «Смарагд»
+  if (n.includes('туя') || n.includes('колумна') || n.includes('смарагд')) return IconThuja;
+
+  // Самшит вічнозелений
+  if (n.includes('самшит')) return IconBoxwood;
+
   if (n.includes('ялина')) return IconSpruce;
   if (n.includes('хвой')) return IconConifers;
   if (n.includes('листопад')) return IconDeciduous;
@@ -837,7 +854,7 @@ const Header = () => {
 
             <div className="border-t border-gray-200 my-2" />
 
-            {/* ✅ Contacts: phone icon next to number, only Viber tag on the first */}
+            {/* ✅ Contacts */}
             <div className="px-4 py-2">
               <div className="grid grid-cols-1 gap-2">
                 <a
@@ -876,7 +893,7 @@ const Header = () => {
               </div>
             </div>
 
-            {/* ✅ WORK TIME + LIVE STATUS + WEEKENDS LINE */}
+            {/* ✅ WORK TIME */}
             <div className="px-4 py-3">
               <div className="rounded-2xl border border-green-100 bg-green-50 p-3">
                 <div className="flex items-start gap-3">
@@ -928,7 +945,6 @@ const Header = () => {
             className="flex-shrink-0 border-t border-gray-200 bg-white p-4"
             style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
           >
-            {/* 4 кнопки */}
             <div className="grid grid-cols-4 gap-2">
               {/* Instagram */}
               <a
@@ -1028,7 +1044,7 @@ const Header = () => {
                 <span className="hidden sm:inline">TikTok</span>
               </a>
 
-              {/* Telegram ✅ (додано) */}
+              {/* Telegram */}
               <a
                 href="https://t.me/+L3ufkaf-48pmMjAy"
                 target="_blank"
@@ -1070,7 +1086,6 @@ const Header = () => {
                     ))}
                 </span>
 
-                {/* Telegram SVG icon (lucide-ish) */}
                 <span className="w-5 h-5 transition-transform duration-300 group-hover:scale-110 motion-safe:animate-pulse motion-reduce:animate-none">
                   <svg viewBox="0 0 48 48" className="w-5 h-5" aria-hidden="true">
                     <defs>
