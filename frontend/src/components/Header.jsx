@@ -10,6 +10,7 @@ import {
   RefreshCw,
   MapPin,
   ChevronRight,
+  Phone,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
@@ -20,17 +21,7 @@ const cx = (...c) => c.filter(Boolean).join(' ');
 
 /* =================== CATEGORY ICONS (SVG, lucide-style) =================== */
 const IconBonsai = ({ className = 'w-5 h-5' }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    aria-hidden="true"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
     <path d="M6 20h12" />
     <path d="M9 20c2-2 2-5 2-8" />
     <path d="M13 20c-2-2-2-5-2-8" />
@@ -40,17 +31,7 @@ const IconBonsai = ({ className = 'w-5 h-5' }) => (
 );
 
 const IconThuja = ({ className = 'w-5 h-5' }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    aria-hidden="true"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
     <path d="M12 3l4 6-4 2-4-2 4-6z" />
     <path d="M8 9l4 2 4-2" />
     <path d="M9 11l3 2 3-2" />
@@ -61,17 +42,7 @@ const IconThuja = ({ className = 'w-5 h-5' }) => (
 );
 
 const IconGlobeThuja = ({ className = 'w-5 h-5' }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    aria-hidden="true"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
     <circle cx="12" cy="11" r="6" />
     <path d="M12 17v5" />
     <path d="M8 22h8" />
@@ -81,17 +52,7 @@ const IconGlobeThuja = ({ className = 'w-5 h-5' }) => (
 );
 
 const IconBoxwood = ({ className = 'w-5 h-5' }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    aria-hidden="true"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
     <path d="M12 21s7-4 7-10a7 7 0 0 0-14 0c0 6 7 10 7 10z" />
     <path d="M9.5 12c1.2-1.2 3.8-1.2 5 0" />
     <path d="M8.7 9.2c1.6-1.5 5-1.5 6.6 0" />
@@ -99,17 +60,7 @@ const IconBoxwood = ({ className = 'w-5 h-5' }) => (
 );
 
 const IconConifers = ({ className = 'w-5 h-5' }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    aria-hidden="true"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
     <path d="M12 2l3 5-3 2-3-2 3-5z" />
     <path d="M7 9l5 3 5-3" />
     <path d="M6 14l6 4 6-4" />
@@ -119,17 +70,7 @@ const IconConifers = ({ className = 'w-5 h-5' }) => (
 );
 
 const IconDeciduous = ({ className = 'w-5 h-5' }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    aria-hidden="true"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
     <path d="M12 2c4 3 7 6 7 10a7 7 0 0 1-14 0c0-4 3-7 7-10z" />
     <path d="M12 14v8" />
     <path d="M9 22h6" />
@@ -138,17 +79,7 @@ const IconDeciduous = ({ className = 'w-5 h-5' }) => (
 );
 
 const IconCatalpa = ({ className = 'w-5 h-5' }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    aria-hidden="true"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
     <path d="M12 3c3 2 6 5 6 9a6 6 0 0 1-12 0c0-4 3-7 6-9z" />
     <path d="M12 13c-2.2 0-4.2-1.2-5.6-3" />
     <path d="M12 13c2.2 0 4.2-1.2 5.6-3" />
@@ -158,17 +89,7 @@ const IconCatalpa = ({ className = 'w-5 h-5' }) => (
 );
 
 const IconSpruce = ({ className = 'w-5 h-5' }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    aria-hidden="true"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
     <path d="M12 2l4 6-4 2-4-2 4-6z" />
     <path d="M8 10l4 2 4-2" />
     <path d="M7 14l5 3 5-3" />
@@ -178,17 +99,7 @@ const IconSpruce = ({ className = 'w-5 h-5' }) => (
 );
 
 const IconIndoor = ({ className = 'w-5 h-5' }) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    className={className}
-    aria-hidden="true"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
     <path d="M7 21h10" />
     <path d="M9 21c4-2 1-6 3-10" />
     <path d="M10 12c-1.8.3-3.3 0-4.6-.7-1.2-.6-2.2-1.6-2.9-3.5 2.9-.7 4.7-.2 6 .8" />
@@ -249,14 +160,7 @@ const ClockBadgeIcon = ({ className = 'w-6 h-6' }) => (
       <path d="M16.7 12h1.1" strokeWidth="1.2" />
     </g>
 
-    <path
-      d="M12 8.7v3.5l2.6 1.6"
-      fill="none"
-      stroke="#16a34a"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
+    <path d="M12 8.7v3.5l2.6 1.6" fill="none" stroke="#16a34a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
 
     <circle cx="12" cy="12" r="1.1" fill="#16a34a" />
   </svg>
@@ -695,10 +599,7 @@ const Header = () => {
                 <button onClick={() => navigate('/about')} className="hover:text-green-400 transition-colors whitespace-nowrap">
                   Про нас
                 </button>
-                <button
-                  onClick={() => navigate('/delivery')}
-                  className="hover:text-green-400 transition-colors whitespace-nowrap"
-                >
+                <button onClick={() => navigate('/delivery')} className="hover:text-green-400 transition-colors whitespace-nowrap">
                   Оплата і доставка
                 </button>
                 <button onClick={() => navigate('/return')} className="hover:text-green-400 transition-colors whitespace-nowrap">
@@ -724,11 +625,7 @@ const Header = () => {
       >
         <button
           type="button"
-          className={cx(
-            'absolute inset-0 bg-black/50 transition-opacity',
-            overlayTransition,
-            isMenuOpen ? 'opacity-100' : 'opacity-0'
-          )}
+          className={cx('absolute inset-0 bg-black/50 transition-opacity', overlayTransition, isMenuOpen ? 'opacity-100' : 'opacity-0')}
           onClick={closeMenu}
           aria-label="Закрити меню"
           tabIndex={isMenuOpen ? 0 : -1}
@@ -850,11 +747,9 @@ const Header = () => {
               <span className="font-medium text-sm">Контакти</span>
             </button>
 
-            {/* ❌ БЛОГ ПОВНІСТЮ ПРИБРАНО */}
-
             <div className="border-t border-gray-200 my-2" />
 
-            {/* ✅ Compact Contacts (Viber + Vodafone icons kept) */}
+            {/* ✅ Contacts: phone icon next to number, only Viber tag on the first; Vodafone tag removed */}
             <div className="px-4 py-2">
               <div className="grid grid-cols-1 gap-2">
                 <a
@@ -863,13 +758,15 @@ const Header = () => {
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-9 h-9 rounded-xl bg-white border border-gray-200 flex items-center justify-center flex-shrink-0">
-                      <img src="/viber.png" alt="Viber" className="w-5 h-5" />
+                      <Phone className="w-5 h-5 text-green-600" />
                     </div>
                     <div className="min-w-0">
                       <div className="text-sm font-semibold text-gray-800 truncate">+380 (63) 650-74-49</div>
                       <div className="text-xs text-gray-500">Анастасія</div>
                     </div>
                   </div>
+
+                  {/* leave only Viber tag */}
                   <span className="text-xs font-semibold text-green-700 bg-green-100 px-2 py-1 rounded-full flex-shrink-0">
                     Viber
                   </span>
@@ -881,21 +778,20 @@ const Header = () => {
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-9 h-9 rounded-xl bg-white border border-gray-200 flex items-center justify-center flex-shrink-0">
-                      <img src="/vodafone.png" alt="Vodafone" className="w-5 h-5" />
+                      <Phone className="w-5 h-5 text-green-600" />
                     </div>
                     <div className="min-w-0">
                       <div className="text-sm font-semibold text-gray-800 truncate">+380 (95) 251-03-47</div>
                       <div className="text-xs text-gray-500">Ігор</div>
                     </div>
                   </div>
-                  <span className="text-xs font-semibold text-green-700 bg-green-100 px-2 py-1 rounded-full flex-shrink-0">
-                    Vodafone
-                  </span>
+
+                  {/* Vodafone tag removed */}
                 </a>
               </div>
             </div>
 
-            {/* ✅ WORK TIME + LIVE STATUS (без "Статус оновлюється...") */}
+            {/* ✅ WORK TIME + LIVE STATUS */}
             <div className="px-4 py-3">
               <div className="rounded-2xl border border-green-100 bg-green-50 p-3">
                 <div className="flex items-start gap-3">
@@ -908,22 +804,12 @@ const Header = () => {
                       <p className="text-sm font-bold text-gray-800 leading-tight">Графік роботи</p>
 
                       <div className="flex items-center gap-2 flex-shrink-0">
-                        <span
-                          className={cx('relative inline-flex h-2.5 w-2.5 rounded-full', openNow ? 'bg-green-500' : 'bg-gray-400')}
-                          aria-hidden="true"
-                        >
+                        <span className={cx('relative inline-flex h-2.5 w-2.5 rounded-full', openNow ? 'bg-green-500' : 'bg-gray-400')} aria-hidden="true">
                           {!reducedMotion && (
-                            <span
-                              className={cx(
-                                'absolute inset-0 rounded-full opacity-75',
-                                openNow ? 'animate-ping bg-green-500' : 'animate-ping bg-gray-400'
-                              )}
-                            />
+                            <span className={cx('absolute inset-0 rounded-full opacity-75', openNow ? 'animate-ping bg-green-500' : 'animate-ping bg-gray-400')} />
                           )}
                         </span>
-                        <span className={cx('text-xs font-semibold', openNow ? 'text-green-700' : 'text-gray-600')}>
-                          {statusText}
-                        </span>
+                        <span className={cx('text-xs font-semibold', openNow ? 'text-green-700' : 'text-gray-600')}>{statusText}</span>
                       </div>
                     </div>
 
@@ -937,10 +823,7 @@ const Header = () => {
           </div>
 
           {/* SOCIAL */}
-          <div
-            className="flex-shrink-0 border-t border-gray-200 bg-white p-4"
-            style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}
-          >
+          <div className="flex-shrink-0 border-t border-gray-200 bg-white p-4" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
             <div className="grid grid-cols-3 gap-2">
               {/* Instagram */}
               <a
@@ -1123,15 +1006,9 @@ const Header = () => {
         </aside>
       </div>
 
-      {/* SEARCH */}
+      {/* SEARCH (залишив як було у твоєму файлі, без змін) */}
       {isMobile ? (
-        <BottomSheet
-          open={isSearchOpen}
-          onClose={closeSearch}
-          label="Пошук"
-          containerRef={searchPanelRef}
-          reducedMotion={reducedMotion}
-        >
+        <BottomSheet open={isSearchOpen} onClose={closeSearch} label="Пошук" containerRef={searchPanelRef} reducedMotion={reducedMotion}>
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-lg font-bold text-gray-800">Пошук товарів</h2>
             <button
@@ -1194,24 +1071,14 @@ const Header = () => {
           )}
           aria-hidden={!isSearchOpen}
         >
-          <button
-            type="button"
-            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
-            onClick={closeSearch}
-            aria-label="Закрити пошук"
-            tabIndex={isSearchOpen ? 0 : -1}
-          />
+          <button type="button" className="absolute inset-0 bg-black/20 backdrop-blur-sm" onClick={closeSearch} aria-label="Закрити пошук" tabIndex={isSearchOpen ? 0 : -1} />
 
           <div
             ref={searchPanelRef}
             role="dialog"
             aria-modal="true"
             aria-label="Пошук"
-            className={cx(
-              'absolute top-0 left-0 right-0 bg-white shadow-2xl',
-              reducedMotion ? '' : 'transition-transform duration-300',
-              isSearchOpen ? 'translate-y-0' : '-translate-y-full'
-            )}
+            className={cx('absolute top-0 left-0 right-0 bg-white shadow-2xl', reducedMotion ? '' : 'transition-transform duration-300', isSearchOpen ? 'translate-y-0' : '-translate-y-full')}
             style={{ paddingTop: 'env(safe-area-inset-top)' }}
           >
             <div className="max-w-3xl mx-auto px-4 py-6 md:py-8 relative">
