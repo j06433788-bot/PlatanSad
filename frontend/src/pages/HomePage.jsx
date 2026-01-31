@@ -4,7 +4,7 @@ import Hero from "../components/Hero";
 import ProductSection from "../components/ProductSection";
 import CatalogModal from "../components/CatalogModal";
 
-const VIDEO_URL = "/nursery.mp4"; // файл має бути в /var/www/PlatanSad/frontend/build/nursery.mp4
+const VIDEO_URL = "/nursery.mp4"; // файл має бути доступний по https://platansad.com.ua/nursery.mp4
 
 const HomePage = () => {
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
@@ -160,10 +160,10 @@ const HomePage = () => {
       {/* Products */}
       <ProductSection />
 
-      {/* FULL WIDTH VIDEO */}
+      {/* ✅ MOBILE-ONLY FULL WIDTH VIDEO (DESKTOP REMOVED) */}
       <section
         ref={videoSectionRef}
-        className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] mt-5 sm:mt-7"
+        className="lg:hidden w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] mt-5 sm:mt-7"
       >
         <div
           className={[
@@ -174,7 +174,7 @@ const HomePage = () => {
               : "opacity-0 scale-[1.02] translate-y-3",
           ].join(" ")}
         >
-          <div className="relative w-screen h-[68vw] sm:h-[40vw] lg:h-[420px] max-h-[520px] overflow-hidden">
+          <div className="relative w-screen h-[68vw] sm:h-[40vw] max-h-[520px] overflow-hidden">
             {!videoFailed ? (
               <video
                 ref={videoRef}
