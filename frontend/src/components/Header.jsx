@@ -201,10 +201,10 @@ const IconIndoor = ({ className = 'w-5 h-5' }) => (
 const getCategoryIcon = (nameRaw = '') => {
   const n = String(nameRaw).toLowerCase().replace(/\s+/g, ' ').trim();
 
-  if (n.includes('бонсай') || n.includes('нівакі')) return IconBonsai;
-  if (n.includes('глобоса')) return IconGlobeThuja;
-  if (n.includes('туя') || n.includes('колумна') || n.includes('смарагд')) return IconThuja;
-  if (n.includes('самшит')) return IconBoxwood;
+  if (n.includes('Нівакі') || n.includes('Pinus sylvestris')) return IconBonsai;
+  if (n.includes('«Глобоза»')) return IconGlobeThuja;
+  if (n.includes('туя') || n.includes('«Колумна»') || n.includes('«Смарагд»')) return IconThuja;
+  if (n.includes('самшит')) n.includes('«Колумна»') return IconBoxwood;
   if (n.includes('ялина')) return IconSpruce;
   if (n.includes('хвой')) return IconConifers;
   if (n.includes('листопад')) return IconDeciduous;
