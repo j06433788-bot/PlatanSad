@@ -9,7 +9,6 @@ import {
   Truck,
   RefreshCw,
   MapPin,
-  Sprout,
   ChevronRight,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -19,7 +18,119 @@ import { categoriesApi } from '../api/categoriesApi';
 
 const cx = (...c) => c.filter(Boolean).join(' ');
 
-/* =================== SVG CLOCK (custom) =================== */
+/* =================== CATEGORY ICONS (SVG, lucide-style) =================== */
+const IconBonsai = ({ className = 'w-5 h-5' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+    <path d="M6 20h12" />
+    <path d="M9 20c2-2 2-5 2-8" />
+    <path d="M13 20c-2-2-2-5-2-8" />
+    <path d="M7 10c2.5 0 4-1.5 5-3.5C13 8.5 14.5 10 17 10" />
+    <path d="M12 6c.5-2 2-3 4-3" />
+  </svg>
+);
+
+const IconThuja = ({ className = 'w-5 h-5' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+    <path d="M12 3l4 6-4 2-4-2 4-6z" />
+    <path d="M8 9l4 2 4-2" />
+    <path d="M9 11l3 2 3-2" />
+    <path d="M10 13l2 2 2-2" />
+    <path d="M12 15v6" />
+    <path d="M7 21h10" />
+  </svg>
+);
+
+const IconGlobeThuja = ({ className = 'w-5 h-5' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+    <circle cx="12" cy="11" r="6" />
+    <path d="M12 17v5" />
+    <path d="M8 22h8" />
+    <path d="M8.8 9.5c2.2 1.2 4.2 1.2 6.4 0" />
+    <path d="M9.2 12.8c1.8 1 3.8 1 5.6 0" />
+  </svg>
+);
+
+const IconBoxwood = ({ className = 'w-5 h-5' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+    <path d="M12 21s7-4 7-10a7 7 0 0 0-14 0c0 6 7 10 7 10z" />
+    <path d="M9.5 12c1.2-1.2 3.8-1.2 5 0" />
+    <path d="M8.7 9.2c1.6-1.5 5-1.5 6.6 0" />
+  </svg>
+);
+
+const IconConifers = ({ className = 'w-5 h-5' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+    <path d="M12 2l3 5-3 2-3-2 3-5z" />
+    <path d="M7 9l5 3 5-3" />
+    <path d="M6 14l6 4 6-4" />
+    <path d="M12 18v4" />
+    <path d="M8 22h8" />
+  </svg>
+);
+
+const IconDeciduous = ({ className = 'w-5 h-5' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+    <path d="M12 2c4 3 7 6 7 10a7 7 0 0 1-14 0c0-4 3-7 7-10z" />
+    <path d="M12 14v8" />
+    <path d="M9 22h6" />
+    <path d="M10 11c.8.8 3.2.8 4 0" />
+  </svg>
+);
+
+const IconCatalpa = ({ className = 'w-5 h-5' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+    <path d="M12 3c3 2 6 5 6 9a6 6 0 0 1-12 0c0-4 3-7 6-9z" />
+    <path d="M12 13c-2.2 0-4.2-1.2-5.6-3" />
+    <path d="M12 13c2.2 0 4.2-1.2 5.6-3" />
+    <path d="M12 13v8" />
+    <path d="M9 21h6" />
+  </svg>
+);
+
+const IconSpruce = ({ className = 'w-5 h-5' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+    <path d="M12 2l4 6-4 2-4-2 4-6z" />
+    <path d="M8 10l4 2 4-2" />
+    <path d="M7 14l5 3 5-3" />
+    <path d="M12 17v5" />
+    <path d="M9 22h6" />
+  </svg>
+);
+
+const IconIndoor = ({ className = 'w-5 h-5' }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+    <path d="M7 21h10" />
+    <path d="M9 21c4-2 1-6 3-10" />
+    <path d="M10 12c-1.8.3-3.3 0-4.6-.7-1.2-.6-2.2-1.6-2.9-3.5 2.9-.7 4.7-.2 6 .8" />
+    <path d="M13 9c0-3 1.5-4.8 4.8-5 0 2.4-.6 3.8-1.7 4.6-1 .8-2.5 1.3-4.1 1.4z" />
+    <path d="M18 22v-6a4 4 0 0 0-4-4h-4a4 4 0 0 0-4 4v6" />
+  </svg>
+);
+
+const getCategoryIcon = (nameRaw = '') => {
+  const n = String(nameRaw).toLowerCase().replace(/\s+/g, ' ').trim();
+
+  if (n.includes('бонсай') || n.includes('нівакі')) return IconBonsai;
+
+  if (n.includes('глобоса')) return IconGlobeThuja;
+  if (n.includes('туя') || n.includes('колумна') || n.includes('смарагд')) return IconThuja;
+
+  if (n.includes('самшит')) return IconBoxwood;
+
+  if (n.includes('ялина')) return IconSpruce;
+
+  if (n.includes('хвой')) return IconConifers;
+
+  if (n.includes('листопад')) return IconDeciduous;
+
+  if (n.includes('катальпа')) return IconCatalpa;
+
+  if (n.includes('кімнат')) return IconIndoor;
+
+  return IconConifers;
+};
+
+/* =================== CLOCK SVG (custom badge) =================== */
 const ClockBadgeIcon = ({ className = 'w-6 h-6' }) => (
   <svg viewBox="0 0 24 24" className={className} aria-hidden="true" focusable="false">
     <defs>
@@ -32,18 +143,15 @@ const ClockBadgeIcon = ({ className = 'w-6 h-6' }) => (
       </filter>
     </defs>
 
-    {/* badge */}
     <path
       d="M12 2.2c3.3 0 6 2.7 6 6v1.05c0 .45.18.88.5 1.2l.85.85c.7.7.7 1.84 0 2.55l-.85.85c-.32.32-.5.75-.5 1.2V18c0 3.3-2.7 6-6 6s-6-2.7-6-6v-1.05c0-.45-.18-.88-.5-1.2l-.85-.85c-.7-.7-.7-1.84 0-2.55l.85-.85c.32-.32.5-.75.5-1.2V8.2c0-3.3 2.7-6 6-6z"
       fill="url(#clockGrad)"
       filter="url(#clockShadow)"
     />
 
-    {/* inner circle */}
     <circle cx="12" cy="12" r="6.6" fill="rgba(255,255,255,0.92)" />
     <circle cx="12" cy="12" r="6.6" fill="none" stroke="rgba(0,0,0,0.06)" strokeWidth="1" />
 
-    {/* ticks */}
     <g opacity="0.6" stroke="#16a34a" strokeLinecap="round">
       <path d="M12 6.2v1.1" strokeWidth="1.2" />
       <path d="M12 16.7v1.1" strokeWidth="1.2" />
@@ -51,7 +159,6 @@ const ClockBadgeIcon = ({ className = 'w-6 h-6' }) => (
       <path d="M16.7 12h1.1" strokeWidth="1.2" />
     </g>
 
-    {/* hands */}
     <path
       d="M12 8.7v3.5l2.6 1.6"
       fill="none"
@@ -60,6 +167,7 @@ const ClockBadgeIcon = ({ className = 'w-6 h-6' }) => (
       strokeLinecap="round"
       strokeLinejoin="round"
     />
+
     <circle cx="12" cy="12" r="1.1" fill="#16a34a" />
   </svg>
 );
@@ -76,9 +184,8 @@ function getKyivHoursMinutes() {
   return { hh: hh || 0, mm: mm || 0 };
 }
 function isOpenNowKyiv({ hh, mm }) {
-  // Open daily: 08:00–17:00 (17:00 вже закрито)
   const minutes = hh * 60 + mm;
-  return minutes >= 8 * 60 && minutes < 17 * 60;
+  return minutes >= 8 * 60 && minutes < 17 * 60; // 08:00–17:00
 }
 
 function useLockBodyScroll(locked) {
@@ -279,7 +386,7 @@ const Header = () => {
   // Ripple state
   const [ripples, setRipples] = useState([]);
 
-  // ✅ Live status by Kyiv time (updates every 30s)
+  // ✅ Live open/closed by Kyiv time
   const [kyivTime, setKyivTime] = useState(() => getKyivHoursMinutes());
   useEffect(() => {
     const tick = () => setKyivTime(getKyivHoursMinutes());
@@ -562,34 +669,39 @@ const Header = () => {
               <h3 className="text-sm font-bold text-green-800 uppercase tracking-wide">Категорії рослин</h3>
             </div>
 
-            {categories.map((category) => (
-              <div key={category.id} className="border-b border-gray-100">
-                <button
-                  type="button"
-                  onClick={() => {
-                    navigate(`/catalog?category=${encodeURIComponent(category.name)}`);
-                    closeMenu();
-                  }}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors group"
-                  data-testid={`category-${category.id}`}
-                >
-                  <div className="text-green-500 group-hover:text-green-600 transition-colors">
-                    <Sprout className="w-5 h-5" />
-                  </div>
-                  <div className="flex-1 text-left min-w-0">
-                    <span className="font-medium text-sm truncate block">{category.name}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {category.count > 0 && (
-                      <span className="text-xs text-gray-400 bg-white px-2 py-0.5 rounded-full border border-gray-200">
-                        {category.count}
-                      </span>
-                    )}
-                    <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-green-600 transition-all" />
-                  </div>
-                </button>
-              </div>
-            ))}
+            {categories.map((category) => {
+              const Icon = getCategoryIcon(category.name);
+              return (
+                <div key={category.id} className="border-b border-gray-100">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigate(`/catalog?category=${encodeURIComponent(category.name)}`);
+                      closeMenu();
+                    }}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors group"
+                    data-testid={`category-${category.id}`}
+                  >
+                    <div className="text-green-500 group-hover:text-green-600 transition-colors">
+                      <Icon className="w-5 h-5" />
+                    </div>
+
+                    <div className="flex-1 text-left min-w-0">
+                      <span className="font-medium text-sm truncate block">{category.name}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      {category.count > 0 && (
+                        <span className="text-xs text-gray-400 bg-white px-2 py-0.5 rounded-full border border-gray-200">
+                          {category.count}
+                        </span>
+                      )}
+                      <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-green-600 transition-all" />
+                    </div>
+                  </button>
+                </div>
+              );
+            })}
 
             <div className="border-t-4 border-gray-200 my-3" />
 
@@ -641,7 +753,7 @@ const Header = () => {
               <span className="font-medium text-sm">Контакти</span>
             </button>
 
-            {/* ✅ БЛОГ ПРИБРАНО ПОВНІСТЮ */}
+            {/* ❌ БЛОГ ПОВНІСТЮ ПРИБРАНО */}
 
             <div className="border-t border-gray-200 my-2" />
 
@@ -662,7 +774,7 @@ const Header = () => {
               </a>
             </div>
 
-            {/* ✅ Графік + Live status */}
+            {/* ✅ WORK TIME + LIVE STATUS */}
             <div className="px-4 py-3">
               <div className="rounded-2xl border border-green-100 bg-green-50 p-3">
                 <div className="flex items-start gap-3">
@@ -700,6 +812,7 @@ const Header = () => {
                     <p className="text-sm text-gray-700 mt-1">
                       Пн–Нд: <span className="font-semibold text-gray-900">08:00–17:00</span>
                     </p>
+
                     <p className="text-xs text-gray-500 mt-1 leading-relaxed">
                       Статус оновлюється автоматично (час Києва).
                     </p>
