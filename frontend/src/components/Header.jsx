@@ -196,8 +196,6 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // ✅ ТЕПЕР: в хедері не робимо “другий кошик”
-  // лише показуємо лічильник + перехід на /cart
   const { cartCount } = useCart();
   const { wishlistCount } = useWishlist();
 
@@ -218,7 +216,6 @@ const Header = () => {
   const menuPanelRef = useRef(null);
   const searchPanelRef = useRef(null);
 
-  // Ripple state
   const [ripples, setRipples] = useState([]);
 
   const addRipple = useCallback(
@@ -311,57 +308,67 @@ const Header = () => {
 
       <header className="w-full sticky top-0 z-50 bg-white shadow-sm">
         <div className="bg-white">
-          <div className="max-w-7xl mx-auto px-2 sm:px-4 py-3 sm:py-5 md:py-6 lg:py-8">
-            <div className="flex items-center justify-between w-full gap-2 sm:gap-4">
-              <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2 flex-shrink-0">
+          {/* ✅ трошки компактніше на мобільному, більше — на десктопі */}
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 py-2.5 sm:py-4 md:py-5 lg:py-6">
+            {/* ✅ 1fr auto 1fr = центр завжди по центру */}
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 sm:gap-4 w-full">
+              {/* LEFT */}
+              <div className="flex items-center justify-start gap-1 sm:gap-2">
                 <button
                   ref={menuBtnRef}
                   type="button"
                   onClick={() => setIsMenuOpen(true)}
-                  className="p-2 sm:p-3 md:p-2 text-gray-600 hover:text-green-500 transition-colors hover:bg-gray-100 rounded-full md:hidden active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-200"
+                  className="p-2.5 sm:p-3.5 md:p-4 text-gray-600 hover:text-green-500 transition-colors hover:bg-gray-100 rounded-full md:hidden active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-200"
                   data-testid="menu-toggle"
                   aria-label="Відкрити меню"
                   aria-haspopup="dialog"
                   aria-expanded={isMenuOpen}
                 >
-                  <Menu className="w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6" />
+                  {/* ✅ збільшені, але адаптивно */}
+                  <Menu className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10" />
                 </button>
 
                 <button
                   ref={searchBtnRef}
                   type="button"
                   onClick={() => setIsSearchOpen(true)}
-                  className="p-2 sm:p-3 md:p-2 text-gray-600 hover:text-green-500 transition-colors hover:bg-gray-100 rounded-full active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-200"
+                  className="p-2.5 sm:p-3.5 md:p-4 text-gray-600 hover:text-green-500 transition-colors hover:bg-gray-100 rounded-full active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-200"
                   data-testid="search-toggle"
                   aria-label="Пошук"
                   aria-haspopup="dialog"
                   aria-expanded={isSearchOpen}
                 >
-                  <Search className="w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6" />
+                  <Search className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10" />
                 </button>
               </div>
 
-              <button
-                type="button"
-                className="flex items-center gap-0.5 sm:gap-1 md:gap-2 cursor-pointer active:scale-95 transition-transform min-w-0 justify-center focus:outline-none"
-                onClick={() => navigate('/')}
-                aria-label="На головну"
-              >
-                <img
-                  src="/logo.webp"
-                  alt="PlatanSad Logo"
-                  className="w-8 h-8 sm:w-12 sm:h-12 md:w-32 md:h-32 lg:w-40 lg:h-40 object-contain mix-blend-multiply flex-shrink-0"
-                  loading="eager"
-                  decoding="async"
-                  style={{ filter: 'drop-shadow(0 0 0 transparent)' }}
-                />
-                <span className="text-base sm:text-xl md:text-5xl lg:text-6xl font-bold text-gray-800 whitespace-nowrap">
-                  Platan<span className="text-green-500">Sad</span>
-                </span>
-              </button>
+              {/* CENTER */}
+              <div className="flex items-center justify-center min-w-0">
+                <button
+                  type="button"
+                  className="flex items-center gap-1.5 sm:gap-3 cursor-pointer active:scale-95 transition-transform min-w-0 justify-center focus:outline-none"
+                  onClick={() => navigate('/')}
+                  aria-label="На головну"
+                >
+                  {/* ✅ логотип 2x, але не “вбиває” мобільний */}
+                  <img
+                    src="/logo.webp"
+                    alt="PlatanSad Logo"
+                    className="w-12 h-12 sm:w-16 sm:h-16 md:w-28 md:h-28 lg:w-36 lg:h-36 object-contain mix-blend-multiply flex-shrink-0"
+                    loading="eager"
+                    decoding="async"
+                    style={{ filter: 'drop-shadow(0 0 0 transparent)' }}
+                  />
 
-              <div className="flex items-center gap-0.5 sm:gap-1 md:gap-3 flex-shrink-0">
-                {/* ✅ WISHLIST ICON (НЕАКТИВНЕ КОЛИ 0) */}
+                  {/* ✅ текст 2x, але адаптивно + не переноситься */}
+                  <span className="text-xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-800 whitespace-nowrap leading-none text-center">
+                    Platan<span className="text-green-500">Sad</span>
+                  </span>
+                </button>
+              </div>
+
+              {/* RIGHT */}
+              <div className="flex items-center justify-end gap-1 sm:gap-2">
                 <button
                   type="button"
                   onClick={() => {
@@ -371,7 +378,7 @@ const Header = () => {
                   aria-disabled={wishlistCount === 0}
                   tabIndex={wishlistCount === 0 ? -1 : 0}
                   className={cx(
-                    'p-2 sm:p-3 md:p-2 transition-all duration-300 rounded-full relative focus:outline-none focus:ring-2 focus:ring-green-200',
+                    'p-2.5 sm:p-3.5 md:p-4 transition-all duration-300 rounded-full relative focus:outline-none focus:ring-2 focus:ring-green-200',
                     wishlistCount > 0
                       ? 'text-red-500 hover:text-red-600 hover:bg-red-50 active:scale-95'
                       : 'text-gray-400 cursor-not-allowed opacity-70'
@@ -382,30 +389,29 @@ const Header = () => {
                 >
                   <Heart
                     className={cx(
-                      'w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6',
+                      'w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10',
                       wishlistCount > 0 ? 'fill-red-500' : 'fill-none'
                     )}
                   />
                   {wishlistCount > 0 && (
-                    <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 bg-red-500 text-white text-[10px] sm:text-xs min-w-[18px] sm:min-w-[22px] h-[18px] sm:h-[22px] px-0.5 sm:px-1 rounded-full flex items-center justify-center font-bold animate-pulse shadow-md">
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[11px] sm:text-sm min-w-[20px] sm:min-w-[26px] h-[20px] sm:h-[26px] px-1 rounded-full flex items-center justify-center font-bold animate-pulse shadow-md">
                       {wishlistCount}
                     </span>
                   )}
                 </button>
 
-                {/* ✅ CART ICON */}
                 <button
                   type="button"
                   onClick={() => navigate('/cart')}
-                  className="p-2 sm:p-3 md:p-2 text-gray-600 hover:text-green-500 transition-colors hover:bg-gray-100 rounded-full relative active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-200"
+                  className="p-2.5 sm:p-3.5 md:p-4 text-gray-600 hover:text-green-500 transition-colors hover:bg-gray-100 rounded-full relative active:scale-95 focus:outline-none focus:ring-2 focus:ring-green-200"
                   data-testid="cart-icon"
                   aria-label="Кошик"
                 >
                   <div className="relative">
-                    <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 md:w-6 md:h-6" />
+                    <ShoppingBag className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10" />
                     {cartCount > 0 && (
                       <span
-                        className="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 bg-green-500 text-white text-[10px] sm:text-xs min-w-[18px] sm:min-w-[22px] h-[18px] sm:h-[22px] px-0.5 sm:px-1 rounded-full flex items-center justify-center font-bold shadow-md"
+                        className="absolute -top-2 -right-2 bg-green-500 text-white text-[11px] sm:text-sm min-w-[20px] sm:min-w-[26px] h-[20px] sm:h-[26px] px-1 rounded-full flex items-center justify-center font-bold shadow-md"
                         data-testid="cart-count"
                       >
                         {cartCount}
