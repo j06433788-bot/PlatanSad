@@ -4,32 +4,10 @@ import { productsApi } from '../api/productsApi';
 import ProductCard from '../components/ProductCard';
 import { SlidersHorizontal, X, Grid3X3, LayoutGrid } from 'lucide-react';
 
-const InstagramGlyph = ({ className = 'w-4 h-4' }) => (
-  <svg
-    viewBox="0 0 24 24"
-    className={className}
-    fill="none"
-    aria-hidden="true"
-  >
-    {/* outer rounded square */}
-    <rect
-      x="4.5"
-      y="4.5"
-      width="15"
-      height="15"
-      rx="4.2"
-      stroke="currentColor"
-      strokeWidth="1.8"
-    />
-    {/* lens */}
-    <circle
-      cx="12"
-      cy="12"
-      r="3.4"
-      stroke="currentColor"
-      strokeWidth="1.8"
-    />
-    {/* small dot */}
+const InstagramGlyph = ({ className = 'w-4 h-4 text-white/95' }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" aria-hidden="true">
+    <rect x="4.5" y="4.5" width="15" height="15" rx="4.2" stroke="currentColor" strokeWidth="1.8" />
+    <circle cx="12" cy="12" r="3.4" stroke="currentColor" strokeWidth="1.8" />
     <circle cx="16.9" cy="7.1" r="1.05" fill="currentColor" />
   </svg>
 );
@@ -274,19 +252,17 @@ const CatalogPage = () => {
           animation: shimmer 1.2s ease-in-out infinite;
         }
 
-        /* ========= Premium IG badge ========= */
+        /* ========= Premium IG floating chip only ========= */
         @keyframes igSheen {
           0% { transform: translateX(-130%); opacity: 0; }
           25% { opacity: .9; }
           60% { opacity: .9; }
           100% { transform: translateX(130%); opacity: 0; }
         }
-
         @keyframes igIn {
-          from { opacity: 0; transform: translateY(6px) scale(.985); filter: blur(.2px); }
-          to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+          from { opacity: 0; transform: translateY(10px) scale(.985); }
+          to   { opacity: 1; transform: translateY(0) scale(1); }
         }
-
         .ig-badge {
           position: relative;
           overflow: hidden;
@@ -311,13 +287,16 @@ const CatalogPage = () => {
           .ig-tilt:active { transform: translateY(0) rotateX(0) rotateY(0) scale(.995); }
         }
 
-        /* Floating chip on mobile (safe-area) */
+        /* Floating chip (kept) */
         .ig-float {
           position: fixed;
           right: 14px;
           bottom: calc(14px + env(safe-area-inset-bottom));
           z-index: 60;
         }
+
+        /* If you want it on desktop too, remove this block.
+           Now it's mobile-only, as requested earlier. */
         @media (min-width: 640px) {
           .ig-float { display: none; }
         }
@@ -332,7 +311,7 @@ const CatalogPage = () => {
         }
       `}</style>
 
-      {/* ✅ Floating IG chip (mobile only) */}
+      {/* ✅ Floating IG chip (ONLY kept). Shows only for "Кімнатні рослини" */}
       {isRoomPlantsSelected && (
         <div className="ig-float">
           <a
@@ -460,43 +439,6 @@ const CatalogPage = () => {
                   </button>
                 )}
               </div>
-
-              {/* ✅ Premium IG badge under filters */}
-              {isRoomPlantsSelected && (
-                <div className="mt-3 flex items-center">
-                  <a
-                    href={IG_URL}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="
-                      ig-badge ig-tilt
-                      inline-flex items-center gap-2
-                      rounded-full px-3.5 py-1.5
-                      text-[12.5px] sm:text-sm font-semibold
-                      text-white
-                      bg-[radial-gradient(120%_120%_at_20%_20%,rgba(255,255,255,.20),transparent_55%),linear-gradient(135deg,#ff3d7f,#b43bff_55%,#4f46e5)]
-                      shadow-[0_10px_30px_rgba(180,59,255,.22)]
-                      border border-white/16
-                      backdrop-blur-md
-                      hover:shadow-[0_14px_44px_rgba(180,59,255,.32)]
-                      transition
-                      select-none
-                    "
-                    aria-label="Instagram maisternia.roslyn"
-                    title="Instagram"
-                  >
-                    <span className="grid place-items-center w-6 h-6 rounded-full bg-white/12 border border-white/10">
-                      <InstagramGlyph className="w-4 h-4 text-white/95" />
-                    </span>
-
-                    <span className="leading-none">{IG_HANDLE}</span>
-
-                    <span className="ml-0.5 text-[11px] font-bold px-2 py-0.5 rounded-full bg-black/20 border border-white/10">
-                      Instagram
-                    </span>
-                  </a>
-                </div>
-              )}
             </div>
           </div>
 
@@ -510,7 +452,11 @@ const CatalogPage = () => {
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-bold text-gray-800">Фільтри</h2>
                 {activeFiltersCount > 0 && (
-                  <button onClick={clearFilters} className="text-sm font-medium text-gray-500 hover:text-gray-700" type="button">
+                  <button
+                    onClick={clearFilters}
+                    className="text-sm font-medium text-gray-500 hover:text-gray-700"
+                    type="button"
+                  >
                     Скинути
                   </button>
                 )}
@@ -598,6 +544,7 @@ const CatalogPage = () => {
 
           {/* Products */}
           <div className="lg:col-span-3">
+            {/* Skeleton loader */}
             {loading ? (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4">
                 {[...Array(9)].map((_, i) => (
@@ -624,7 +571,7 @@ const CatalogPage = () => {
                   <div
                     key={product?.id ?? `${product?.slug ?? 'p'}-${idx}`}
                     className="item-in"
-                    style={{ animationDelay: `${Math.min(idx, 12) * 28}ms` }}
+                    style={{ animationDelay: `${Math.min(idx, 12) * 28}ms` }} // stagger
                   >
                     <ProductCard product={product} variant="catalog" />
                   </div>
