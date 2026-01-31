@@ -237,9 +237,9 @@ const Hero = () => {
             })}
           </div>
 
-          {/* Ultra thin pills + shimmer */}
+          {/* Pills — width same, height reduced */}
           {len > 1 && (
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1">
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5">
               {slides.map((_, i) => (
                 <button
                   key={i}
@@ -249,8 +249,8 @@ const Hero = () => {
                   }}
                   className={`relative overflow-hidden rounded-full transition-all duration-300 ${
                     i === index
-                      ? "w-[12px] sm:w-[16px] h-[1px]"
-                      : "w-[6px] sm:w-[8px] h-[1px] opacity-60"
+                      ? "w-6 sm:w-8 h-[1px]"
+                      : "w-3 sm:w-4 h-[1px] opacity-60"
                   }`}
                 >
                   {i === index ? (
@@ -278,3 +278,4 @@ const Hero = () => {
 };
 
 export default Hero;
+
