@@ -136,7 +136,7 @@ const DeliveryPage = () => {
                     </li>
                     <li className="flex items-start gap-2">
                       <CheckCircle className="w-4 h-4 text-green-500 mt-0.5" />
-                      <span className="text-sm sm:text-base">Пн–Нд 8:00–20:00</span>
+                      <span className="text-sm sm:text-base">Пн–Нд 8:00–17:00</span>
                     </li>
                   </ul>
                 </div>
