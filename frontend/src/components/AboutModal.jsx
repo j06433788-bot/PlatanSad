@@ -180,7 +180,7 @@ const AboutModal = ({ isOpen, onClose }) => {
                 <Award className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
                 <div>
                   <p className="font-bold text-gray-800 text-sm sm:text-base">
-                    Понад {years}+ років досвіду
+                    Понад {years} років досвіду
                   </p>
                   <p className="text-xs sm:text-sm text-gray-600 mt-1">
                     Дорослі, власно вирощені рослини з правильною кореневою системою
