@@ -10,7 +10,8 @@ import {
   Sparkles,
   Copy,
   Check,
-  QrCode
+  QrCode,
+  PartyPopper,
 } from 'lucide-react';
 
 const DURATION_SEC = 6;
@@ -62,9 +63,8 @@ const OrderSuccessPage = () => {
   const lastKey = 'ps_order_code_last';
 
   // Load or create order code:
-  // - If orderId exists: use stable code per orderKey (create if missing)
-  //   and ALSO write the same code into lastKey (always update last)
-  // - If orderId absent: always generate new code and overwrite lastKey
+  // - If orderId exists: stable code per orderKey, and ALWAYS update lastKey with this code
+  // - If orderId absent: ALWAYS generate a new code and overwrite lastKey
   useEffect(() => {
     setMounted(true);
 
@@ -79,25 +79,22 @@ const OrderSuccessPage = () => {
           code = generateOrderCode();
           localStorage.setItem(orderKey, code);
         }
-
-        // ALWAYS update "last" to the current order code
+        // ALWAYS update "last"
         localStorage.setItem(lastKey, code);
       } else {
-        // No orderId => treat as a new "last" order every time
+        // No orderId => always new "last"
         code = generateOrderCode();
         localStorage.setItem(lastKey, code);
       }
 
       setLocalOrderCode(code);
     } catch {
-      // If storage is blocked (private mode), just generate runtime code
       setLocalOrderCode(generateOrderCode());
     }
   }, [orderKey]);
 
   // Display:
-  // - If backend orderId exists, show it as "Номер" (store code still used for support)
-  // - If no backend id, show generated code as number
+  // - If backend orderId exists, show it, else show generated code
   const displayOrderId = useMemo(() => {
     return orderId ? String(orderId) : localOrderCode;
   }, [orderId, localOrderCode]);
@@ -107,17 +104,18 @@ const OrderSuccessPage = () => {
       brand: 'PlatanSad',
       orderId: orderId ? String(orderId) : null,
       orderCode: localOrderCode || null,
-      createdAt: new Date().toISOString()
+      createdAt: new Date().toISOString(),
     };
     return safeJsonStringify(payload);
   }, [orderId, localOrderCode]);
 
+  // QR image (no libs)
   const qrUrl = useMemo(() => {
     const data = encodeURIComponent(supportPayload);
     return `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${data}`;
   }, [supportPayload]);
 
-  // Countdown logic
+  // Countdown
   useEffect(() => {
     if (!autoEnabled) return;
 
@@ -169,6 +167,17 @@ const OrderSuccessPage = () => {
     } catch {}
   };
 
+  const copyPayload = async () => {
+    try {
+      if (navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(supportPayload);
+      }
+    } catch {}
+  };
+
+  // Lucide icon fallback (if PartyPopper not available in your lucide version)
+  const ConfettiIcon = PartyPopper || Sparkles;
+
   return (
     <div className="bg-gray-50">
       <style>{`
@@ -176,15 +185,34 @@ const OrderSuccessPage = () => {
           from { opacity: 0; transform: translateY(12px); }
           to { opacity: 1; transform: translateY(0); }
         }
+        @keyframes osPop {
+          0% { transform: scale(.85); opacity: 0; }
+          60% { transform: scale(1.08); opacity: 1; }
+          100% { transform: scale(1); opacity: 1; }
+        }
         .os-card { animation: osFade .45s ease-out both; }
+        .os-badge { animation: osPop .45s ease-out .05s both; }
       `}</style>
 
       <div className="min-h-[100dvh] flex items-center justify-center px-3 py-4 sm:px-6 sm:py-10">
+        {/* ✅ card is relative so badge can be absolute */}
         <div
-          className={`w-full max-w-[560px] bg-white border border-gray-100 shadow-sm rounded-3xl overflow-hidden ${
+          className={`relative w-full max-w-[560px] bg-white border border-gray-100 shadow-sm rounded-3xl overflow-hidden ${
             mounted ? 'os-card' : 'opacity-0'
           }`}
         >
+          {/* ✅ TOP-RIGHT CONFETTI BADGE (Lucide SVG) */}
+          <div
+            className="os-badge absolute -top-3 -right-3 sm:-top-4 sm:-right-4
+                       w-10 h-10 sm:w-12 sm:h-12
+                       rounded-full flex items-center justify-center
+                       bg-gradient-to-br from-yellow-200 to-amber-400
+                       shadow-lg ring-4 ring-white"
+            aria-hidden="true"
+          >
+            <ConfettiIcon className="w-5 h-5 sm:w-6 sm:h-6 text-amber-900" />
+          </div>
+
           {/* TOP */}
           <div className="p-4 sm:p-7">
             {/* Professional badge */}
@@ -309,8 +337,8 @@ const OrderSuccessPage = () => {
                       Для підтримки / admin
                     </div>
                     <div className="mt-1 text-xs text-gray-600 leading-relaxed">
-                      QR містить службову інформацію (ID/код замовлення + час створення). “Останнє замовлення” завжди
-                      оновлюється автоматично.
+                      QR містить службову інформацію (ID/код замовлення + час створення). “Останнє замовлення” в
+                      localStorage оновлюється автоматично.
                     </div>
 
                     <div className="mt-3">
@@ -323,13 +351,7 @@ const OrderSuccessPage = () => {
 
                       <button
                         type="button"
-                        onClick={async () => {
-                          try {
-                            if (navigator?.clipboard?.writeText) {
-                              await navigator.clipboard.writeText(supportPayload);
-                            }
-                          } catch {}
-                        }}
+                        onClick={copyPayload}
                         className="mt-2 inline-flex items-center gap-2 rounded-xl px-3 py-2 border border-gray-200 bg-white hover:bg-gray-50 active:scale-[0.98] transition
                                    focus:outline-none focus:ring-4 focus:ring-gray-200 text-[12px] font-extrabold text-gray-900"
                       >
