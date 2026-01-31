@@ -54,14 +54,13 @@ const AboutModal = ({ isOpen, onClose }) => {
     }
 
     const start = performance.now();
-    const duration = 900; // ms
+    const duration = 900;
     const yTarget = 20;
     const pTarget = 200;
 
     let raf = 0;
     const tick = (now) => {
       const t = Math.min(1, (now - start) / duration);
-      // easeOutCubic
       const eased = 1 - Math.pow(1 - t, 3);
 
       setYears(Math.round(yTarget * eased));
@@ -119,7 +118,7 @@ const AboutModal = ({ isOpen, onClose }) => {
           <button
             data-close
             onClick={onClose}
-            className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 active:bg-white/15 transition-colors z-20 focus:outline-none focus-visible:ring-4 focus-visible:ring-white/30"
+            className="absolute top-3 right-3 sm:top-4 sm:right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors z-20"
             aria-label="Закрити"
           >
             <X className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -156,8 +155,8 @@ const AboutModal = ({ isOpen, onClose }) => {
                       Нівакі та формовані дерева
                     </p>
 
-                    {/* Counter badge */}
-                    <div className="shrink-0 rounded-full bg-green-600 text-white px-3 py-1 text-xs sm:text-sm font-extrabold">
+                    {/* Pulsing counter */}
+                    <div className="shrink-0 rounded-full bg-green-600 text-white px-3 py-1 text-xs sm:text-sm font-extrabold animate-pulse">
                       {pines}+
                     </div>
                   </div>
@@ -179,18 +178,10 @@ const AboutModal = ({ isOpen, onClose }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div className="p-4 bg-green-50 rounded-2xl flex gap-3">
                 <Award className="w-5 h-5 text-green-600 shrink-0 mt-0.5" />
-                <div className="min-w-0">
-                  <div className="flex items-start justify-between gap-3">
-                    <p className="font-bold text-gray-800 text-sm sm:text-base">
-                      Понад {years}+ років досвіду
-                    </p>
-
-                    {/* Counter badge */}
-                    <div className="shrink-0 rounded-full bg-green-600 text-white px-3 py-1 text-xs sm:text-sm font-extrabold">
-                      {years}+
-                    </div>
-                  </div>
-
+                <div>
+                  <p className="font-bold text-gray-800 text-sm sm:text-base">
+                    Понад {years}+ років досвіду
+                  </p>
                   <p className="text-xs sm:text-sm text-gray-600 mt-1">
                     Дорослі, власно вирощені рослини з правильною кореневою системою
                   </p>
