@@ -1,17 +1,57 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { LayoutGrid, Play, Pause, ArrowRight } from "lucide-react";
 import Hero from "../components/Hero";
 import ProductSection from "../components/ProductSection";
 import CatalogModal from "../components/CatalogModal";
 
 const VIDEO_URL = "/nursery.mp4";
+
 const DESKTOP_BANNER_IMAGE =
   "https://eu-central-1.linodeobjects.com/list/production/412397/gallery/big/66068c720d2d0.jpg?1316609607";
 
 const HomePage = () => {
   const [isCatalogOpen, setIsCatalogOpen] = useState(false);
 
-  // VIDEO MOBILE
+  // ✅ Detect "real mobile/tablet" by touch capability (not by screen width)
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const check = () => {
+      const hasTouch =
+        "ontouchstart" in window ||
+        (navigator.maxTouchPoints ?? 0) > 0 ||
+        (navigator.msMaxTouchPoints ?? 0) > 0;
+
+      // More robust: touch-like interaction (phones/tablets)
+      const coarsePointer =
+        window.matchMedia?.("(pointer: coarse)").matches ?? false;
+
+      const noHover =
+        window.matchMedia?.("(hover: none)").matches ?? false;
+
+      setIsTouchDevice(Boolean(hasTouch && (coarsePointer || noHover)));
+    };
+
+    check();
+
+    // Update on changes (some browsers can change pointer mode)
+    const mq1 = window.matchMedia?.("(pointer: coarse)");
+    const mq2 = window.matchMedia?.("(hover: none)");
+
+    const onChange = () => check();
+
+    mq1?.addEventListener?.("change", onChange);
+    mq2?.addEventListener?.("change", onChange);
+
+    return () => {
+      mq1?.removeEventListener?.("change", onChange);
+      mq2?.removeEventListener?.("change", onChange);
+    };
+  }, []);
+
+  // VIDEO (touch only)
   const videoRef = useRef(null);
   const videoSectionRef = useRef(null);
 
@@ -20,7 +60,10 @@ const HomePage = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
 
+  // Observe visibility (touch only)
   useEffect(() => {
+    if (!isTouchDevice) return;
+
     const el = videoSectionRef.current;
     if (!el || typeof window === "undefined" || !("IntersectionObserver" in window))
       return;
@@ -32,13 +75,18 @@ const HomePage = () => {
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [isTouchDevice]);
 
+  // Animate on first view (touch only)
   useEffect(() => {
+    if (!isTouchDevice) return;
     if (isVisible) setHasAnimatedIn(true);
-  }, [isVisible]);
+  }, [isVisible, isTouchDevice]);
 
+  // Autoplay when visible (touch only)
   useEffect(() => {
+    if (!isTouchDevice) return;
+
     const video = videoRef.current;
     if (!video || videoFailed) return;
 
@@ -47,9 +95,12 @@ const HomePage = () => {
     } else {
       video.pause();
     }
-  }, [isVisible, videoFailed]);
+  }, [isVisible, videoFailed, isTouchDevice]);
 
+  // Sync play state (touch only)
   useEffect(() => {
+    if (!isTouchDevice) return;
+
     const v = videoRef.current;
     if (!v) return;
 
@@ -63,7 +114,7 @@ const HomePage = () => {
       v.removeEventListener("play", onPlay);
       v.removeEventListener("pause", onPause);
     };
-  }, []);
+  }, [isTouchDevice]);
 
   const togglePlay = async () => {
     const v = videoRef.current;
@@ -95,13 +146,12 @@ const HomePage = () => {
       {/* Products */}
       <ProductSection />
 
-      {/* DESKTOP 1:1 BANNER */}
-      <section className="hidden lg:block max-w-7xl mx-auto px-4 mt-8">
+      {/* ✅ DESKTOP: PREMIUM 1:1 BANNER (always visible on desktop screens, but safe anyway) */}
+      <section className="max-w-7xl mx-auto px-4 mt-8">
         <div className="grid grid-cols-12 gap-6 items-start">
-          {/* BANNER */}
+          {/* 1:1 Banner */}
           <div className="col-span-12 lg:col-span-5">
             <div className="relative w-full aspect-square overflow-hidden rounded-3xl shadow-xl ring-1 ring-black/5">
-              {/* image */}
               <img
                 src={DESKTOP_BANNER_IMAGE}
                 alt="PlatanSad розсадник"
@@ -109,16 +159,12 @@ const HomePage = () => {
                 loading="lazy"
               />
 
-              {/* overlays */}
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
               <div className="absolute inset-0 bg-gradient-to-r from-black/35 via-transparent to-transparent" />
 
-              {/* content */}
               <div className="absolute inset-0 p-6 xl:p-8 flex flex-col justify-end">
                 <div className="inline-flex items-center gap-2 self-start rounded-full bg-white/10 text-white px-3 py-1.5 backdrop-blur ring-1 ring-white/15">
-                  <span className="text-xs font-semibold tracking-wide">
-                    🌿 PlatanSad
-                  </span>
+                  <span className="text-xs font-semibold tracking-wide">🌿 PlatanSad</span>
                   <span className="text-xs text-white/80">розсадник</span>
                 </div>
 
@@ -152,35 +198,29 @@ const HomePage = () => {
             </div>
           </div>
 
-          {/* INFO BLOCK */}
+          {/* Info block */}
           <div className="col-span-12 lg:col-span-7">
             <div className="rounded-3xl border border-gray-100 shadow-sm p-6 xl:p-8 bg-white">
               <h4 className="text-xl xl:text-2xl font-extrabold text-gray-900">
                 Преміум якість для вашого саду
               </h4>
               <p className="mt-2 text-gray-600 leading-relaxed">
-                Наші рослини — це результат ретельного догляду та відбору.
-                Підкажемо по догляду і підбору для твоїх умов.
+                Наші рослини — це результат ретельного догляду та відбору. Підкажемо по догляду
+                і підбору для твоїх умов.
               </p>
 
               <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="rounded-2xl bg-gray-50 p-4">
                   <div className="text-sm font-bold text-gray-900">100+ видів</div>
-                  <div className="text-xs text-gray-600 mt-1">
-                    Хвойні, нівакі, вічнозелені
-                  </div>
+                  <div className="text-xs text-gray-600 mt-1">Хвойні, нівакі, вічнозелені</div>
                 </div>
                 <div className="rounded-2xl bg-gray-50 p-4">
                   <div className="text-sm font-bold text-gray-900">Нівакі</div>
-                  <div className="text-xs text-gray-600 mt-1">
-                    Формовані дерева
-                  </div>
+                  <div className="text-xs text-gray-600 mt-1">Формовані дерева</div>
                 </div>
                 <div className="rounded-2xl bg-gray-50 p-4">
                   <div className="text-sm font-bold text-gray-900">Пакування</div>
-                  <div className="text-xs text-gray-600 mt-1">
-                    Акуратно та надійно
-                  </div>
+                  <div className="text-xs text-gray-600 mt-1">Акуратно та надійно</div>
                 </div>
               </div>
 
@@ -198,64 +238,77 @@ const HomePage = () => {
         </div>
       </section>
 
-      {/* MOBILE ONLY VIDEO */}
-      <section
-        ref={videoSectionRef}
-        className="lg:hidden w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] mt-5 sm:mt-7"
-      >
-        <div
-          className={[
-            "w-screen bg-black transform-gpu",
-            "transition-[opacity,transform] duration-700 ease-out",
-            hasAnimatedIn
-              ? "opacity-100 scale-100 translate-y-0"
-              : "opacity-0 scale-[1.02] translate-y-3",
-          ].join(" ")}
+      {/* ✅ VIDEO: ONLY TOUCH DEVICES (phones/tablets). On PC it will NEVER render. */}
+      {isTouchDevice && (
+        <section
+          ref={videoSectionRef}
+          className="w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] mt-5 sm:mt-7"
         >
-          <div className="relative w-screen h-[68vw] sm:h-[40vw] max-h-[520px] overflow-hidden">
-            {!videoFailed ? (
-              <video
-                ref={videoRef}
-                className="absolute inset-0 w-full h-full object-cover"
-                src={VIDEO_URL}
-                muted
-                autoPlay
-                loop
-                playsInline
-                preload="metadata"
-                onError={() => setVideoFailed(true)}
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-black text-white">
-                🌿 Відео тимчасово недоступне
+          <div
+            className={[
+              "w-screen bg-black transform-gpu",
+              "transition-[opacity,transform] duration-700 ease-out",
+              hasAnimatedIn
+                ? "opacity-100 scale-100 translate-y-0"
+                : "opacity-0 scale-[1.02] translate-y-3",
+            ].join(" ")}
+          >
+            <div className="relative w-screen h-[68vw] sm:h-[40vw] max-h-[520px] overflow-hidden">
+              {!videoFailed ? (
+                <video
+                  ref={videoRef}
+                  className="absolute inset-0 w-full h-full object-cover"
+                  src={VIDEO_URL}
+                  muted
+                  autoPlay
+                  loop
+                  playsInline
+                  preload="metadata"
+                  onError={() => setVideoFailed(true)}
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center bg-black">
+                  <div className="text-center px-4">
+                    <div className="text-white/90 font-bold text-base sm:text-lg">
+                      🌿 Відео тимчасово недоступне
+                    </div>
+                    <div className="text-white/60 text-sm mt-1">
+                      Перевір файл <span className="font-mono">{VIDEO_URL}</span> на сервері
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
+
+              <div className="pointer-events-none absolute bottom-2 left-2 sm:bottom-3 sm:left-3">
+                <div className="bg-black/50 backdrop-blur-sm px-2 py-1 rounded-lg ring-1 ring-white/10">
+                  <p className="text-[10px] sm:text-[11px] font-medium text-white">
+                    🌿 Відео з нашого розсадника
+                  </p>
+                </div>
               </div>
-            )}
 
-            {/* overlays */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-
-            <div className="absolute bottom-2 left-2 text-white text-xs bg-black/50 px-2 py-1 rounded-lg">
-              🌿 Відео з нашого розсадника
+              {!videoFailed && (
+                <div className="absolute bottom-3 right-3">
+                  <button
+                    onClick={togglePlay}
+                    className="flex items-center gap-2 rounded-2xl bg-white/10 text-white px-3.5 py-2.5 backdrop-blur-md ring-1 ring-white/20 shadow transition active:scale-[0.98]"
+                  >
+                    {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                    <span className="text-sm font-bold">
+                      {isPlaying ? "Пауза" : "Play"}
+                    </span>
+                  </button>
+                </div>
+              )}
             </div>
-
-            {!videoFailed && (
-              <button
-                onClick={togglePlay}
-                className="absolute bottom-3 right-3 flex items-center gap-2 bg-white/15 text-white px-3.5 py-2.5 rounded-2xl backdrop-blur ring-1 ring-white/20"
-              >
-                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                {isPlaying ? "Пауза" : "Play"}
-              </button>
-            )}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* CATALOG MODAL */}
-      <CatalogModal
-        isOpen={isCatalogOpen}
-        onClose={() => setIsCatalogOpen(false)}
-      />
+      {/* Catalog Modal */}
+      <CatalogModal isOpen={isCatalogOpen} onClose={() => setIsCatalogOpen(false)} />
     </div>
   );
 };
