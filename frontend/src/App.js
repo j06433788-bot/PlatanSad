@@ -21,6 +21,7 @@ import DeliveryPage from "./pages/DeliveryPage";
 import ReturnPage from "./pages/ReturnPage";
 import ContactsPage from "./pages/ContactsPage";
 import BlogPage from "./pages/BlogPage";
+import CMSPage from "./pages/CMSPage";
 
 // Admin imports
 import AdminLogin from "./admin/pages/AdminLogin";
@@ -282,6 +283,18 @@ function App() {
                       <Header />
                       <main className="flex-1">
                         <BlogPage />
+                      </main>
+                      <Footer />
+                    </div>
+                  }
+                />
+                <Route
+                  path="/pages/:pageKey"
+                  element={
+                    <div className="App min-h-screen bg-white flex flex-col">
+                      <Header />
+                      <main className="flex-1">
+                        <CMSPage />
                       </main>
                       <Footer />
                     </div>

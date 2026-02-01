@@ -29,7 +29,17 @@ const emptyFooterLink = {
   is_active: true
 };
 
+const emptyPageDraft = {
+  page_key: '',
+  title: '',
+  content: '',
+  meta_description: '',
+  meta_keywords: ''
+};
+
 const normalizeBaseUrl = (u) => (u || '').replace(/\/+$/, '');
+const pageKeyPattern = /^[a-z0-9-]+$/;
+const staticPageRoutes = new Set(['about', 'delivery', 'return', 'contacts']);
 
 const AdminCMS = () => {
   const [pages, setPages] = useState([]);
@@ -47,6 +57,9 @@ const AdminCMS = () => {
 
   const [editingFooterId, setEditingFooterId] = useState(null);
   const [footerDraft, setFooterDraft] = useState(emptyFooterLink);
+
+  const [newPageDraft, setNewPageDraft] = useState(emptyPageDraft);
+  const [creatingPage, setCreatingPage] = useState(false);
 
   const [previewPageKey, setPreviewPageKey] = useState(null);
   const [pageFilter, setPageFilter] = useState('');
@@ -171,6 +184,61 @@ const AdminCMS = () => {
     } catch (error) {
       console.error(error);
       toast.error(`Помилка оновлення сторінки: ${error.message || 'невідомо'}`);
+    }
+  };
+
+  const handleCreatePage = async () => {
+    const trimmedKey = newPageDraft.page_key.trim();
+    if (!trimmedKey || !newPageDraft.title.trim() || !newPageDraft.content.trim()) {
+      toast.error('Заповніть ключ сторінки, заголовок та контент.');
+      return;
+    }
+
+    if (!pageKeyPattern.test(trimmedKey)) {
+      toast.error('Ключ сторінки має містити лише латинські літери, цифри або дефіс.');
+      return;
+    }
+
+    if (pages.some((p) => p.page_key === trimmedKey)) {
+      toast.error('Сторінка з таким ключем вже існує.');
+      return;
+    }
+
+    setCreatingPage(true);
+    try {
+      await apiFetch('/api/cms/pages', {
+        method: 'POST',
+        body: JSON.stringify({
+          ...newPageDraft,
+          page_key: trimmedKey
+        })
+      });
+
+      toast.success('Сторінку створено!');
+      setNewPageDraft(emptyPageDraft);
+      await loadData();
+    } catch (error) {
+      console.error(error);
+      toast.error(`Помилка створення сторінки: ${error.message || 'невідомо'}`);
+    } finally {
+      setCreatingPage(false);
+    }
+  };
+
+  const handleDeletePage = async (pageKey) => {
+    const confirmDelete = window.confirm(
+      `Видалити сторінку "${pageKey}"? Цю дію неможливо скасувати.`
+    );
+    if (!confirmDelete) return;
+
+    try {
+      await apiFetch(`/api/cms/pages/${pageKey}`, { method: 'DELETE' });
+      toast.success('Сторінку видалено');
+      if (editingPageKey === pageKey) cancelEditPage();
+      await loadData();
+    } catch (error) {
+      console.error(error);
+      toast.error(`Помилка видалення сторінки: ${error.message || 'невідомо'}`);
     }
   };
 
@@ -306,6 +374,9 @@ const AdminCMS = () => {
       return t.includes(normalizedFilter) || k.includes(normalizedFilter);
     });
   }, [pageFilter, pages]);
+
+  const getPageUrl = (pageKey) =>
+    staticPageRoutes.has(pageKey) ? `/${pageKey}` : `/pages/${pageKey}`;
 
   // ===================== UI =====================
   if (loading) {
@@ -464,6 +535,101 @@ const AdminCMS = () => {
             </div>
           </div>
 
+          <div className="border rounded-lg p-4 mb-6 bg-gray-50">
+            <h3 className="font-semibold text-gray-700 mb-3">Створити нову сторінку</h3>
+
+            <div className="grid gap-3 lg:grid-cols-2">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Ключ сторінки</label>
+                <input
+                  type="text"
+                  value={newPageDraft.page_key}
+                  onChange={(e) =>
+                    setNewPageDraft((prev) => ({
+                      ...prev,
+                      page_key: e.target.value.toLowerCase().replace(/\s+/g, '-')
+                    }))
+                  }
+                  placeholder="about-us"
+                  className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Доступні символи: латиниця, цифри, дефіс. URL буде {`/pages/${newPageDraft.page_key || 'page-key'}`}.
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Заголовок</label>
+                <input
+                  type="text"
+                  value={newPageDraft.title}
+                  onChange={(e) =>
+                    setNewPageDraft((prev) => ({ ...prev, title: e.target.value }))
+                  }
+                  placeholder="Нова сторінка"
+                  className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="lg:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">Контент (HTML)</label>
+                <textarea
+                  value={newPageDraft.content}
+                  onChange={(e) =>
+                    setNewPageDraft((prev) => ({ ...prev, content: e.target.value }))
+                  }
+                  rows={6}
+                  className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500 font-mono text-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Meta Description
+                </label>
+                <input
+                  type="text"
+                  value={newPageDraft.meta_description}
+                  onChange={(e) =>
+                    setNewPageDraft((prev) => ({ ...prev, meta_description: e.target.value }))
+                  }
+                  className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Meta Keywords
+                </label>
+                <input
+                  type="text"
+                  value={newPageDraft.meta_keywords}
+                  onChange={(e) =>
+                    setNewPageDraft((prev) => ({ ...prev, meta_keywords: e.target.value }))
+                  }
+                  className="w-full px-3 py-2 border rounded focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={handleCreatePage}
+                  disabled={creatingPage}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                >
+                  <Plus className="w-4 h-4" />
+                  {creatingPage ? 'Створення...' : 'Створити'}
+                </button>
+                <button
+                  onClick={() => setNewPageDraft(emptyPageDraft)}
+                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                >
+                  Очистити
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div className="space-y-4">
             {filteredPages.map((page) => {
               const isEditing = editingPageKey === page.page_key;
@@ -477,15 +643,24 @@ const AdminCMS = () => {
                     </div>
 
                     {!isEditing ? (
-                      <button
-                        onClick={() => startEditPage(page)}
-                        className="flex items-center gap-2 px-3 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
-                      >
-                        <Edit2 className="w-4 h-4" />
-                        Редагувати
-                      </button>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          onClick={() => startEditPage(page)}
+                          className="flex items-center gap-2 px-3 py-1.5 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                          Редагувати
+                        </button>
+                        <button
+                          onClick={() => handleDeletePage(page.page_key)}
+                          className="flex items-center gap-2 px-3 py-1.5 bg-red-500 text-white rounded hover:bg-red-600 text-sm"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Видалити
+                        </button>
+                      </div>
                     ) : (
-                      <div className="flex gap-2">
+                      <div className="flex flex-wrap gap-2">
                         <button
                           onClick={() =>
                             setPreviewPageKey(previewPageKey === page.page_key ? null : page.page_key)
@@ -582,7 +757,7 @@ const AdminCMS = () => {
                           <div className="flex items-center justify-between mb-2">
                             <p className="text-sm font-semibold text-gray-700">Превʼю контенту</p>
                             <a
-                              href={`/${page.page_key}`}
+                              href={getPageUrl(page.page_key)}
                               className="flex items-center gap-1 text-blue-600 text-sm hover:underline"
                               target="_blank"
                               rel="noreferrer"
@@ -602,7 +777,7 @@ const AdminCMS = () => {
                   ) : (
                     <div className="text-sm text-gray-600">
                       <p className="mb-2">
-                        <strong>Сторінка:</strong> /{page.page_key}
+                        <strong>URL:</strong> {getPageUrl(page.page_key)}
                       </p>
                       <p>
                         <strong>Останнє оновлення:</strong>{' '}
