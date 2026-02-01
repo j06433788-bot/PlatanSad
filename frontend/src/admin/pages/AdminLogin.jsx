@@ -1,3 +1,6 @@
+Ось готовий код `AdminLogin.jsx`:
+
+```jsx
 import React, { useMemo, useState } from 'react';
 import { useAdminAuth } from '../context/AdminAuthContext';
 import { Lock, User } from 'lucide-react';
@@ -134,3 +137,6 @@ const AdminLogin = () => {
 };
 
 export default AdminLogin;
+```
+
+Готово! Просто скопіюйте та замініть вміст файлу `frontend/src/admin/pages/AdminLogin.jsx`.
