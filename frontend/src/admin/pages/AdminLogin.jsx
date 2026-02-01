@@ -9,7 +9,7 @@ const AdminLogin = () => {
   const [credentials, setCredentials] = useState({ username: '', password: '' });
   const [loading, setLoading] = useState(false);
 
-  const bgUrl = useMemo(() => "/admin-bg.jpg", []);
+  const bgUrl = useMemo(() => "https://images.unsplash.com/photo-1676265014734-ad6a52feb631?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzNzl8MHwxfHNlYXJjaHwzfHxwbGFuZSUyMHRyZWUlMjBnYXJkZW4lMjBuYXR1cmUlMjBncmVlbiUyMGxlYXZlc3xlbnwwfHx8fDE3Njk5MDg3Njd8MA&ixlib=rb-4.1.0&q=85", []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
