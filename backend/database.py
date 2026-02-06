@@ -1,43 +1,67 @@
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
-from sqlalchemy.orm import declarative_base
-from sqlalchemy import Column, String, Float, Integer, DateTime, Text, Boolean, ForeignKey, JSON
-from sqlalchemy.orm import relationship
+from sqlalchemy import (
+    create_engine,
+    Column,
+    String,
+    Float,
+    Integer,
+    DateTime,
+    Text,
+    Boolean,
+    ForeignKey,
+    JSON,
+)
+from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from dotenv import load_dotenv
 from pathlib import Path
-
-ROOT_DIR = Path(__file__).parent
-load_dotenv(ROOT_DIR / '.env')
-import os
 from datetime import datetime
 import uuid
+import os
 
-# Database URL
-DATABASE_URL = os.environ.get('DATABASE_URL', 'postgresql+asyncpg://postgres:postgres@localhost:5432/platansad')
+# =========================
+# ENV
+# =========================
 
-# Create async engine
-engine = create_async_engine(
+ROOT_DIR = Path(__file__).parent
+load_dotenv(ROOT_DIR / ".env")
+
+# =========================
+# DATABASE URL
+# =========================
+# За замовчуванням SQLite (STABLE)
+# Якщо захочеш PostgreSQL — просто задай DATABASE_URL у .env
+
+DATABASE_URL = os.environ.get(
+    "DATABASE_URL",
+    f"sqlite:///{ROOT_DIR / 'platansad.db'}"
+)
+
+# =========================
+# ENGINE (SYNC)
+# =========================
+
+engine = create_engine(
     DATABASE_URL,
     echo=False,
-    future=True
+    connect_args={"check_same_thread": False}
+    if DATABASE_URL.startswith("sqlite")
+    else {},
 )
 
-# Create async session factory
-AsyncSessionLocal = async_sessionmaker(
-    engine,
-    class_=AsyncSession,
-    expire_on_commit=False,
+SessionLocal = sessionmaker(
     autocommit=False,
-    autoflush=False
+    autoflush=False,
+    bind=engine,
 )
 
-# Base class for models
 Base = declarative_base()
 
+# =========================
+# MODELS
+# =========================
 
-# Product Model
 class Product(Base):
     __tablename__ = "products"
-    
+
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     name = Column(String, nullable=False, index=True)
     article = Column(String, nullable=False, unique=True)
@@ -52,20 +76,18 @@ class Product(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-# Category Model
 class Category(Base):
     __tablename__ = "categories"
-    
+
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     name = Column(String, nullable=False, unique=True, index=True)
     icon = Column(String, nullable=False)
     count = Column(Integer, default=0)
 
 
-# Cart Model
 class CartItem(Base):
     __tablename__ = "cart"
-    
+
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     product_id = Column(String, nullable=False, index=True)
     product_name = Column(String, nullable=False)
@@ -75,23 +97,21 @@ class CartItem(Base):
     user_id = Column(String, default="guest", index=True)
 
 
-# Wishlist Model
 class WishlistItem(Base):
     __tablename__ = "wishlist"
-    
+
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     product_id = Column(String, nullable=False, index=True)
     user_id = Column(String, default="guest", index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-# Order Model
 class Order(Base):
     __tablename__ = "orders"
-    
+
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     user_id = Column(String, default="guest", index=True)
-    items = Column(JSON, nullable=False)  # Store as JSON array
+    items = Column(JSON, nullable=False)
     total_amount = Column(Float, nullable=False)
     customer_name = Column(String, nullable=False)
     customer_phone = Column(String, nullable=False)
@@ -104,10 +124,9 @@ class Order(Base):
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
 
 
-# Quick Order Model
 class QuickOrder(Base):
     __tablename__ = "quick_orders"
-    
+
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     product_id = Column(String, nullable=False, index=True)
     product_name = Column(String, nullable=False)
@@ -121,21 +140,19 @@ class QuickOrder(Base):
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
 
 
-# Site Settings Model
 class SiteSettings(Base):
     __tablename__ = "site_settings"
-    
+
     id = Column(String, primary_key=True, default="main")
     settings_data = Column(JSON, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
-# CMS Page Content Model
 class PageContent(Base):
     __tablename__ = "page_contents"
-    
+
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    page_key = Column(String, unique=True, nullable=False, index=True)  # about, delivery, contacts, return
+    page_key = Column(String, unique=True, nullable=False, index=True)
     title = Column(String, nullable=False)
     content = Column(Text, nullable=False)
     meta_description = Column(String, nullable=True)
@@ -143,10 +160,9 @@ class PageContent(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
-# CMS Hero Section Model
 class HeroSection(Base):
     __tablename__ = "hero_sections"
-    
+
     id = Column(String, primary_key=True, default="main")
     title = Column(String, nullable=False)
     subtitle = Column(String, nullable=True)
@@ -156,12 +172,11 @@ class HeroSection(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
-# CMS Footer Links Model  
 class FooterLink(Base):
     __tablename__ = "footer_links"
-    
+
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    section = Column(String, nullable=False, index=True)  # company, help, social
+    section = Column(String, nullable=False, index=True)
     title = Column(String, nullable=False)
     url = Column(String, nullable=False)
     order = Column(Integer, default=0)
@@ -169,10 +184,9 @@ class FooterLink(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
-# CMS Blog Model
 class BlogPost(Base):
     __tablename__ = "blog_posts"
-    
+
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     slug = Column(String, unique=True, nullable=False, index=True)
     title = Column(String, nullable=False)
@@ -191,54 +205,50 @@ class BlogPost(Base):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
-# CMS Menu Items Model
 class MenuItem(Base):
     __tablename__ = "menu_items"
-    
+
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     title = Column(String, nullable=False)
     url = Column(String, nullable=False)
     icon = Column(String, nullable=True)
     order = Column(Integer, default=0)
     is_active = Column(Boolean, default=True)
-    parent_id = Column(String, nullable=True)  # For submenu
+    parent_id = Column(String, nullable=True)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
 
-# Media Library Model
 class MediaFile(Base):
     __tablename__ = "media_files"
-    
+
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     filename = Column(String, nullable=False)
     original_name = Column(String, nullable=False)
     url = Column(String, nullable=False)
-    file_type = Column(String, nullable=False)  # image, video, document
+    file_type = Column(String, nullable=False)
     mime_type = Column(String, nullable=True)
-    file_size = Column(Integer, nullable=True)  # size in bytes
+    file_size = Column(Integer, nullable=True)
     alt_text = Column(String, nullable=True)
     title = Column(String, nullable=True)
-    folder = Column(String, default="general")  # for organization
+    folder = Column(String, default="general")
     uploaded_by = Column(String, default="admin")
     created_at = Column(DateTime, default=datetime.utcnow, index=True)
 
+# =========================
+# DB HELPERS
+# =========================
 
-# Database helper functions
-async def get_db():
-    """Dependency to get database session"""
-    async with AsyncSessionLocal() as session:
-        try:
-            yield session
-        finally:
-            await session.close()
-
-
-async def init_db():
-    """Initialize database tables"""
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
-async def close_db():
-    """Close database connection"""
-    await engine.dispose()
+def init_db():
+    Base.metadata.create_all(bind=engine)
+
+
+def close_db():
+    engine.dispose()
